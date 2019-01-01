@@ -47,10 +47,14 @@ public class MapMaker {
                 String currentLine = scanner.nextLine();
                 if ("x".equals(currentLine.toLowerCase())) {
                     return;
-                } else if (getDirectionFromInput(currentLine)) {
+                } else if (getDirectionFromInput(currentLine.toLowerCase())) {
                     break;
                 }
             }
+            if (lastX < 0 || lastX > nesScreenMap.getWidth() || lastY < 0 || lastY > nesScreenMap.getHeight()) {
+                adjustImageSize();
+            }
+            System.out.println(lastX + " " + lastY);
         }
     }
 
@@ -60,15 +64,48 @@ public class MapMaker {
 //        } else if ("down".equals(currentLine.toLowerCase()) || "d".equals(currentLine.toLowerCase())) {
         } else if (currentLine.contains("down")) {
             lastY += SCREENSHOT_HEIGHT + OFFSET;
-            System.out.println("AAAAAA");
         } else if (currentLine.contains("left")) {
             lastX -= SCREENSHOT_WIDTH + OFFSET;
         } else if (currentLine.contains("right")) {
             lastX += SCREENSHOT_WIDTH + OFFSET;
         } else {
+            System.out.println("Input not recognized.");
             return false;
         }
         return (currentLine.indexOf("*") != 0);
+    }
+
+    private void adjustImageSize() {
+        int newWidth  = nesScreenMap.getWidth();
+        int newHeight = nesScreenMap.getHeight();
+        int shiftedXValue = 0;
+        int shiftedYValue = 0;
+
+        if (lastX < 0) {
+            newWidth += -lastX;
+            shiftedXValue = -lastX;
+            lastX = 0;
+        } else if (lastX > nesScreenMap.getWidth()) {
+            newWidth += (lastX - nesScreenMap.getWidth());
+        }
+
+        if (lastY < 0) {
+            newHeight += -lastY;
+            shiftedYValue = -lastY;
+            lastY = 0;
+        } else if (lastY > nesScreenMap.getHeight()) {
+            newHeight += (lastY - nesScreenMap.getHeight());
+        }
+
+        BufferedImage newImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics g = newImage.getGraphics();
+
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, newImage.getWidth(), newImage.getHeight());
+        g.drawImage(nesScreenMap, shiftedXValue, shiftedYValue, null);
+        g.dispose();
+
+        nesScreenMap = newImage;
     }
 
     private void saveImage() {

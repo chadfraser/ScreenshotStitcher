@@ -2,13 +2,14 @@ import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.image.*;
 import java.io.*;
+import java.util.Scanner;
 
 
 public class ImageSaver implements ClipboardOwner {
     public static void main(String[] args) {
     }
 
-    public static BufferedImage cropClipboardImage() {
+    static BufferedImage cropClipboardImage() {
         BufferedImage bufferedImage = getImageFromClipboard();
         if (bufferedImage != null) {
             bufferedImage = cropImage(bufferedImage);
@@ -18,13 +19,19 @@ public class ImageSaver implements ClipboardOwner {
     }
 
     private static BufferedImage getImageFromClipboard() {
-        try {
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            return (BufferedImage) clipboard.getData(DataFlavor.imageFlavor);
-        } catch(UnsupportedFlavorException | IOException e) {
-            e.printStackTrace();
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            try {
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                return (BufferedImage) clipboard.getData(DataFlavor.imageFlavor);
+//            } catch (UnsupportedFlavorException | IOException e) {
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("You do not have a screenshot currently copied. Press 'enter' to try again.");
+                scanner.nextLine();
+            }
         }
-        return null;
+//        return null;
     }
 
     private void copyImage(BufferedImage bufferedImage)
