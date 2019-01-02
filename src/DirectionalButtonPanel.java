@@ -3,48 +3,69 @@ import javafx.scene.Group;
 import javax.swing.*;
 import java.awt.*;
 
-public class DirectionalButtonPanel extends JPanel {
+class DirectionalButtonPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     private static final int WIDTH = 250;
-    private static final int HEIGHT = 350;
+    private static final int HEIGHT = 150;
 
     private MapMakerWindow mapMakerWindow;
 
-    public DirectionalButtonPanel(MapMakerWindow mapMakerWindow) {
+    DirectionalButtonPanel(MapMakerWindow mapMakerWindow) {
         this.mapMakerWindow = mapMakerWindow;
 
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        setMaximumSize(new Dimension(WIDTH, HEIGHT));
+        setBackground(Color.YELLOW);
         setFocusable(true);
         JButton upButton = new JButton("UP");
         JButton downButton = new JButton("DOWN");
         JButton leftButton = new JButton("LEFT");
         JButton rightButton = new JButton("RIGHT");
 
-        GroupLayout groupLayout = new GroupLayout(this);
-        setLayout(groupLayout);
-        groupLayout.setAutoCreateContainerGaps(true);
-        groupLayout.setAutoCreateGaps(true);
+        JButton[] arrayOfButtons = {upButton, downButton, leftButton, rightButton};
 
-        groupLayout.setHorizontalGroup(
-                groupLayout.createSequentialGroup()
-                        .addComponent(leftButton)
-                        .addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                                    .addComponent(upButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(downButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addComponent(rightButton));
+        setButtonSizes(arrayOfButtons);
 
-        groupLayout.setVerticalGroup(
-                groupLayout.createSequentialGroup()
-                        .addComponent(upButton)
-                        .addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                                .addComponent(leftButton)
-                                .addComponent(rightButton))
-                        .addComponent(downButton));
+        setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
 
-//        add(upButton, BorderLayout.NORTH);
-//        add(leftButton, BorderLayout.WEST);
-//        add(rightButton, BorderLayout.EAST);
-//        add(downButton, BorderLayout.SOUTH);
+        c.insets = new Insets (5, 0, 0, 0);
+        c.weightx = 0.5;
+        c.gridwidth = 4;
+        c.gridx = 3;
+        c.gridy = 0;
+        add(upButton, c);
+
+        c.weightx = 0.5;
+        c.gridwidth = 4;
+        c.gridx = 0;
+        c.gridy = 1;
+        add(leftButton, c);
+
+        c.weightx = 0.5;
+        c.gridwidth = 4;
+        c.gridx = 6;
+        c.gridy = 1;
+        add(rightButton, c);
+
+        c.weightx = 0.5;
+        c.gridwidth = 4;
+        c.gridx = 3;
+        c.gridy = 2;
+        add(downButton, c);
+    }
+
+    private void setButtonSizes(JButton[] arrayOfButtons) {
+        int maxButtonWidth = 0;
+        for (JButton button : arrayOfButtons) {
+            if (button.getPreferredSize().getWidth() > maxButtonWidth) {
+                maxButtonWidth = (int) button.getPreferredSize().getWidth();
+            }
+        }
+        for (JButton button : arrayOfButtons) {
+            button.setPreferredSize(new Dimension(maxButtonWidth,
+                                                  (int) button.getPreferredSize().getHeight()));
+        }
     }
 }
