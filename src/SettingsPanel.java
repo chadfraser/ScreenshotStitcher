@@ -1,38 +1,32 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.image.BufferedImage;
 
-public class PreviewAndSelectionPanel extends JPanel {
+public class SettingsPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     private static final int WIDTH = 250;
     private static final int HEIGHT = MapMakerWindow.getConstantHeight();
 
-    private BufferedImage previewPanel;
     private MapMakerWindow mapMakerWindow;
-    private DirectionalButtonPanel buttonPanel;
-    private PasteButtonPanel pasteButtonPanel;
-    private ImagePreviewPanel imagePreviewPanel;
+    private DataPanel dataPanel;
+    private UndoAndZoomPanel undoAndZoomPanel;
 
-    PreviewAndSelectionPanel(MapMakerWindow mapMakerWindow) {
+    SettingsPanel(MapMakerWindow mapMakerWindow) {
         this.mapMakerWindow = mapMakerWindow;
 
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
         setMaximumSize(new Dimension(WIDTH, HEIGHT));
 
-        buttonPanel = new DirectionalButtonPanel(mapMakerWindow);
-        pasteButtonPanel = new PasteButtonPanel(mapMakerWindow);
-        imagePreviewPanel = new ImagePreviewPanel(mapMakerWindow);
+        dataPanel = new DataPanel(mapMakerWindow);
+        undoAndZoomPanel = new UndoAndZoomPanel(mapMakerWindow);
 
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-        add(buttonPanel);
+        add(dataPanel);
         add(Box.createVerticalGlue());
-        add(pasteButtonPanel);
-        add(imagePreviewPanel);
-//        pack();
-//        setMinimumSize(new Dimension(WIDTH, HEIGHT));
-//        setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        add(undoAndZoomPanel);
     }
 
     public static int getConstantWidth() {

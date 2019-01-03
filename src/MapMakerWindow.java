@@ -3,12 +3,12 @@ import java.awt.*;
 
 public class MapMakerWindow extends JFrame {
     private static final int WIDTH = 1100;
-    private static final int HEIGHT = 600;
+    private static final int HEIGHT = 700;
 
     private MapMakerImagePanel mapMakerImagePanel;
     private PreviewAndSelectionPanel previewAndSelectionPanel;
-    private ImagePanelAndSavePanelPanel imagePanelAndSavePanelPanel;
-    private UndoAndZoomPanel undoAndZoomPanel;
+    private MainImageAndSavePanel mainImageAndSavePanel;
+    private SettingsPanel settingsPanel;
 
     private MapMakerWindow() {
         setTitle("NES Map Maker");
@@ -20,13 +20,13 @@ public class MapMakerWindow extends JFrame {
 //        setMinimumSize(new Dimension(700, 600));
 
         previewAndSelectionPanel = new PreviewAndSelectionPanel(this);
-        imagePanelAndSavePanelPanel = new ImagePanelAndSavePanelPanel(this);
-        undoAndZoomPanel = new UndoAndZoomPanel(this);
+        mainImageAndSavePanel = new MainImageAndSavePanel(this);
+        settingsPanel = new SettingsPanel(this);
 
-//        setLayout(new GridBagLayout());
-        add(undoAndZoomPanel, BorderLayout.EAST);
-        add(imagePanelAndSavePanelPanel, BorderLayout.CENTER);
-        add(previewAndSelectionPanel, BorderLayout.WEST);
+        setLayout(new BoxLayout(getContentPane(), BoxLayout.LINE_AXIS));
+        add(previewAndSelectionPanel);
+        add(mainImageAndSavePanel);
+        add(settingsPanel);
 
         pack();
         setLocationRelativeTo(null);
@@ -35,6 +35,14 @@ public class MapMakerWindow extends JFrame {
 
     public static void main(String[] args) {
         new MapMakerWindow();
+    }
+
+    public static int getConstantWidth() {
+        return WIDTH;
+    }
+
+    public static int getConstantHeight() {
+        return HEIGHT;
     }
 
     public MapMakerImagePanel getMapMakerImagePanel() {

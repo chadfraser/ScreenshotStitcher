@@ -12,6 +12,7 @@ public class UndoAndZoomPanel extends JPanel {
     public UndoAndZoomPanel(MapMakerWindow mapMakerWindow) {
         this.mapMakerWindow = mapMakerWindow;
 
+        setBackground(Color.CYAN);
 //        setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
@@ -27,13 +28,6 @@ public class UndoAndZoomPanel extends JPanel {
         c.gridx = 0;
         c.gridy = 0;
         add(zoomButton, c);
-
-//        c.fill = GridBagConstraints.HORIZONTAL;
-//        c.weightx = 0.5;
-//        c.gridwidth = 3;
-//        c.gridx = 0;
-//        c.gridy = 1;
-//        add(saveButton, c);
 
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 0.5;
