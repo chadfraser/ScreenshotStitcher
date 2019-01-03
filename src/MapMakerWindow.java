@@ -1,13 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
 
 public class MapMakerWindow extends JFrame {
     private static final int WIDTH = 1100;
     private static final int HEIGHT = 600;
 
     private MapMakerImagePanel mapMakerImagePanel;
-    private ButtonPanelAndPreviewPanelPanel buttonPanelAndPreviewPanelPanel;
+    private PreviewAndSelectionPanel previewAndSelectionPanel;
     private ImagePanelAndSavePanelPanel imagePanelAndSavePanelPanel;
     private UndoAndZoomPanel undoAndZoomPanel;
 
@@ -20,14 +19,14 @@ public class MapMakerWindow extends JFrame {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
 //        setMinimumSize(new Dimension(700, 600));
 
-        buttonPanelAndPreviewPanelPanel = new ButtonPanelAndPreviewPanelPanel(this);
+        previewAndSelectionPanel = new PreviewAndSelectionPanel(this);
         imagePanelAndSavePanelPanel = new ImagePanelAndSavePanelPanel(this);
         undoAndZoomPanel = new UndoAndZoomPanel(this);
 
 //        setLayout(new GridBagLayout());
         add(undoAndZoomPanel, BorderLayout.EAST);
         add(imagePanelAndSavePanelPanel, BorderLayout.CENTER);
-        add(buttonPanelAndPreviewPanelPanel, BorderLayout.WEST);
+        add(previewAndSelectionPanel, BorderLayout.WEST);
 
         pack();
         setLocationRelativeTo(null);
