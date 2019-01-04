@@ -7,7 +7,19 @@ class DirectionalButtonPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     private static final int WIDTH = 250;
-    private static final int HEIGHT = 150;
+    private static final int HEIGHT = 450;
+
+    private JPanel leftButtonPanel;
+    private JPanel upDownButtonPanel;
+    private JPanel rightButtonPanel;
+    private JPanel editButtonPanel;
+
+    private JButton upButton;
+    private JButton downButton;
+    private JButton leftButton;
+    private JButton rightButton;
+    private JButton pasteButton;
+    private JButton deleteButton;
 
     private MapMakerWindow mapMakerWindow;
 
@@ -16,56 +28,131 @@ class DirectionalButtonPanel extends JPanel {
 
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setMaximumSize(new Dimension(WIDTH, HEIGHT));
-        setBackground(Color.YELLOW);
+//        setBackground(Color.YELLOW);
         setFocusable(true);
-        JButton upButton = new JButton("UP");
-        JButton downButton = new JButton("DOWN");
-        JButton leftButton = new JButton("LEFT");
-        JButton rightButton = new JButton("RIGHT");
 
-        JButton[] arrayOfButtons = {upButton, downButton, leftButton, rightButton};
+        leftButtonPanel = new JPanel(new GridBagLayout());
+        upDownButtonPanel = new JPanel(new GridBagLayout());
+        rightButtonPanel = new JPanel(new GridBagLayout());
+        editButtonPanel = new JPanel(new GridBagLayout());
 
-        setButtonSizes(arrayOfButtons);
+        upButton = new JButton("UP");
+        downButton = new JButton("DOWN");
+        leftButton = new JButton("LEFT");
+        rightButton = new JButton("RIGHT");
+        pasteButton = new JButton("PASTE");
+        deleteButton = new JButton("DELETE");
 
+        initializePanels();
+        initializeLayout();
+    }
+
+    private void initializeLayout() {
         setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
 
-        c.insets = new Insets (5, 0, 0, 0);
-        c.weightx = 0.5;
-        c.gridwidth = 4;
-        c.gridx = 3;
-        c.gridy = 0;
-        add(upButton, c);
+        c.fill = GridBagConstraints.BOTH;
 
         c.weightx = 0.5;
-        c.gridwidth = 4;
+        c.weighty = 0.45;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 0;
+        add(leftButtonPanel, c);
+
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 1;
+        c.gridy = 0;
+        add(upDownButtonPanel, c);
+
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 2;
+        c.gridy = 0;
+        add(rightButtonPanel, c);
+
+        c.gridwidth = 1;
+        c.gridheight = 1;
         c.gridx = 0;
         c.gridy = 1;
-        add(leftButton, c);
+        add(Box.createGlue(), c);
 
-        c.weightx = 0.5;
+        c.weighty = 0.1;
+        c.gridheight = 1;
         c.gridwidth = 4;
-        c.gridx = 6;
-        c.gridy = 1;
-        add(rightButton, c);
-
-        c.weightx = 0.5;
-        c.gridwidth = 4;
-        c.gridx = 3;
+        c.gridx = 0;
         c.gridy = 2;
-        add(downButton, c);
+        add(editButtonPanel, c);
     }
 
-    private void setButtonSizes(JButton[] arrayOfButtons) {
-        int maxButtonWidth = 0;
-        for (JButton button : arrayOfButtons) {
-            if (button.getPreferredSize().getWidth() > maxButtonWidth) {
-                maxButtonWidth = (int) button.getPreferredSize().getWidth();
-            }
-        }
-        for (JButton button : arrayOfButtons) {
-            button.setPreferredSize(new Dimension(maxButtonWidth,
-                                                  (int) button.getPreferredSize().getHeight()));
-        }
+    private void initializePanels() {
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.BOTH;
+        c.insets = new Insets(5, 2, 5, 2);
+
+        initializeSidePanel(c, leftButtonPanel, leftButton);
+        initializeSidePanel(c, rightButtonPanel, rightButton);
+        initializeUpDownButtonPanel(c);
+        initializeEditButtonPanel(c);
+    }
+
+    private void initializeSidePanel(GridBagConstraints c, JPanel sidePanel, JButton sideButton) {
+        c.weightx = 0.5;
+        c.weighty = 0.5;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 0;
+        sidePanel.add(Box.createGlue(), c);
+
+        c.gridwidth = 1;
+        c.gridheight = 2;
+        c.gridx = 0;
+        c.gridy = 1;
+        sidePanel.add(sideButton, c);
+
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 3;
+        sidePanel.add(Box.createGlue(), c);
+    }
+
+    private void initializeUpDownButtonPanel(GridBagConstraints c) {
+        c.weightx = 0.5;
+        c.weighty = 0.5;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 0;
+        upDownButtonPanel.add(upButton, c);
+
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 1;
+        upDownButtonPanel.add(downButton, c);
+    }
+
+    private void initializeEditButtonPanel(GridBagConstraints c) {
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 0;
+        editButtonPanel.add(pasteButton, c);
+
+        c.gridwidth = 2;
+        c.gridheight = 1;
+        c.gridx = 1;
+        c.gridy = 0;
+        editButtonPanel.add(Box.createHorizontalGlue(), c);
+
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 3;
+        c.gridy = 0;
+        editButtonPanel.add(deleteButton, c);
     }
 }
