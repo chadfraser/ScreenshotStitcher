@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class UndoAndZoomPanel extends JPanel {
+public class UndoButtonPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     private static final int WIDTH = 250;
@@ -22,7 +22,7 @@ public class UndoAndZoomPanel extends JPanel {
 
     private MapMakerWindow mapMakerWindow;
 
-    UndoAndZoomPanel(MapMakerWindow mapMakerWindow) {
+    UndoButtonPanel(MapMakerWindow mapMakerWindow) {
         this.mapMakerWindow = mapMakerWindow;
 
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
