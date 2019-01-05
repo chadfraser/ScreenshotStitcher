@@ -88,9 +88,12 @@ class DirectionalButtonPanel extends JPanel {
     }
 
     private void initializePanels() {
+        int insetWidth = WIDTH / 125;
+        int insetHeight = HEIGHT / 90;
+
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
-        c.insets = new Insets(5, 2, 5, 2);
+        c.insets = new Insets(insetHeight, insetWidth, insetHeight, insetWidth);
 
         initializeSidePanel(c, leftButtonPanel, leftButton);
         initializeSidePanel(c, rightButtonPanel, rightButton);
