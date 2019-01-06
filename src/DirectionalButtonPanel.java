@@ -156,4 +156,42 @@ class DirectionalButtonPanel extends JPanel {
         c.gridy = 0;
         editButtonPanel.add(deleteButton, c);
     }
+
+    @Override
+    public final Dimension getPreferredSize() {
+        Dimension dimension = super.getPreferredSize();
+        Dimension prefSize;
+        Component component = getParent();
+
+        if (component == null) {
+            prefSize = new Dimension((int) dimension.getWidth(), (int) dimension.getHeight());
+        } else if (component.getWidth() > dimension.getWidth() && component.getHeight() > dimension.getHeight()) {
+            prefSize = component.getSize();
+        } else {
+            prefSize = dimension;
+        }
+        int width = (int) prefSize.getWidth();
+        int height = (int) prefSize.getHeight();
+        int newWidth = (width > height * 1.2 ? (int) (height * 1.2) : width);
+        return new Dimension(newWidth, height);
+    }
+
+    @Override
+    public final Dimension getMaximumSize() {
+        Dimension dimension = super.getMaximumSize();
+        Dimension maxSize;
+        Component component = getParent();
+
+        if (component == null) {
+            maxSize = new Dimension((int) dimension.getWidth(), (int) dimension.getHeight());
+        } else if (component.getWidth() > dimension.getWidth() && component.getHeight() > dimension.getHeight()) {
+            maxSize = component.getSize();
+        } else {
+            maxSize = dimension;
+        }
+        int width = (int) maxSize.getWidth();
+        int height = (int) maxSize.getHeight();
+        int newWidth = (width > height * 1.2 ? (int) (height * 1.2) : width);
+        return new Dimension(newWidth, height);
+    }
 }
