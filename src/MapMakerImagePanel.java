@@ -5,8 +5,8 @@ import java.awt.image.BufferedImage;
 public class MapMakerImagePanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
-    private static final int WIDTH = 500;
-    private static final int HEIGHT = 500;
+    private static final int WIDTH = 600;
+    private static final int HEIGHT = 600;
     private BufferedImage bufferedImage;
 
     private MapMakerWindow mapMakerWindow;
@@ -14,7 +14,8 @@ public class MapMakerImagePanel extends JPanel {
     MapMakerImagePanel(MapMakerWindow mapMakerWindow) {
         this.mapMakerWindow = mapMakerWindow;
 
-        setBackground(Color.GREEN);
+        setBackground(Color.WHITE);
+        setBorder(BorderFactory.createLineBorder(Color.BLACK));
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
         setMaximumSize(new Dimension(WIDTH, HEIGHT));

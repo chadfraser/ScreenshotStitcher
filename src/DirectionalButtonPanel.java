@@ -1,5 +1,3 @@
-import javafx.scene.Group;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -26,9 +24,9 @@ class DirectionalButtonPanel extends JPanel {
     DirectionalButtonPanel(MapMakerWindow mapMakerWindow) {
         this.mapMakerWindow = mapMakerWindow;
 
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        setMaximumSize(new Dimension(WIDTH, HEIGHT));
-//        setBackground(Color.YELLOW);
+//        setPreferredSize(new Dimension(WIDTH, HEIGHT));
+//        setMaximumSize(new Dimension(WIDTH, HEIGHT));
+        setBackground(Color.RED);
         setFocusable(true);
 
         leftButtonPanel = new JPanel(new GridBagLayout());
