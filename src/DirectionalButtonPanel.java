@@ -173,7 +173,30 @@ class DirectionalButtonPanel extends JPanel {
         int width = (int) prefSize.getWidth();
         int height = (int) prefSize.getHeight();
         int newWidth = (width > height * 1.2 ? (int) (height * 1.2) : width);
-        return new Dimension(newWidth, height);
+        int newHeight = (height > width * 1.2 ? (int) (width * 1.2) : height);
+        return new Dimension(newWidth, newHeight);
+    }
+
+
+
+    @Override
+    public final Dimension getMinimumSize() {
+//        Dimension dimension = super.getPreferredSize();
+//        Dimension prefSize;
+//        Component component = getParent();
+//
+//        if (component == null) {
+//            prefSize = new Dimension((int) dimension.getWidth(), (int) dimension.getHeight());
+//        } else if (component.getWidth() > dimension.getWidth() && component.getHeight() > dimension.getHeight()) {
+//            prefSize = component.getSize();
+//        } else {
+//            prefSize = dimension;
+//        }
+//        int width = (int) prefSize.getWidth();
+//        int height = (int) prefSize.getHeight();
+//        int newWidth = (width > height * 1.2 ? (int) (height * 1.2) : width);
+//        int newHeight = (height > width * 1.2 ? (int) (width * 1.2) : height);
+        return new Dimension(200, 200);  // TODO: Fix this method to return a size based on JButton contents
     }
 
     @Override
@@ -192,6 +215,7 @@ class DirectionalButtonPanel extends JPanel {
         int width = (int) maxSize.getWidth();
         int height = (int) maxSize.getHeight();
         int newWidth = (width > height * 1.2 ? (int) (height * 1.2) : width);
-        return new Dimension(newWidth, height);
+        int newHeight = (height > width * 1.2 ? (int) (width * 1.2) : height);
+        return new Dimension(newWidth, newHeight);
     }
 }
