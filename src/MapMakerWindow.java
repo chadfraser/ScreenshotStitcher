@@ -5,26 +5,36 @@ public class MapMakerWindow extends JFrame {
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 650;
 
+    private int cropX = 8;
+    private int cropY = 67;
+    private int cropWidth = 512;
+    private int cropHeight = 384;
+//    private int cropX;
+//    private int cropY;
+//    private int cropWidth;
+//    private int cropHeight;
+    private int offsets = 6;
+    private Color backgroundColor = Color.WHITE;
     private JScrollPane mapMakerImageScrollPane;
+
     private MapMakerImagePanel mapMakerImagePanel;
     private ImagePreviewPanel imagePreviewPanel;
     private DirectionalButtonPanel directionalButtonPanel;
     private ZoomPanel zoomPanel;
     private SavePanel savePanel;
     private UndoButtonPanel undoButtonPanel;
-
     private JPanel imagePreviewSubPanel;
+
     private JPanel directionalButtonSubPanel;
     private JPanel zoomSubPanel;
     private JPanel saveSubPanel;
     private JPanel undoSubPanel;
-
     private JPanel directionalButtonAndImagePreviewPanel;
+
     private JPanel zoomAndImagePreviewPanel;
     private JPanel saveAndImagePreviewPanel;
     private JPanel undoAndImagePreviewPanel;
     private JTabbedPane optionTabbedPane;
-
     private MapMakerWindow() {
         setTitle("NES Map Maker");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -115,7 +125,55 @@ public class MapMakerWindow extends JFrame {
         sidePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     }
 
+    public void setCropX(int cropX) {
+        this.cropX = cropX;
+    }
+
+    public void setCropY(int cropY) {
+        this.cropY = cropY;
+    }
+
+    public void setCropWidth(int cropWidth) {
+        this.cropWidth = cropWidth;
+    }
+
+    public void setCropHeight(int cropHeight) {
+        this.cropHeight = cropHeight;
+    }
+
+    public void setOffsets(int offsets) {
+        this.offsets = offsets;
+    }
+
+    public void setBackgroundColor(Color backgroundColor) {
+        this.backgroundColor = backgroundColor;
+    }
+
     public MapMakerImagePanel getMapMakerImagePanel() {
         return mapMakerImagePanel;
+    }
+
+    public int getCropX() {
+        return cropX;
+    }
+
+    public int getCropY() {
+        return cropY;
+    }
+
+    public int getCropWidth() {
+        return cropWidth;
+    }
+
+    public int getCropHeight() {
+        return cropHeight;
+    }
+
+    public int getOffsets() {
+        return offsets;
+    }
+
+    public Color getBackgroundColor() {
+        return backgroundColor;
     }
 }
