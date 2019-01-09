@@ -27,7 +27,7 @@ public class MapMaker {
 
     private void initializeMap() {
         scanner = new Scanner(System.in);
-        nesScreenMap = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        nesScreenMap = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
         Graphics g = nesScreenMap.getGraphics();
 
         g.setColor(Color.WHITE);
@@ -97,7 +97,7 @@ public class MapMaker {
             newHeight += (lastY - nesScreenMap.getHeight());
         }
 
-        BufferedImage newImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+        BufferedImage newImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics g = newImage.getGraphics();
 
         g.setColor(Color.WHITE);

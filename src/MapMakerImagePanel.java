@@ -8,11 +8,10 @@ public class MapMakerImagePanel extends JPanel {
     private static final int WIDTH = 600;
     private static final int HEIGHT = 600;
 
-//    private int x = 300;
-//    private int y = 300;
     private int cursorX = 300;
     private int cursorY = 300;
     private BufferedImage bufferedImage;
+    private BufferedImage displayImage;
 
     private MapMakerWindow mapMakerWindow;
 
@@ -26,12 +25,25 @@ public class MapMakerImagePanel extends JPanel {
         setMaximumSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
 
-        bufferedImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        bufferedImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        bufferedImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
         Graphics g = bufferedImage.getGraphics();
-        g.setColor(Color.BLACK);
-        g.drawRect(cursorX, cursorY, mapMakerWindow.getCropWidth(), mapMakerWindow.getCropHeight());
-        System.out.println(cursorX + " " + cursorY + " " + mapMakerWindow.getCropWidth() + " " + mapMakerWindow.getCropHeight());
+        g.setColor(mapMakerWindow.getBackgroundColor());
+        g.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
         g.dispose();
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        if (bufferedImage == null) {
+            System.err.println("The MapMakerImagePanel buffered image has been set to null.");
+            System.exit(1);
+        }
+
+        g.drawImage(bufferedImage, 0, 0, null);
+        setSize(bufferedImage.getWidth(), bufferedImage.getHeight());
     }
 
     public BufferedImage getBufferedImage() {

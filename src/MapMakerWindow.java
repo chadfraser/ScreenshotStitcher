@@ -1,5 +1,7 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class MapMakerWindow extends JFrame {
     private static final int WIDTH = 1000;
@@ -16,6 +18,7 @@ public class MapMakerWindow extends JFrame {
     private int offsets = 6;
     private Color backgroundColor = Color.WHITE;
     private JScrollPane mapMakerImageScrollPane;
+    private BufferedImage bufferedImage;
 
     private MapMakerImagePanel mapMakerImagePanel;
     private ImagePreviewPanel imagePreviewPanel;
@@ -75,8 +78,6 @@ public class MapMakerWindow extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
-        revalidate();
-        repaint();
     }
 
     public static void main(String[] args) {
@@ -124,6 +125,8 @@ public class MapMakerWindow extends JFrame {
         sidePanel.add(imagePreviewSubPanel);
         sidePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     }
+
+    public void adjustImageDisplay() {}
 
     public void setCropX(int cropX) {
         this.cropX = cropX;
