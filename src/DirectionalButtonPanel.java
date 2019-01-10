@@ -1,8 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 class DirectionalButtonPanel extends JPanel implements ActionListener {
     private static final long serialVersionUID = 1L;
@@ -170,6 +172,69 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
         editButtonPanel.add(deleteButton, c);
     }
 
+    private void moveDirectionalBox(ActionEvent e) {
+        MapMakerImagePanel mapMakerImageWindow = mapMakerWindow.getMapMakerImagePanel();
+        BufferedImage mapMakerStoredImage = mapMakerImageWindow.getStoredImage();
+        BufferedImage tempImage;
+
+        int x = mapMakerImageWindow.getCursorX();
+        int y = mapMakerImageWindow.getCursorY();
+        int cropWidth = mapMakerWindow.getCropWidth();
+        int cropHeight = mapMakerWindow.getCropHeight();
+        int offsets = mapMakerWindow.getOffsets();
+
+        int newWidth = mapMakerStoredImage.getWidth();
+        int newHeight = mapMakerStoredImage.getHeight();
+        int horizontalAdjustment = 0;
+        int verticalAdjustment = 0;
+
+        if (e.getSource() == upButton) {
+            y -= (cropHeight + offsets);
+            if (y < 0) {
+                newHeight -= y;
+                verticalAdjustment -= y;
+                y = 0;
+            }
+        } else if (e.getSource() == downButton) {
+            y += (cropHeight + offsets);
+            if ((y + cropHeight) > mapMakerStoredImage.getHeight()) {
+                newHeight = y + cropHeight;
+            }
+        } else if (e.getSource() == leftButton) {
+            x -= (cropWidth + offsets);
+            if (x < 0) {
+                newWidth -= x;
+                horizontalAdjustment -= x;
+                x = 0;
+            }
+        } else if (e.getSource() == rightButton) {
+            x += (cropWidth + offsets);
+            if ((x + cropWidth) > mapMakerStoredImage.getWidth()) {
+                newWidth = x + cropWidth;
+            }
+//            Graphics g = tempImage.getGraphics();
+//            g.setColor(backgroundColor);
+//            g.fillRect(0, 0, tempImage.getWidth(), tempImage.getHeight());
+//            g.drawImage(mapMakerImage, x, y, null);
+//            g.setColor(Color.BLACK);  // TODO: Check for lightness/darkness
+//            g.drawRect(x, y, cropWidth, cropHeight);
+//            g.dispose();
+        }
+
+        tempImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = tempImage.createGraphics();
+        g.drawImage(mapMakerStoredImage, horizontalAdjustment, verticalAdjustment, null);
+        mapMakerImageWindow.setStoredImage(tempImage);
+        g.dispose();
+
+//        System.out.println(tempImage.getHeight() + " " + tempImage.getWidth());
+//        System.out.println("***" + mapMakerImage.getHeight() + " " + mapMakerImage.getWidth());
+//        System.out.println("***" + mapMakerImageWindow.getHeight() + " " + mapMakerImageWindow.getWidth());
+        mapMakerImageWindow.setCursorX(x);
+        mapMakerImageWindow.setCursorY(y);
+        mapMakerImageWindow.updateImages();
+    }
+
     @Override
     public final Dimension getPreferredSize() {
         Dimension dimension = super.getPreferredSize();
@@ -189,8 +254,6 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
         int newHeight = (height > width * 1.2 ? (int) (width * 1.2) : height);
         return new Dimension(newWidth, newHeight);
     }
-
-
 
     @Override
     public final Dimension getMinimumSize() {
@@ -236,7 +299,6 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         MapMakerImagePanel mapMakerImageWindow = mapMakerWindow.getMapMakerImagePanel();
         BufferedImage mapMakerStoredImage = mapMakerImageWindow.getStoredImage();
-        BufferedImage tempImage;
 
         int x = mapMakerImageWindow.getCursorX();
         int y = mapMakerImageWindow.getCursorY();
@@ -244,78 +306,34 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
         int cropY = mapMakerWindow.getCropY();
         int cropWidth = mapMakerWindow.getCropWidth();
         int cropHeight = mapMakerWindow.getCropHeight();
-        int offsets = mapMakerWindow.getOffsets();
-        Color backgroundColor = mapMakerWindow.getBackgroundColor();
-
-        int newWidth = mapMakerStoredImage.getWidth();
-        int newHeight = mapMakerStoredImage.getHeight();
-
-
-
 
         if (e.getSource() == pasteButton) {
             Graphics2D g = mapMakerStoredImage.createGraphics();
-            BufferedImage currentImage = ImageSaver.cropClipboardImage(cropX, cropY, cropWidth, cropHeight);
-            g.drawImage(currentImage, x, y, null);
-            g.dispose();
-            System.out.println("AA");
-
-            mapMakerImageWindow.updateImages();
-            return;
+            try {
+                BufferedImage currentImage = ImageSaver.cropClipboardImage(cropX, cropY, cropWidth, cropHeight);
+                g.drawImage(currentImage, x, y, null);
+            } catch (UnsupportedFlavorException | IOException except) {
+//                except.printStackTrace();
+                JOptionPane.showMessageDialog(mapMakerWindow,
+                        "You do not currently have an image copied to the clipboard.",
+                        "WARNING",
+                        JOptionPane.WARNING_MESSAGE);
+            } finally {
+                g.dispose();
+            }
 
         } else if (e.getSource() == deleteButton) {
             Graphics2D g = mapMakerStoredImage.createGraphics();
-            g.clearRect(x, y, cropWidth, cropHeight);
-//            g.setC
+//            g.clearRect(x, y, cropWidth, cropHeight);
+            g.setComposite(AlphaComposite.Src);
+            g.setColor(new Color(0, 0, 0, 0));
+            g.fillRect(x, y, cropWidth, cropHeight);
             g.dispose();
-            System.out.println("BB");
 
-            mapMakerImageWindow.updateImages();
-            return;
-
-        } else if (e.getSource() == upButton) {
-            y -= (cropHeight + offsets);
-            if (y < 0) {
-                newHeight -= y;
-                y = 0;
-            }
-        } else if (e.getSource() == downButton) {
-            y += (cropHeight + offsets);
-            if ((y + cropHeight) > mapMakerStoredImage.getHeight()) {
-                newHeight = y + cropHeight;
-            }
-        } else if (e.getSource() == leftButton) {
-            x -= (cropWidth + offsets);
-            if (x < 0) {
-                newWidth -= x;
-                x = 0;
-            }
-        } else if (e.getSource() == rightButton) {
-            x += (cropWidth + offsets);
-            if ((x + cropWidth) > mapMakerStoredImage.getWidth()) {
-                newWidth = x + cropWidth;
-            }
-//            Graphics g = tempImage.getGraphics();
-//            g.setColor(backgroundColor);
-//            g.fillRect(0, 0, tempImage.getWidth(), tempImage.getHeight());
-//            g.drawImage(mapMakerImage, x, y, null);
-//            g.setColor(Color.BLACK);  // TODO: Check for lightness/darkness
-//            g.drawRect(x, y, cropWidth, cropHeight);
-//            g.dispose();
+        } else {
+            moveDirectionalBox(e);
         }
 
-
-        tempImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = tempImage.createGraphics();
-        g.drawImage(mapMakerStoredImage, x, y, null);
-        mapMakerImageWindow.setStoredImage(tempImage);
-        g.dispose();
-
-//        System.out.println(tempImage.getHeight() + " " + tempImage.getWidth());
-//        System.out.println("***" + mapMakerImage.getHeight() + " " + mapMakerImage.getWidth());
-//        System.out.println("***" + mapMakerImageWindow.getHeight() + " " + mapMakerImageWindow.getWidth());
-        mapMakerImageWindow.setCursorX(x);
-        mapMakerImageWindow.setCursorY(y);
         mapMakerImageWindow.updateImages();
     }
 }

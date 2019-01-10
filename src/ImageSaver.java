@@ -9,7 +9,17 @@ public class ImageSaver implements ClipboardOwner {
     public static void main(String[] args) {
     }
 
-    static BufferedImage cropClipboardImage() {
+    static BufferedImage cropClipboardImage(int x, int y, int width, int height)
+            throws UnsupportedFlavorException,IOException {
+        BufferedImage bufferedImage = getImageFromClipboard();
+        if (bufferedImage != null) {
+            bufferedImage = cropImage(x, y, width, height, bufferedImage);
+            return bufferedImage;
+        }
+        return null;
+    }
+
+    static BufferedImage cropClipboardImage() throws UnsupportedFlavorException, IOException {
         BufferedImage bufferedImage = getImageFromClipboard();
         if (bufferedImage != null) {
             bufferedImage = cropImage(bufferedImage);
@@ -18,20 +28,18 @@ public class ImageSaver implements ClipboardOwner {
         return null;
     }
 
-    private static BufferedImage getImageFromClipboard() {
+    private static BufferedImage getImageFromClipboard() throws UnsupportedFlavorException, IOException {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            try {
+//            try {
                 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                 return (BufferedImage) clipboard.getData(DataFlavor.imageFlavor);
 //            } catch (UnsupportedFlavorException | IOException e) {
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("You do not have a screenshot currently copied. Press 'enter' to try again.");
-                scanner.nextLine();
-            }
+//                e.printStackTrace();
+//                System.out.println("You do not have a screenshot currently copied. Press 'enter' to try again.");
+//                scanner.nextLine();
+//            }
         }
-//        return null;
     }
 
     private void copyImage(BufferedImage bufferedImage)

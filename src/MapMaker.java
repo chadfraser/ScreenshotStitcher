@@ -1,5 +1,6 @@
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -38,23 +39,27 @@ public class MapMaker {
     private void addRoomsToMap() {
         while (true) {
             Graphics g = nesScreenMap.getGraphics();
-            BufferedImage currentImage = ImageSaver.cropClipboardImage();
-            g.drawImage(currentImage, lastX, lastY, null);
+            try {
+                BufferedImage currentImage = ImageSaver.cropClipboardImage();
+                g.drawImage(currentImage, lastX, lastY, null);
 
-            while (true) {
-                System.out.println("Input direction to next room, or 'x' to exit. If the input begins with a '*', " +
-                        "a new image will not be added to the map with this movement.");
-                String currentLine = scanner.nextLine();
-                if ("x".equals(currentLine.toLowerCase())) {
-                    return;
-                } else if (getDirectionFromInput(currentLine.toLowerCase())) {
-                    break;
+                while (true) {
+                    System.out.println("Input direction to next room, or 'x' to exit. If the input begins with a '*', " +
+                            "a new image will not be added to the map with this movement.");
+                    String currentLine = scanner.nextLine();
+                    if ("x".equals(currentLine.toLowerCase())) {
+                        return;
+                    } else if (getDirectionFromInput(currentLine.toLowerCase())) {
+                        break;
+                    }
                 }
+                if (lastX < 0 || lastX > nesScreenMap.getWidth() || lastY < 0 || lastY > nesScreenMap.getHeight()) {
+                    adjustImageSize();
+                }
+                System.out.println(lastX + " " + lastY);
+            } catch (UnsupportedFlavorException | IOException ignore) {
+                
             }
-            if (lastX < 0 || lastX > nesScreenMap.getWidth() || lastY < 0 || lastY > nesScreenMap.getHeight()) {
-                adjustImageSize();
-            }
-            System.out.println(lastX + " " + lastY);
         }
     }
 
