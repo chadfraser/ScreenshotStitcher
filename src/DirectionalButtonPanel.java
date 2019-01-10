@@ -246,18 +246,21 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
         int offsets = mapMakerWindow.getOffsets();
         Color backgroundColor = mapMakerWindow.getBackgroundColor();
 
-        int newWidth = mapMakerImageWindow.getWidth();
-        int newHeight = mapMakerImageWindow.getHeight();
+        int newWidth = mapMakerStoredImage.getWidth();
+        int newHeight = mapMakerStoredImage.getHeight();
 
 
         if (e.getSource() == upButton) {
             y -= (cropHeight + offsets);
+            System.out.println("UP: " + y);
             if (y < 0) {
                 newHeight -= y;
                 y = 0;
             }
+            System.out.println(newHeight);
         } else if (e.getSource() == downButton) {
             y += (cropHeight + offsets);
+            System.out.println("DOWN: " + y);
             if ((y + cropHeight) > mapMakerStoredImage.getHeight()) {
                 newHeight = y + cropHeight;
             }
