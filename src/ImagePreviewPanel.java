@@ -8,7 +8,7 @@ public class ImagePreviewPanel extends JPanel {
     private static final int WIDTH = 250;
     private static final int HEIGHT = 250;
 
-    private BufferedImage previewPanel;
+    private BufferedImage previewImage;
     private MapMakerWindow mapMakerWindow;
 
     ImagePreviewPanel(MapMakerWindow mapMakerWindow) {
@@ -20,6 +20,20 @@ public class ImagePreviewPanel extends JPanel {
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
         setBackground(Color.WHITE);
         setFocusable(true);
+
+        previewImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+    }
+
+    public void updatePreviewPanel(BufferedImage newPreviewImage) {
+        previewImage = newPreviewImage;
+        repaint();
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        g.drawImage(previewImage, 0, 0, null);
     }
 
     @Override
@@ -44,5 +58,9 @@ public class ImagePreviewPanel extends JPanel {
     @Override
     public final Dimension getMaximumSize() {
         return getPreferredSize();
+    }
+
+    public BufferedImage getPreviewImage() {
+        return previewImage;
     }
 }

@@ -35,6 +35,7 @@ public class MapMakerWindow extends JFrame {
     private JPanel saveAndImagePreviewPanel;
     private JPanel undoAndImagePreviewPanel;
     private JTabbedPane optionTabbedPane;
+    
     private MapMakerWindow() {
         setTitle("NES Map Maker");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -149,6 +150,10 @@ public class MapMakerWindow extends JFrame {
 
     public MapMakerImagePanel getMapMakerImagePanel() {
         return mapMakerImagePanel;
+    }
+
+    public ImagePreviewPanel getImagePreviewPanel() {
+        return imagePreviewPanel;
     }
 
     public int getCropX() {
