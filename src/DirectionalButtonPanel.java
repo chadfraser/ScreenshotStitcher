@@ -235,7 +235,7 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         MapMakerImagePanel mapMakerImageWindow = mapMakerWindow.getMapMakerImagePanel();
-        BufferedImage mapMakerImage = mapMakerImageWindow.getBufferedImage();
+        BufferedImage mapMakerStoredImage = mapMakerImageWindow.getStoredImage();
         BufferedImage tempImage;
         int x = mapMakerImageWindow.getCursorX();
         int y = mapMakerImageWindow.getCursorY();
@@ -258,7 +258,7 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
             }
         } else if (e.getSource() == downButton) {
             y += (cropHeight + offsets);
-            if ((y + cropHeight) > mapMakerImage.getHeight()) {
+            if ((y + cropHeight) > mapMakerStoredImage.getHeight()) {
                 newHeight = y + cropHeight;
             }
         } else if (e.getSource() == leftButton) {
@@ -269,7 +269,7 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
             }
         } else if (e.getSource() == rightButton) {
             x += (cropWidth + offsets);
-            if ((x + cropWidth) > mapMakerImage.getWidth()) {
+            if ((x + cropWidth) > mapMakerStoredImage.getWidth()) {
                 newWidth = x + cropWidth;
             }
 //            Graphics g = tempImage.getGraphics();
@@ -284,31 +284,17 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
 
         tempImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics g = tempImage.getGraphics();
-        g.setColor(Color.ORANGE);
-        g.fillRect(0, 0, tempImage.getWidth(), tempImage.getHeight());
-        g.drawImage(mapMakerImage, x, y, null);
-        g.setColor(Color.BLACK);  // TODO: Check for lightness/darkness
-        g.drawRect(x, y, cropWidth, cropHeight);
+        g.drawImage(mapMakerStoredImage, x, y, null);
+        mapMakerImageWindow.setStoredImage(tempImage);
         g.dispose();
 
-//        Graphics g = mapMakerImage.getGraphics();
-//        g.setColor(Color.ORANGE);
-//        g.fillRect(0, 0, mapMakerWindow.getWidth(), mapMakerWindow.getHeight());
-//        g.drawImage(mapMakerImage, 0, 0, null);
-//        g.setColor(Color.BLACK);  // TODO: Check for lightness/darkness
-//        g.drawRect(x, y, cropWidth, cropHeight);
-//        g.dispose();
-
-        System.out.println(tempImage.getHeight() + " " + tempImage.getWidth());
-        System.out.println("***" + mapMakerImage.getHeight() + " " + mapMakerImage.getWidth());
-        System.out.println("***" + mapMakerImageWindow.getHeight() + " " + mapMakerImageWindow.getWidth());
+//        System.out.println(tempImage.getHeight() + " " + tempImage.getWidth());
+//        System.out.println("***" + mapMakerImage.getHeight() + " " + mapMakerImage.getWidth());
+//        System.out.println("***" + mapMakerImageWindow.getHeight() + " " + mapMakerImageWindow.getWidth());
         mapMakerImageWindow.setCursorX(x);
         mapMakerImageWindow.setCursorY(y);
-        mapMakerImageWindow.setBufferedImage(tempImage);
+        mapMakerImageWindow.updateDisplayImage();
+        mapMakerImageWindow.updateScaledDisplayImage();
         mapMakerImageWindow.repaint();
-//        mapMakerWindow.repaint();
-//        mapMakerWindow.validate();
-        System.out.println(mapMakerImageWindow.getBufferedImage());
-        System.out.println(mapMakerImage);
     }
 }
