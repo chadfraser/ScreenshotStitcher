@@ -1,8 +1,5 @@
-import javafx.scene.layout.Background;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 public class MapMakerImagePanel extends JPanel {
@@ -11,8 +8,8 @@ public class MapMakerImagePanel extends JPanel {
     private static final int WIDTH = 600;
     private static final int HEIGHT = 600;
 
-    private int cursorX = 0;
-    private int cursorY = 0;
+    private int cursorX;
+    private int cursorY;
     private BufferedImage storedImage;
     private BufferedImage displayImage;
     private BufferedImage scaledDisplayImage;
@@ -21,6 +18,9 @@ public class MapMakerImagePanel extends JPanel {
 
     MapMakerImagePanel(MapMakerWindow mapMakerWindow) {
         this.mapMakerWindow = mapMakerWindow;
+
+        cursorX = (WIDTH - mapMakerWindow.getCropWidth()) / 2;
+        cursorY = (HEIGHT - mapMakerWindow.getCropHeight()) / 2;
 
         setBackground(Color.WHITE);
 //        setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -33,9 +33,11 @@ public class MapMakerImagePanel extends JPanel {
         displayImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
         scaledDisplayImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
 
-        Graphics g = scaledDisplayImage.getGraphics();
+        Graphics2D g = scaledDisplayImage.createGraphics();
         g.setColor(mapMakerWindow.getBackgroundColor());
         g.fillRect(0, 0, scaledDisplayImage.getWidth(), scaledDisplayImage.getHeight());
+        g.setColor(Color.BLACK);
+        g.drawRect(cursorX, cursorY, mapMakerWindow.getCropWidth(), mapMakerWindow.getCropHeight());
         g.dispose();
     }
 
@@ -46,10 +48,16 @@ public class MapMakerImagePanel extends JPanel {
         g.drawImage(scaledDisplayImage, 0, 0, null);
     }
 
-    public void updateDisplayImage() {
+    public void updateImages() {
+        updateDisplayImage();
+        updateScaledDisplayImage();
+        repaint();
+    }
+
+    private void updateDisplayImage() {
         BufferedImage tempImage = new BufferedImage(storedImage.getWidth(), storedImage.getHeight(),
                 BufferedImage.TYPE_INT_ARGB);
-        Graphics g = tempImage.getGraphics();
+        Graphics2D g = tempImage.createGraphics();
         g.setColor(mapMakerWindow.getBackgroundColor());
         g.fillRect(0, 0, tempImage.getWidth(), tempImage.getHeight());
         g.drawImage(storedImage, 0, 0, null);
@@ -60,7 +68,7 @@ public class MapMakerImagePanel extends JPanel {
         displayImage = tempImage;
     }
 
-    public void updateScaledDisplayImage() {
+    private void updateScaledDisplayImage() {
         double scaleWidth = (double) mapMakerWindow.getScrollPanelWidth() / (double) storedImage.getWidth();
         double scaleHeight = (double) mapMakerWindow.getScrollPanelHeight() / (double) storedImage.getHeight();
         int scaleCursorX = (int) (cursorX * scaleWidth);
@@ -70,27 +78,15 @@ public class MapMakerImagePanel extends JPanel {
 
         BufferedImage tempImage = new BufferedImage(mapMakerWindow.getScrollPanelWidth(),
                 mapMakerWindow.getScrollPanelHeight(), BufferedImage.TYPE_INT_ARGB);
-//        Image scaledInstance = displayImage.getScaledInstance(getWidth(), getHeight(), Image.SCALE_SMOOTH);
-        Graphics g = tempImage.getGraphics();
+        Graphics2D g = tempImage.createGraphics();
         g.setColor(mapMakerWindow.getBackgroundColor());
         g.fillRect(0, 0, tempImage.getWidth(), tempImage.getHeight());
         g.drawImage(storedImage, 0, 0, mapMakerWindow.getScrollPanelWidth(), mapMakerWindow.getScrollPanelHeight(),
                 null);
         g.setColor(Color.BLACK);
-        g.fillRect(scaleCursorX, scaleCursorY, scaleCropWidth, scaleCropHeight);
+        g.drawRect(scaleCursorX, scaleCursorY, scaleCropWidth, scaleCropHeight);
         g.dispose();
         scaledDisplayImage = tempImage;
-        System.out.println("SCALED DISPLAY: " + scaledDisplayImage.getWidth() + " " + scaledDisplayImage.getHeight());
-        System.out.println("DISPLAY: " + displayImage.getWidth() + " " + displayImage.getHeight());
-        System.out.println("CURSOR: " + cursorX + " " + cursorY);
-        System.out.println("SCALE: " + scaleCursorX + " " + scaleCursorY + " " + scaleWidth + " " + scaleHeight);
-        System.out.println("WID/HEI: " + mapMakerWindow.getScrollPanelHeight() + " " + mapMakerWindow.getScrollPanelWidth() +
-                " " + storedImage.getWidth() + " " + storedImage.getHeight());
-        System.out.println();
-//        AffineTransform affineTransform = new AffineTransform();
-//        float newWidth = storedImage.getWidth() / getWidth();
-//        float newHeight = storedImage.getHeight() / getHeight();
-//        affineTransform.scale(newWidth, newHeight);
     }
 
     public BufferedImage getDisplayImage() {

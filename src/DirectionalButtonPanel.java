@@ -54,8 +54,8 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
         downButton.addActionListener(this);
         leftButton.addActionListener(this);
         rightButton.addActionListener(this);
-//        upButton.addActionListener(this);
-//        upButton.addActionListener(this);
+        pasteButton.addActionListener(this);
+        deleteButton.addActionListener(this);
     }
 
     private void initializeLayout() {
@@ -237,6 +237,7 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
         MapMakerImagePanel mapMakerImageWindow = mapMakerWindow.getMapMakerImagePanel();
         BufferedImage mapMakerStoredImage = mapMakerImageWindow.getStoredImage();
         BufferedImage tempImage;
+
         int x = mapMakerImageWindow.getCursorX();
         int y = mapMakerImageWindow.getCursorY();
         int cropX = mapMakerWindow.getCropX();
@@ -250,17 +251,36 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
         int newHeight = mapMakerStoredImage.getHeight();
 
 
-        if (e.getSource() == upButton) {
+
+
+        if (e.getSource() == pasteButton) {
+            Graphics2D g = mapMakerStoredImage.createGraphics();
+            BufferedImage currentImage = ImageSaver.cropClipboardImage(cropX, cropY, cropWidth, cropHeight);
+            g.drawImage(currentImage, x, y, null);
+            g.dispose();
+            System.out.println("AA");
+
+            mapMakerImageWindow.updateImages();
+            return;
+
+        } else if (e.getSource() == deleteButton) {
+            Graphics2D g = mapMakerStoredImage.createGraphics();
+            g.clearRect(x, y, cropWidth, cropHeight);
+//            g.setC
+            g.dispose();
+            System.out.println("BB");
+
+            mapMakerImageWindow.updateImages();
+            return;
+
+        } else if (e.getSource() == upButton) {
             y -= (cropHeight + offsets);
-            System.out.println("UP: " + y);
             if (y < 0) {
                 newHeight -= y;
                 y = 0;
             }
-            System.out.println(newHeight);
         } else if (e.getSource() == downButton) {
             y += (cropHeight + offsets);
-            System.out.println("DOWN: " + y);
             if ((y + cropHeight) > mapMakerStoredImage.getHeight()) {
                 newHeight = y + cropHeight;
             }
@@ -286,7 +306,7 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
 
 
         tempImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
-        Graphics g = tempImage.getGraphics();
+        Graphics2D g = tempImage.createGraphics();
         g.drawImage(mapMakerStoredImage, x, y, null);
         mapMakerImageWindow.setStoredImage(tempImage);
         g.dispose();
@@ -296,8 +316,6 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
 //        System.out.println("***" + mapMakerImageWindow.getHeight() + " " + mapMakerImageWindow.getWidth());
         mapMakerImageWindow.setCursorX(x);
         mapMakerImageWindow.setCursorY(y);
-        mapMakerImageWindow.updateDisplayImage();
-        mapMakerImageWindow.updateScaledDisplayImage();
-        mapMakerImageWindow.repaint();
+        mapMakerImageWindow.updateImages();
     }
 }
