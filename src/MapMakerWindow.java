@@ -1,7 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
-public class MapMakerWindow extends JFrame {
+public class MapMakerWindow extends JFrame implements Serializable {
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 650;
 
@@ -35,7 +39,7 @@ public class MapMakerWindow extends JFrame {
     private JPanel saveAndImagePreviewPanel;
     private JPanel undoAndImagePreviewPanel;
     private JTabbedPane optionTabbedPane;
-    
+
     private MapMakerWindow() {
         setTitle("NES Map Maker");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -122,6 +126,19 @@ public class MapMakerWindow extends JFrame {
         sidePanel.add(Box.createRigidArea(new Dimension(5, 5)));
         sidePanel.add(imagePreviewSubPanel);
         sidePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    }
+
+    public void serializeData(FileOutputStream fileOutputStream) {
+        try {
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(this);
+            objectOutputStream.close();
+            fileOutputStream.close();
+            System.out.println("Serialized data is saved in " + fileOutputStream.toString());
+        } catch (IOException i) {
+            i.printStackTrace();
+        }
+
     }
 
     public void setCropX(int cropX) {

@@ -212,13 +212,6 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
             if ((x + cropWidth) > mapMakerStoredImage.getWidth()) {
                 newWidth = x + cropWidth;
             }
-//            Graphics g = tempImage.getGraphics();
-//            g.setColor(backgroundColor);
-//            g.fillRect(0, 0, tempImage.getWidth(), tempImage.getHeight());
-//            g.drawImage(mapMakerImage, x, y, null);
-//            g.setColor(Color.BLACK);  // TODO: Check for lightness/darkness
-//            g.drawRect(x, y, cropWidth, cropHeight);
-//            g.dispose();
         }
 
         tempImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
@@ -227,12 +220,8 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
         mapMakerImageWindow.setStoredImage(tempImage);
         g.dispose();
 
-//        System.out.println(tempImage.getHeight() + " " + tempImage.getWidth());
-//        System.out.println("***" + mapMakerImage.getHeight() + " " + mapMakerImage.getWidth());
-//        System.out.println("***" + mapMakerImageWindow.getHeight() + " " + mapMakerImageWindow.getWidth());
         mapMakerImageWindow.setCursorX(x);
         mapMakerImageWindow.setCursorY(y);
-        mapMakerImageWindow.updateImages();
     }
 
     @Override
@@ -257,21 +246,6 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
 
     @Override
     public final Dimension getMinimumSize() {
-//        Dimension dimension = super.getPreferredSize();
-//        Dimension prefSize;
-//        Component component = getParent();
-//
-//        if (component == null) {
-//            prefSize = new Dimension((int) dimension.getWidth(), (int) dimension.getHeight());
-//        } else if (component.getWidth() > dimension.getWidth() && component.getHeight() > dimension.getHeight()) {
-//            prefSize = component.getSize();
-//        } else {
-//            prefSize = dimension;
-//        }
-//        int width = (int) prefSize.getWidth();
-//        int height = (int) prefSize.getHeight();
-//        int newWidth = (width > height * 1.2 ? (int) (height * 1.2) : width);
-//        int newHeight = (height > width * 1.2 ? (int) (width * 1.2) : height);
         return new Dimension(200, 200);  // TODO: Fix this method to return a size based on JButton contents
     }
 
@@ -312,19 +286,19 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
             try {
                 BufferedImage currentImage = ImageSaver.cropClipboardImage(cropX, cropY, cropWidth, cropHeight);
                 g.drawImage(currentImage, x, y, null);
-            } catch (UnsupportedFlavorException | IOException except) {
-//                except.printStackTrace();
+            } catch (UnsupportedFlavorException except) {
                 JOptionPane.showMessageDialog(mapMakerWindow,
                         "You do not currently have an image copied to the clipboard.",
-                        "WARNING",
-                        JOptionPane.WARNING_MESSAGE);
+                        "Clipboard Image Error",
+                        JOptionPane.ERROR_MESSAGE);
+            } catch (IOException except) {
+                except.printStackTrace();
             } finally {
                 g.dispose();
             }
 
         } else if (e.getSource() == deleteButton) {
             Graphics2D g = mapMakerStoredImage.createGraphics();
-//            g.clearRect(x, y, cropWidth, cropHeight);
             g.setComposite(AlphaComposite.Src);
             g.setColor(new Color(0, 0, 0, 0));
             g.fillRect(x, y, cropWidth, cropHeight);
