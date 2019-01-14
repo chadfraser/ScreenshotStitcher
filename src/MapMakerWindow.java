@@ -19,6 +19,7 @@ public class MapMakerWindow extends JFrame implements Serializable {
 //    private int cropHeight;
     private int offsets = 6;
     private Color backgroundColor = Color.WHITE;
+    private ZoomValue zoomValue = ZoomValue.FIT_TO_SCREEN;
     private JScrollPane mapMakerImageScrollPane;
 
     private MapMakerImagePanel mapMakerImagePanel;
@@ -161,6 +162,10 @@ public class MapMakerWindow extends JFrame implements Serializable {
         this.offsets = offsets;
     }
 
+    public void setZoomValue(ZoomValue zoomValue) {
+        this.zoomValue = zoomValue;
+    }
+
     public void setBackgroundColor(Color backgroundColor) {
         this.backgroundColor = backgroundColor;
     }
@@ -191,6 +196,10 @@ public class MapMakerWindow extends JFrame implements Serializable {
 
     public int getOffsets() {
         return offsets;
+    }
+
+    public ZoomValue getZoomValue() {
+        return zoomValue;
     }
 
     public Color getBackgroundColor() {

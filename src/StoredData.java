@@ -11,19 +11,14 @@ public class StoredData implements Serializable {
     private int cropWidth;
     private int cropHeight;
     private int offsets;
+    private ZoomValue zoomValue;
     private Color backgroundColor;
     private List<BufferedImage> undoListImages;
     // TODO: Implement data settings: save settings, shortcuts
 
     public static void serializeData(MapMakerWindow mapMakerWindow, String fileName) {
         StoredData storedData = new StoredData();
-        storedData.imagePanelStoredImage = mapMakerWindow.getMapMakerImagePanel().getStoredImage();
-        storedData.backgroundColor = mapMakerWindow.getBackgroundColor();
-        storedData.cropX = mapMakerWindow.getCropX();
-        storedData.cropY = mapMakerWindow.getCropY();
-        storedData.cropWidth = mapMakerWindow.getCropWidth();
-        storedData.cropHeight = mapMakerWindow.getCropHeight();
-        storedData.offsets = mapMakerWindow.getOffsets();
+        storedData.setData(mapMakerWindow);
 
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(fileName);
@@ -38,17 +33,43 @@ public class StoredData implements Serializable {
         }
     }
 
-    public static StoredData deserializeData(String fileName) {
+    public static void deserializeData(MapMakerWindow mapMakerWindow, File file) {
         StoredData storedData = null;
         try {
-            FileInputStream fileIn = new FileInputStream(fileName);
+            FileInputStream fileIn = new FileInputStream(file);
             ObjectInputStream in = new ObjectInputStream(fileIn);
             storedData = (StoredData) in.readObject();
             in.close();
             fileIn.close();
+            storedData.applyData(mapMakerWindow);
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return storedData;
+    }
+
+    // TODO: Find better name for this method
+    private void setData(MapMakerWindow mapMakerWindow) {
+        imagePanelStoredImage = mapMakerWindow.getMapMakerImagePanel().getStoredImage();
+        zoomValue = mapMakerWindow.getZoomValue();
+        backgroundColor = mapMakerWindow.getBackgroundColor();
+        cropX = mapMakerWindow.getCropX();
+        cropY = mapMakerWindow.getCropY();
+        cropWidth = mapMakerWindow.getCropWidth();
+        cropHeight = mapMakerWindow.getCropHeight();
+        offsets = mapMakerWindow.getOffsets();
+    }
+
+    // TODO: Find better name for this method
+    private void applyData(MapMakerWindow mapMakerWindow) {
+        mapMakerWindow.getMapMakerImagePanel().setStoredImage(imagePanelStoredImage);
+        mapMakerWindow.setZoomValue(zoomValue);
+        mapMakerWindow.setBackgroundColor(backgroundColor);
+        mapMakerWindow.setCropX(cropX);
+        mapMakerWindow.setCropY(cropY);
+        mapMakerWindow.setCropWidth(cropWidth);
+        mapMakerWindow.setCropHeight(cropHeight);
+        mapMakerWindow.setOffsets(offsets);
+
+        mapMakerWindow.getMapMakerImagePanel().updateImages();
     }
 }

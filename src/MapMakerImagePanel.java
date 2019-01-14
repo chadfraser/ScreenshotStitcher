@@ -4,8 +4,9 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.RasterFormatException;
+import java.io.Serializable;
 
-public class MapMakerImagePanel extends JPanel implements MouseInputListener {
+public class MapMakerImagePanel extends JPanel implements MouseInputListener, Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final int WIDTH = 600;
