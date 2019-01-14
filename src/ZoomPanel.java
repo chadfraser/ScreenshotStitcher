@@ -1,8 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ZoomPanel extends JPanel {
+public class ZoomPanel extends JPanel implements ActionListener {
     private static final long serialVersionUID = 1L;
 
     private static final int WIDTH = 250;
@@ -13,7 +14,7 @@ public class ZoomPanel extends JPanel {
 
     private JButton focusButton;
     private JLabel zoomComboBoxLabel;
-    private JComboBox zoomComboBox;
+    private JComboBox<ZoomValue> zoomComboBox;
 
     private MapMakerWindow mapMakerWindow;
 
@@ -30,10 +31,12 @@ public class ZoomPanel extends JPanel {
         zoomComboBoxLabel = new JLabel("Zoom Value");
         zoomComboBoxLabel.setLabelFor(zoomComboBox);
 
-        String[] zoomValues = {"Fit to screen", "10%", "25%", "50%", "100%", "200%"};
-        zoomComboBox = new JComboBox<>(zoomValues);
+//        String[] zoomValues = {"Fit to screen", "10%", "25%", "50%", "100%", "200%"};
+//        zoomComboBox = new JComboBox<>(zoomValues);
+        zoomComboBox = new JComboBox<>();
+        zoomComboBox.setModel(new DefaultComboBoxModel<>(ZoomValue.values()));
         zoomComboBox.setSelectedIndex(0);
-//        zoomComboBox.addActionListener((ActionListener) this);
+        zoomComboBox.addActionListener((ActionListener) this);
 
         initializePanels();
         initializeLayout();
@@ -105,5 +108,14 @@ public class ZoomPanel extends JPanel {
         c.gridx = 0;
         c.gridy = 0;
         buttonPanel.add(focusButton, c);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == zoomComboBox) {
+            mapMakerWindow.setZoomValue((ZoomValue) zoomComboBox.getSelectedItem());
+        } else if (e.getSource() == focusButton) {
+            // TODO: Implement
+        }
     }
 }

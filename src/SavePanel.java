@@ -14,8 +14,10 @@ public class SavePanel extends JPanel implements ActionListener {
 
     private JLabel fileNameLabel;
     private JTextField fileNameField;
-    private JButton saveButton;
-    private JButton openButton;
+    private JButton saveImageButton;
+    private JButton saveDataButton;
+    private JButton openImageButton;
+    private JButton openDataButton;
     private JLabel autoSaveLabel;
     private ButtonGroup autoSaveButtonGroup;
     private JRadioButton autoSaveOnOption;
@@ -39,11 +41,11 @@ public class SavePanel extends JPanel implements ActionListener {
         fileNameField.setText(".png");
         fileNameLabel = new JLabel("FILE NAME");
         fileNameLabel.setLabelFor(fileNameField);
-        saveButton = new JButton("SAVE");
-        openButton = new JButton("OPEN");
+        saveImageButton = new JButton("SAVE");
+        openImageButton = new JButton("OPEN");
 
-        saveButton.addActionListener(this);
-        openButton.addActionListener(this);
+        saveImageButton.addActionListener(this);
+        openImageButton.addActionListener(this);
 
         autoSaveOnOption = new JRadioButton("Turn autosave on");
         autoSaveOffOption = new JRadioButton("Turn autosave off");
@@ -102,24 +104,11 @@ public class SavePanel extends JPanel implements ActionListener {
 
     private void saveImage() {
         String fileName = fileNameField.getText();
-        if (fileName == null || ".png".equals(fileName)) {
-            JOptionPane.showMessageDialog(mapMakerWindow,
-                    "No filename is selected to save to.",
-                    "Filename Missing Warning",
-                    JOptionPane.WARNING_MESSAGE);
+        if (!checkFileNameFormat(".png")) {
             return;
         }
-        if (fileName.contains(".")) {
-            if (!fileName.endsWith(".png")) {
-                JOptionPane.showMessageDialog(mapMakerWindow,
-                        "It looks like you are trying to save to a file extension other than .png\n" +
-                        "This program does not support any other file extensions.",
-                        "Filename Extension Warning",
-                        JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            fileName = fileName.replace(".png", "");
-        }
+        fileName = fileName.replace(".png", "");
+
         try {
             File outputFile = new File(fileName);
             if (!outputFile.exists() || confirmFileOverwrite(outputFile.getCanonicalPath()) == JOptionPane.OK_OPTION) {
@@ -128,6 +117,42 @@ public class SavePanel extends JPanel implements ActionListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void saveData() {
+        String fileName = fileNameField.getText();
+        if (!checkFileNameFormat(".ser")) {
+            return;
+        }
+        fileName = fileName.replace(".ser", "");
+
+        try {
+            File outputFile = new File(fileName);
+            if (!outputFile.exists() || confirmFileOverwrite(outputFile.getCanonicalPath()) == JOptionPane.OK_OPTION) {
+                StoredData.serializeData(mapMakerWindow, fileName + ".ser");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean checkFileNameFormat(String extension) {
+        String fileName = fileNameField.getText();
+        if (fileName == null || fileName.equals(extension)) {
+            JOptionPane.showMessageDialog(mapMakerWindow,
+                    "No filename is selected to save to.",
+                    "Filename Missing Warning",
+                    JOptionPane.WARNING_MESSAGE);
+            return false;
+        } else if (fileName.contains(".") && !fileName.endsWith(extension)) {
+                JOptionPane.showMessageDialog(mapMakerWindow,
+                        "It looks like you are trying to save to a file extension other than " + extension + "\n" +
+                                "This program does not support any other file extensions.",
+                        "Filename Extension Warning",
+                        JOptionPane.WARNING_MESSAGE);
+                return false;
+            }
+        return true;
     }
 
     private int confirmFileOverwrite(String outputFilePath) {
@@ -157,7 +182,21 @@ public class SavePanel extends JPanel implements ActionListener {
         }
     }
 
-     private void initializeFileNamePanel(GridBagConstraints c) {
+    private void openData() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Open MapMaker File");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("SER images", "ser");
+        fileChooser.setFileFilter(filter);
+
+        int status = fileChooser.showSaveDialog(this);
+        if (status == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            fileNameField.setText(selectedFile.getName());
+            StoredData.deserializeData(mapMakerWindow, selectedFile);
+        }
+    }
+
+    private void initializeFileNamePanel(GridBagConstraints c) {
          c.weightx = 0.5;
          c.weighty = 0.5;
          c.gridwidth = 1;
@@ -180,7 +219,7 @@ public class SavePanel extends JPanel implements ActionListener {
          c.gridheight = 1;
          c.gridx = 4;
          c.gridy = 1;
-         fileNamePanel.add(saveButton, c);
+         fileNamePanel.add(saveImageButton, c);
 
          c.weightx = 0.9;
          c.weighty = 0.5;
@@ -196,7 +235,7 @@ public class SavePanel extends JPanel implements ActionListener {
          c.gridheight = 1;
          c.gridx = 4;
          c.gridy = 2;
-         fileNamePanel.add(openButton, c);
+         fileNamePanel.add(openImageButton, c);
      }
 
     private void initializeRadioButtonPanel(GridBagConstraints c) {
@@ -228,11 +267,14 @@ public class SavePanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == saveButton) {
+        if (e.getSource() == saveImageButton) {
             saveImage();
-        }
-        if (e.getSource() == saveButton) {
-            saveImage();
+        } else if (e.getSource() == saveDataButton) {
+            saveData();
+        } else if (e.getSource() == openImageButton) {
+            openImage();
+        } else if (e.getSource() == openDataButton) {
+            openData();
         }
     }
 }
