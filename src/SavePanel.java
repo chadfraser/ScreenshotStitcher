@@ -128,7 +128,7 @@ public class SavePanel extends JPanel implements ActionListener {
 
     private void saveImage() {
         String fileName = imageFileNameField.getText();
-        if (!checkFileNameFormat(".png", fileName)) {
+        if (!isFileNameValid(".png", fileName)) {
             return;
         }
         fileName = fileName.replace(".png", "");
@@ -145,7 +145,7 @@ public class SavePanel extends JPanel implements ActionListener {
 
     private void saveData() {
         String fileName = dataFileNameField.getText();
-        if (!checkFileNameFormat(".ser", fileName)) {
+        if (!isFileNameValid(".ser", fileName)) {
             return;
         }
         fileName = fileName.replace(".ser", "");
@@ -160,7 +160,7 @@ public class SavePanel extends JPanel implements ActionListener {
         }
     }
 
-    private boolean checkFileNameFormat(String extension, String fileName) {
+    private boolean isFileNameValid(String extension, String fileName) {
         if (fileName == null || fileName.equals(extension)) {
             JOptionPane.showMessageDialog(mapMakerWindow,
                     "No filename is selected to save to.",
@@ -268,54 +268,6 @@ public class SavePanel extends JPanel implements ActionListener {
         c.gridx = 4;
         c.gridy = 2;
         filePanel.add(components[3], c);
-
-//        c.weightx = 0.5;  // TODO: Implement this line better
-//        c.weighty = 0.5;
-//        c.gridwidth = 4;
-//        c.gridheight = 1;
-//        c.gridx = 0;
-//        c.gridy = 3;
-//        fileNamePanel.add(Box.createGlue(), c);
-//
-//        c.weightx = 0.5;
-//        c.weighty = 0.5;
-//        c.gridwidth = 1;
-//        c.gridheight = 1;
-//        c.gridx = 0;
-//        c.gridy = 4;
-//        fileNamePanel.add(dataFileNameLabel, c);
-//
-//        c.weightx = 0.9;
-//        c.weighty = 0.5;
-//        c.gridwidth = 4;
-//        c.gridheight = 1;
-//        c.gridx = 0;
-//        c.gridy = 5;
-//        fileNamePanel.add(dataFileNameField, c);
-//
-//        c.weightx = 0.1;
-//        c.weighty = 0.5;
-//        c.gridwidth = 1;
-//        c.gridheight = 1;
-//        c.gridx = 4;
-//        c.gridy = 5;
-//        fileNamePanel.add(saveDataButton, c);
-//
-//        c.weightx = 0.9;
-//        c.weighty = 0.5;
-//        c.gridwidth = 4;
-//        c.gridheight = 1;
-//        c.gridx = 0;
-//        c.gridy = 6;
-//        fileNamePanel.add(Box.createGlue(), c);
-//
-//        c.weightx = 0.1;
-//        c.weighty = 0.5;
-//        c.gridwidth = 1;
-//        c.gridheight = 1;
-//        c.gridx = 4;
-//        c.gridy = 6;
-//        fileNamePanel.add(openDataButton, c);
      }
 
     private void initializeCheckBoxPanel(GridBagConstraints c) {
