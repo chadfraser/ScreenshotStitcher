@@ -12,7 +12,8 @@ public class ZoomPanel extends JPanel implements ActionListener {
     private JPanel buttonPanel;
     private JPanel comboBoxPanel;
 
-    private JButton focusButton;
+    private JButton focusOriginButton;
+    private JButton focusCursorButton;
     private JLabel zoomComboBoxLabel;
     private JComboBox<ZoomValue> zoomComboBox;
 
@@ -26,18 +27,18 @@ public class ZoomPanel extends JPanel implements ActionListener {
 
         buttonPanel = new JPanel(new GridBagLayout());
         comboBoxPanel = new JPanel(new GridBagLayout());
-        focusButton = new JButton("FOCUS ON ORIGIN");
+        focusOriginButton = new JButton("FOCUS ON ORIGIN");
+        focusCursorButton = new JButton("FOCUS ON CURSOR");
 
         zoomComboBoxLabel = new JLabel("Zoom Value");
         zoomComboBoxLabel.setLabelFor(zoomComboBox);
 
-//        String[] zoomValues = {"Fit to screen", "10%", "25%", "50%", "100%", "200%"};
-//        zoomComboBox = new JComboBox<>(zoomValues);
         zoomComboBox = new JComboBox<>();
         zoomComboBox.setModel(new DefaultComboBoxModel<>(ZoomValue.values()));
         zoomComboBox.setSelectedIndex(0);
         zoomComboBox.addActionListener(this);
-        focusButton.addActionListener(this);
+        focusOriginButton.addActionListener(this);
+        focusCursorButton.addActionListener(this);
 
         initializePanels();
         initializeLayout();
@@ -108,7 +109,8 @@ public class ZoomPanel extends JPanel implements ActionListener {
         c.gridheight = 1;
         c.gridx = 0;
         c.gridy = 0;
-        buttonPanel.add(focusButton, c);
+        buttonPanel.add(focusOriginButton, c);
+        buttonPanel.add(focusCursorButton, c);
     }
 
     @Override
@@ -116,15 +118,9 @@ public class ZoomPanel extends JPanel implements ActionListener {
         if (e.getSource() == zoomComboBox) {
             mapMakerWindow.setZoomValue((ZoomValue) zoomComboBox.getSelectedItem());
             mapMakerWindow.getMapMakerImagePanel().updateImages();
-        } else if (e.getSource() == focusButton) {
-            System.out.println(mapMakerWindow.getMapMakerImagePanel().getStoredImage().getWidth() + "  " +
-                    mapMakerWindow.getMapMakerImagePanel().getStoredImage().getHeight());
-
-            System.out.println(mapMakerWindow.getMapMakerImagePanel().getDisplayImage().getWidth() + "  " +
-                    mapMakerWindow.getMapMakerImagePanel().getDisplayImage().getHeight());
-
-            System.out.println(mapMakerWindow.getMapMakerImagePanel().getScaledDisplayImage().getWidth() + "  " +
-                    mapMakerWindow.getMapMakerImagePanel().getScaledDisplayImage().getHeight());
+        } else if (e.getSource() == focusOriginButton) {
+            // TODO: Implement
+        } else if (e.getSource() == focusCursorButton) {
             // TODO: Implement
         }
     }
