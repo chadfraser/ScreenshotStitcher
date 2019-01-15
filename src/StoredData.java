@@ -5,13 +5,12 @@ import java.util.List;
 
 public class StoredData implements Serializable {
     private BufferedImage imagePanelStoredImage;
-    private String ZoomValue;
+    private ZoomValue zoomValue;
     private int cropX;
     private int cropY;
     private int cropWidth;
     private int cropHeight;
     private int offsets;
-    private ZoomValue zoomValue;
     private Color backgroundColor;
     private List<BufferedImage> undoListImages;
     // TODO: Implement data settings: save settings, shortcuts
@@ -34,7 +33,7 @@ public class StoredData implements Serializable {
     }
 
     public static void deserializeData(MapMakerWindow mapMakerWindow, File file) {
-        StoredData storedData = null;
+        StoredData storedData;
         try {
             FileInputStream fileIn = new FileInputStream(file);
             ObjectInputStream in = new ObjectInputStream(fileIn);

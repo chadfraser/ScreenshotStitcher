@@ -36,7 +36,8 @@ public class ZoomPanel extends JPanel implements ActionListener {
         zoomComboBox = new JComboBox<>();
         zoomComboBox.setModel(new DefaultComboBoxModel<>(ZoomValue.values()));
         zoomComboBox.setSelectedIndex(0);
-        zoomComboBox.addActionListener((ActionListener) this);
+        zoomComboBox.addActionListener(this);
+        focusButton.addActionListener(this);
 
         initializePanels();
         initializeLayout();
@@ -114,7 +115,16 @@ public class ZoomPanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == zoomComboBox) {
             mapMakerWindow.setZoomValue((ZoomValue) zoomComboBox.getSelectedItem());
+            mapMakerWindow.getMapMakerImagePanel().updateImages();
         } else if (e.getSource() == focusButton) {
+            System.out.println(mapMakerWindow.getMapMakerImagePanel().getStoredImage().getWidth() + "  " +
+                    mapMakerWindow.getMapMakerImagePanel().getStoredImage().getHeight());
+
+            System.out.println(mapMakerWindow.getMapMakerImagePanel().getDisplayImage().getWidth() + "  " +
+                    mapMakerWindow.getMapMakerImagePanel().getDisplayImage().getHeight());
+
+            System.out.println(mapMakerWindow.getMapMakerImagePanel().getScaledDisplayImage().getWidth() + "  " +
+                    mapMakerWindow.getMapMakerImagePanel().getScaledDisplayImage().getHeight());
             // TODO: Implement
         }
     }
