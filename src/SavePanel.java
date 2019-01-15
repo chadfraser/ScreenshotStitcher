@@ -53,6 +53,8 @@ public class SavePanel extends JPanel implements ActionListener {
 
         saveImageButton.addActionListener(this);
         openImageButton.addActionListener(this);
+        saveDataButton.addActionListener(this);
+        openDataButton.addActionListener(this);
 
         autoSaveCheckbox = new JCheckBox("Turn autosave on");
 
@@ -63,7 +65,6 @@ public class SavePanel extends JPanel implements ActionListener {
         initializePanels();
         initializeLayout();
     }
-
 
     private void initializeLayout() {
         setLayout(new GridBagLayout());
