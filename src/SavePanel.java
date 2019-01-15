@@ -10,20 +10,20 @@ import java.io.IOException;
 
 public class SavePanel extends JPanel implements ActionListener {
     private static final int WIDTH = 250;
-    private static final int HEIGHT = 450;
+    private static final int HEIGHT = 300;
 
-    private JLabel fileNameLabel;
-    private JTextField fileNameField;
+    private JLabel imageFileNameLabel;
+    private JTextField imageFileNameField;
     private JButton saveImageButton;
-    private JButton saveDataButton;
     private JButton openImageButton;
+    private JLabel dataFileNameLabel;
+    private JTextField dataFileNameField;
+    private JButton saveDataButton;
     private JButton openDataButton;
-    private JLabel autoSaveLabel;
-    private ButtonGroup autoSaveButtonGroup;
-    private JRadioButton autoSaveOnOption;
-    private JRadioButton autoSaveOffOption;
+    private JCheckBox autoSaveCheckbox;
 
-    private JPanel fileNamePanel;
+    private JPanel saveImagePanel;
+    private JPanel saveDataPanel;
     private JPanel radioButtonPanel;
 
     private MapMakerWindow mapMakerWindow;
@@ -37,25 +37,27 @@ public class SavePanel extends JPanel implements ActionListener {
         setMaximumSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
 
-        fileNameField = new JTextField();
-        fileNameField.setText(".png");
-        fileNameLabel = new JLabel("FILE NAME");
-        fileNameLabel.setLabelFor(fileNameField);
+        imageFileNameField = new JTextField();
+        imageFileNameField.setText(".png");
+        imageFileNameLabel= new JLabel("IMAGE FILE NAME");
+        imageFileNameLabel.setLabelFor(imageFileNameField);
         saveImageButton = new JButton("SAVE");
         openImageButton = new JButton("OPEN");
+
+        dataFileNameField = new JTextField();
+        dataFileNameField.setText(".ser");
+        dataFileNameLabel = new JLabel("DATA FILE NAME");
+        dataFileNameLabel.setLabelFor(dataFileNameField);
+        saveDataButton = new JButton("SAVE");
+        openDataButton = new JButton("OPEN");
 
         saveImageButton.addActionListener(this);
         openImageButton.addActionListener(this);
 
-        autoSaveOnOption = new JRadioButton("Turn autosave on");
-        autoSaveOffOption = new JRadioButton("Turn autosave off");
+        autoSaveCheckbox = new JCheckBox("Turn autosave on");
 
-        autoSaveLabel = new JLabel("<html>Automatically store your progress as you work</html>");
-        autoSaveButtonGroup = new ButtonGroup();
-        autoSaveButtonGroup.add(autoSaveOnOption);
-        autoSaveButtonGroup.add(autoSaveOffOption);
-
-        fileNamePanel = new JPanel(new GridBagLayout());
+        saveImagePanel = new JPanel(new GridBagLayout());
+        saveDataPanel = new JPanel(new GridBagLayout());
         radioButtonPanel = new JPanel(new GridBagLayout());
 
         initializePanels();
@@ -69,42 +71,63 @@ public class SavePanel extends JPanel implements ActionListener {
 
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 0.5;
-        c.weighty = 0.2;
+        c.weighty = 0.15;
         c.gridwidth = 1;
         c.gridheight = 1;
         c.gridx = 0;
         c.gridy = 0;
-        add(fileNamePanel, c);
+        add(saveImagePanel, c);
 
         c.weightx = 0.5;
-        c.weighty = 0.2;
+        c.weighty = 0.1;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 3;
+        add(Box.createGlue(), c);
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.weightx = 0.5;
+        c.weighty = 0.15;
         c.gridwidth = 1;
         c.gridheight = 1;
         c.gridx = 0;
         c.gridy = 1;
-        add(radioButtonPanel, c);
+        add(saveDataPanel, c);
 
         c.weightx = 0.5;
-        c.weighty = 0.6;
+        c.weighty = 0.1;
         c.gridwidth = 1;
         c.gridheight = 1;
         c.gridx = 0;
         c.gridy = 2;
+        add(radioButtonPanel, c);
+
+        c.weightx = 0.5;
+        c.weighty = 0.5;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 3;
         add(Box.createGlue(), c);
     }
 
     private void initializePanels() {
+        JComponent[] components;
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
 
-        initializeFileNamePanel(c);
-        initializeRadioButtonPanel(c);
+        components = new JComponent[] {imageFileNameLabel, imageFileNameField, saveImageButton, openImageButton};
+        initializeFilePanel(c, saveImagePanel, components);
 
+        components = new JComponent[] {dataFileNameLabel, dataFileNameField, saveDataButton, openDataButton};
+        initializeFilePanel(c, saveDataPanel, components);
+        initializeCheckBoxPanel(c);
     }
 
     private void saveImage() {
-        String fileName = fileNameField.getText();
-        if (!checkFileNameFormat(".png")) {
+        String fileName = imageFileNameField.getText();
+        if (!checkFileNameFormat(".png", fileName)) {
             return;
         }
         fileName = fileName.replace(".png", "");
@@ -120,8 +143,8 @@ public class SavePanel extends JPanel implements ActionListener {
     }
 
     private void saveData() {
-        String fileName = fileNameField.getText();
-        if (!checkFileNameFormat(".ser")) {
+        String fileName = dataFileNameField.getText();
+        if (!checkFileNameFormat(".ser", fileName)) {
             return;
         }
         fileName = fileName.replace(".ser", "");
@@ -136,8 +159,7 @@ public class SavePanel extends JPanel implements ActionListener {
         }
     }
 
-    private boolean checkFileNameFormat(String extension) {
-        String fileName = fileNameField.getText();
+    private boolean checkFileNameFormat(String extension, String fileName) {
         if (fileName == null || fileName.equals(extension)) {
             JOptionPane.showMessageDialog(mapMakerWindow,
                     "No filename is selected to save to.",
@@ -164,7 +186,7 @@ public class SavePanel extends JPanel implements ActionListener {
         int status = fileChooser.showSaveDialog(this);
         if (status == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
-            fileNameField.setText(selectedFile.getName());
+            imageFileNameField.setText(selectedFile.getName());
             try {
                 BufferedImage openedImage = ImageIO.read(selectedFile);
                 mapMakerWindow.getMapMakerImagePanel().setStoredImage(openedImage);
@@ -184,7 +206,7 @@ public class SavePanel extends JPanel implements ActionListener {
         int status = fileChooser.showSaveDialog(this);
         if (status == JFileChooser.APPROVE_OPTION && confirmDataOverwrite() == JOptionPane.OK_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
-            fileNameField.setText(selectedFile.getName());
+            dataFileNameField.setText(selectedFile.getName());
             StoredData.deserializeData(mapMakerWindow, selectedFile);
         }
     }
@@ -205,57 +227,97 @@ public class SavePanel extends JPanel implements ActionListener {
                 JOptionPane.OK_CANCEL_OPTION);
     }
 
-    private void initializeFileNamePanel(GridBagConstraints c) {
-         c.weightx = 0.5;
-         c.weighty = 0.5;
-         c.gridwidth = 1;
-         c.gridheight = 1;
-         c.gridx = 0;
-         c.gridy = 0;
-         fileNamePanel.add(fileNameLabel, c);
-
-         c.weightx = 0.9;
-         c.weighty = 0.5;
-         c.gridwidth = 4;
-         c.gridheight = 1;
-         c.gridx = 0;
-         c.gridy = 1;
-         fileNamePanel.add(fileNameField, c);
-
-         c.weightx = 0.1;
-         c.weighty = 0.5;
-         c.gridwidth = 1;
-         c.gridheight = 1;
-         c.gridx = 4;
-         c.gridy = 1;
-         fileNamePanel.add(saveImageButton, c);
-
-         c.weightx = 0.9;
-         c.weighty = 0.5;
-         c.gridwidth = 4;
-         c.gridheight = 1;
-         c.gridx = 0;
-         c.gridy = 2;
-         fileNamePanel.add(Box.createGlue(), c);
-
-         c.weightx = 0.1;
-         c.weighty = 0.5;
-         c.gridwidth = 1;
-         c.gridheight = 1;
-         c.gridx = 4;
-         c.gridy = 2;
-         fileNamePanel.add(openImageButton, c);
-     }
-
-    private void initializeRadioButtonPanel(GridBagConstraints c) {
+    private void initializeFilePanel(GridBagConstraints c, JPanel filePanel, JComponent[] components) {
         c.weightx = 0.5;
         c.weighty = 0.5;
         c.gridwidth = 1;
         c.gridheight = 1;
         c.gridx = 0;
         c.gridy = 0;
-        radioButtonPanel.add(autoSaveLabel, c);
+        filePanel.add(components[0], c);
 
+        c.weightx = 0.9;
+        c.weighty = 0.5;
+        c.gridwidth = 4;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 1;
+        filePanel.add(components[1], c);
+
+        c.weightx = 0.1;
+        c.weighty = 0.5;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 4;
+        c.gridy = 1;
+        filePanel.add(components[2], c);
+
+        c.weightx = 0.9;
+        c.weighty = 0.5;
+        c.gridwidth = 4;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 2;
+        filePanel.add(Box.createGlue(), c);
+
+        c.weightx = 0.1;
+        c.weighty = 0.5;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 4;
+        c.gridy = 2;
+        filePanel.add(components[3], c);
+
+//        c.weightx = 0.5;  // TODO: Implement this line better
+//        c.weighty = 0.5;
+//        c.gridwidth = 4;
+//        c.gridheight = 1;
+//        c.gridx = 0;
+//        c.gridy = 3;
+//        fileNamePanel.add(Box.createGlue(), c);
+//
+//        c.weightx = 0.5;
+//        c.weighty = 0.5;
+//        c.gridwidth = 1;
+//        c.gridheight = 1;
+//        c.gridx = 0;
+//        c.gridy = 4;
+//        fileNamePanel.add(dataFileNameLabel, c);
+//
+//        c.weightx = 0.9;
+//        c.weighty = 0.5;
+//        c.gridwidth = 4;
+//        c.gridheight = 1;
+//        c.gridx = 0;
+//        c.gridy = 5;
+//        fileNamePanel.add(dataFileNameField, c);
+//
+//        c.weightx = 0.1;
+//        c.weighty = 0.5;
+//        c.gridwidth = 1;
+//        c.gridheight = 1;
+//        c.gridx = 4;
+//        c.gridy = 5;
+//        fileNamePanel.add(saveDataButton, c);
+//
+//        c.weightx = 0.9;
+//        c.weighty = 0.5;
+//        c.gridwidth = 4;
+//        c.gridheight = 1;
+//        c.gridx = 0;
+//        c.gridy = 6;
+//        fileNamePanel.add(Box.createGlue(), c);
+//
+//        c.weightx = 0.1;
+//        c.weighty = 0.5;
+//        c.gridwidth = 1;
+//        c.gridheight = 1;
+//        c.gridx = 4;
+//        c.gridy = 6;
+//        fileNamePanel.add(openDataButton, c);
+     }
+
+    private void initializeCheckBoxPanel(GridBagConstraints c) {
         c.fill = GridBagConstraints.NONE;
         c.weightx = 0.5;
         c.weighty = 0.5;
@@ -263,15 +325,7 @@ public class SavePanel extends JPanel implements ActionListener {
         c.gridheight = 1;
         c.gridx = 0;
         c.gridy = 1;
-        radioButtonPanel.add(autoSaveOnOption, c);
-
-        c.weightx = 0.5;
-        c.weighty = 0.5;
-        c.gridwidth = 1;
-        c.gridheight = 1;
-        c.gridx = 0;
-        c.gridy = 2;
-        radioButtonPanel.add(autoSaveOffOption, c);
+        radioButtonPanel.add(autoSaveCheckbox, c);
     }
 
     @Override
