@@ -155,13 +155,6 @@ public class SavePanel extends JPanel implements ActionListener {
         return true;
     }
 
-    private int confirmFileOverwrite(String outputFilePath) {
-        return JOptionPane.showConfirmDialog(mapMakerWindow,
-                "The file " + outputFilePath + " already exists. Overwrite this file?",
-                "File Overwrite Confirmation",
-                JOptionPane.OK_CANCEL_OPTION);
-    }
-
     private void openImage() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Open Image File");
@@ -189,11 +182,27 @@ public class SavePanel extends JPanel implements ActionListener {
         fileChooser.setFileFilter(filter);
 
         int status = fileChooser.showSaveDialog(this);
-        if (status == JFileChooser.APPROVE_OPTION) {
+        if (status == JFileChooser.APPROVE_OPTION && confirmDataOverwrite() == JOptionPane.OK_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             fileNameField.setText(selectedFile.getName());
             StoredData.deserializeData(mapMakerWindow, selectedFile);
         }
+    }
+
+    private int confirmFileOverwrite(String outputFilePath) {
+        return JOptionPane.showConfirmDialog(mapMakerWindow,
+                "The file " + outputFilePath + " already exists. Overwrite this file?",
+                "File Overwrite Confirmation",
+                JOptionPane.OK_CANCEL_OPTION);
+    }
+
+    private int confirmDataOverwrite() {
+        return JOptionPane.showConfirmDialog(mapMakerWindow,
+                "You are trying to open up stored data. This will permanently delete any unsaved progress in the " +
+                        "current session! Are you sure you wish to do this?\n" +
+                "You may wish to save your current image first, so you can reopen it later.",
+                "Data Overwrite Confirmation",
+                JOptionPane.OK_CANCEL_OPTION);
     }
 
     private void initializeFileNamePanel(GridBagConstraints c) {
