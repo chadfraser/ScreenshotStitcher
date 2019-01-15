@@ -4,6 +4,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.awt.image.RasterFormatException;
 import java.io.IOException;
 
 class DirectionalButtonPanel extends JPanel implements ActionListener {
@@ -286,6 +287,11 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
             try {
                 BufferedImage currentImage = ImageSaver.cropClipboardImage(cropX, cropY, cropWidth, cropHeight);
                 g.drawImage(currentImage, x, y, null);
+            } catch (RasterFormatException except) {
+                JOptionPane.showMessageDialog(mapMakerWindow,
+                        "The current width or height values are too large to crop.",
+                        "Clipboard Image Error",
+                        JOptionPane.ERROR_MESSAGE);
             } catch (UnsupportedFlavorException except) {
                 JOptionPane.showMessageDialog(mapMakerWindow,
                         "You do not currently have an image copied to the clipboard.",
