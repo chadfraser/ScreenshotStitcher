@@ -25,11 +25,20 @@ public class ZoomPanel extends JPanel implements ActionListener {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setMaximumSize(new Dimension(WIDTH, HEIGHT));
 
-        buttonPanel = new JPanel(new GridBagLayout());
-        comboBoxPanel = new JPanel(new GridBagLayout());
+        initializeButtons();
+        initializeComboBox();
+        initializePanels();
+        initializeLayout();
+    }
+
+    private void initializeButtons() {
         focusOriginButton = new JButton("FOCUS ON ORIGIN");
         focusCursorButton = new JButton("FOCUS ON CURSOR");
+        focusOriginButton.addActionListener(this);
+        focusCursorButton.addActionListener(this);
+    }
 
+    private void initializeComboBox() {
         zoomComboBoxLabel = new JLabel("Zoom Value");
         zoomComboBoxLabel.setLabelFor(zoomComboBox);
 
@@ -37,11 +46,6 @@ public class ZoomPanel extends JPanel implements ActionListener {
         zoomComboBox.setModel(new DefaultComboBoxModel<>(ZoomValue.values()));
         zoomComboBox.setSelectedIndex(0);
         zoomComboBox.addActionListener(this);
-        focusOriginButton.addActionListener(this);
-        focusCursorButton.addActionListener(this);
-
-        initializePanels();
-        initializeLayout();
     }
 
     private void initializeLayout() {
@@ -76,6 +80,9 @@ public class ZoomPanel extends JPanel implements ActionListener {
     }
 
     private void initializePanels() {
+        buttonPanel = new JPanel(new GridBagLayout());
+        comboBoxPanel = new JPanel(new GridBagLayout());
+
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(0, 10, 0, 10);
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -110,7 +117,40 @@ public class ZoomPanel extends JPanel implements ActionListener {
         c.gridx = 0;
         c.gridy = 0;
         buttonPanel.add(focusOriginButton, c);
+
+        c.weightx = 0.5;
+        c.weighty = 0.5;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 1;
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)), c);  // TODO: Make this line adjustable
+
+        c.weightx = 0.5;
+        c.weighty = 0.5;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 2;
         buttonPanel.add(focusCursorButton, c);
+    }
+
+    private void setScrollBarValue(JScrollBar scrollBar, int value) {
+        int minimum = scrollBar.getMinimum();
+        int visibleAmount = scrollBar.getVisibleAmount();
+        value = (value - visibleAmount / 2);
+        if (value > minimum) {
+            scrollBar.setValue(value);
+        } else {
+            scrollBar.setValue(minimum);
+        }
+    }
+
+    private int findCenterOfScaledCursor(int value, double scaleRatio, int cropMeasurement) {
+        value = (int) (value * scaleRatio);
+        int scaledCropMeasurement = (int) (cropMeasurement * scaleRatio);
+        value = (value + scaledCropMeasurement / 2);
+        return value;
     }
 
     @Override
@@ -119,9 +159,30 @@ public class ZoomPanel extends JPanel implements ActionListener {
             mapMakerWindow.setZoomValue((ZoomValue) zoomComboBox.getSelectedItem());
             mapMakerWindow.getMapMakerImagePanel().updateImages();
         } else if (e.getSource() == focusOriginButton) {
-            // TODO: Implement
+            JScrollBar scrollBar;
+            int value;
+
+            scrollBar = mapMakerWindow.getMapMakerImageScrollPane().getHorizontalScrollBar();
+            value = mapMakerWindow.getMapMakerImagePanel().getScaledDisplayImage().getWidth() / 2;
+            setScrollBarValue(scrollBar, value);
+
+            scrollBar = mapMakerWindow.getMapMakerImageScrollPane().getVerticalScrollBar();
+            value = mapMakerWindow.getMapMakerImagePanel().getScaledDisplayImage().getHeight() / 2;
+            setScrollBarValue(scrollBar, value);
         } else if (e.getSource() == focusCursorButton) {
-            // TODO: Implement
+            JScrollBar scrollBar;
+            int value;
+            double[] scaledWidthAndHeight = mapMakerWindow.getMapMakerImagePanel().getScaledWidthAndHeight();
+
+            scrollBar = mapMakerWindow.getMapMakerImageScrollPane().getHorizontalScrollBar();
+            value = mapMakerWindow.getMapMakerImagePanel().getCursorX();
+            value = findCenterOfScaledCursor(value, scaledWidthAndHeight[0], mapMakerWindow.getCropWidth());
+            setScrollBarValue(scrollBar, value);
+
+            scrollBar = mapMakerWindow.getMapMakerImageScrollPane().getVerticalScrollBar();
+            value = mapMakerWindow.getMapMakerImagePanel().getCursorY();
+            value = findCenterOfScaledCursor(value, scaledWidthAndHeight[1], mapMakerWindow.getCropHeight());
+            setScrollBarValue(scrollBar, value);
         }
     }
 }
