@@ -1,90 +1,290 @@
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.MouseInputListener;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 
-public class DataPanel extends JPanel implements PropertyChangeListener {
+public class DataPanel extends JPanel implements MouseListener, PropertyChangeListener {
     private static final long serialVersionUID = 1L;
 
     private static final int PANEL_WIDTH = 250;
-    private static final int PANEL_HEIGHT = 150;
+    private static final int PANEL_HEIGHT = 200;
 
-    private int width = 512;
-    private int height = 384;
-    private int offset = 4;
+    private int baseWidth = 512;
+    private int baseHeight = 384;
+    private int baseOffset = 4;
 
-    private JLabel widthLabel;
-    private JLabel heightLabel;
+    private Border cropWidthTitleBorder;
+    private Border cropHeightTitleBorder;
+    private Border cropXTitleBorder;
+    private Border cropYTitleBorder;
+    private Border offsetTitleBorder;
+    private Border backgroundColorTitleBorder;
+
+    private JLabel cropWidthLabel;
+    private JLabel cropHeightLabel;
+    private JLabel cropXLabel;
+    private JLabel cropYLabel;
     private JLabel offsetLabel;
+    private JLabel backgroundColorLabel;
 
-    private JFormattedTextField widthField;
-    private JFormattedTextField heightField;
+    private JFormattedTextField cropXField;
+    private JFormattedTextField cropYField;
+    private JFormattedTextField cropWidthField;
+    private JFormattedTextField cropHeightField;
     private JFormattedTextField offsetField;
+    private JFormattedTextField maxDataField;
+    private JColorChooser backgroundColorChooser;
 
     private NumberFormat widthFormat;
     private NumberFormat heightFormat;
+    private NumberFormat xFormat;
+    private NumberFormat yFormat;
     private NumberFormat offsetFormat;
 
+    private JPanel leftOptionsPanel;
+    private JPanel rightOptionsPanel;
+    private JPanel backgroundColorChooserPanel;
     private MapMakerWindow mapMakerWindow;
 
-    public DataPanel(MapMakerWindow mapMakerWindow) {
+    DataPanel(MapMakerWindow mapMakerWindow) {
         this.mapMakerWindow = mapMakerWindow;
 
-        setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
-        setLayout(new GridLayout(0, 1));
+//        setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
+//        setMinimumSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
+//        setMaximumSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
+//        setMaximumSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
+        backgroundColorChooser = new JColorChooser();
+        backgroundColorChooserPanel = new JPanel() {
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(20, 20);
+            }
+        };
+        backgroundColorChooserPanel.setBackground(mapMakerWindow.getBackgroundColor());
+
         initializeFormats();
-
-        widthLabel = new JLabel("Width", SwingConstants.RIGHT);
-        widthLabel.setBorder(new EmptyBorder(0, 0, 0, 5));
-        widthField = new JFormattedTextField(widthFormat);
-        widthField.setColumns(4);
-        widthField.setValue(width);
-        widthField.addPropertyChangeListener("value", this);
-        widthLabel.setLabelFor(widthField);
-
-        heightLabel = new JLabel("Height", SwingConstants.RIGHT);
-        heightLabel.setBorder(new EmptyBorder(0, 0, 0, 5));
-        heightField = new JFormattedTextField(heightFormat);
-        heightField.setColumns(4);
-        heightField.setValue(height);
-        widthField.addPropertyChangeListener("value", this);
-        heightLabel.setLabelFor(heightField);
-
-        offsetLabel = new JLabel("Offsets", SwingConstants.RIGHT);
-        offsetLabel.setBorder(new EmptyBorder(0, 0, 0, 5));
-        offsetField = new JFormattedTextField(offsetFormat);
-        offsetField.setColumns(2);
-        offsetField.setValue(offset);
-        widthField.addPropertyChangeListener("value", this);
-        offsetLabel.setLabelFor(offsetField);
-
-        add(widthLabel);
-        add(widthField);
-        add(heightLabel);
-        add(heightField);
-        add(offsetLabel);
-        add(offsetField);
+        initializeLabels();
+        initializeFields();
+        initializePanels();
+        initializeLayout();
 
         setBackground(Color.ORANGE);
+    }
+
+    private void initializeLayout() {
+        initializeLeftOptionsPanel();
+        initializeRightOptionsPanel();
+
+        setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+        add(leftOptionsPanel);
+        add(Box.createRigidArea(new Dimension(100, 100)));
+        add(rightOptionsPanel);
+    }
+
+    private void initializePanels() {
+        leftOptionsPanel = new JPanel();
+        rightOptionsPanel = new JPanel();
+    }
+
+    private void initializeLeftOptionsPanel() {
+        leftOptionsPanel.setLayout(new GridBagLayout());
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        int insetHeight = 10;
+
+        c.insets = new Insets(insetHeight, 0, 0, 0);
+        c.weightx = 0.5;
+        c.weighty = 0.5;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 0;
+        leftOptionsPanel.add(cropWidthLabel, c);
+
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 2;
+        leftOptionsPanel.add(cropXLabel, c);
+
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 4;
+        leftOptionsPanel.add(offsetLabel, c);
+
+        c.insets = new Insets(0, 0, 0, 0);
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 1;
+        leftOptionsPanel.add(cropWidthField, c);
+
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 3;
+        leftOptionsPanel.add(cropXField, c);
+
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 5;
+        leftOptionsPanel.add(offsetField, c);
+    }
+
+    private void initializeRightOptionsPanel() {
+        rightOptionsPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        int insetHeight = 10;
+
+        c.insets = new Insets(insetHeight, 0, 0, 0);
+        c.weightx = 0.5;
+        c.weighty = 0.5;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 0;
+        rightOptionsPanel.add(cropHeightLabel, c);
+
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 2;
+        rightOptionsPanel.add(cropYLabel, c);
+
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 4;
+        rightOptionsPanel.add(backgroundColorLabel, c);
+
+        c.insets = new Insets(0, 0, 0, 0);
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 1;
+        rightOptionsPanel.add(cropHeightField, c);
+
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 3;
+        rightOptionsPanel.add(cropYField, c);
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 5;
+        rightOptionsPanel.add(backgroundColorChooserPanel, c);
     }
 
     private void initializeFormats() {
         widthFormat = NumberFormat.getIntegerInstance();
         heightFormat = NumberFormat.getIntegerInstance();
+        xFormat = NumberFormat.getIntegerInstance();
+        yFormat = NumberFormat.getIntegerInstance();
         offsetFormat = NumberFormat.getIntegerInstance();
+    }
+
+    private void initializeLabels() {
+        Border blackLineBorder = BorderFactory.createLineBorder(Color.BLACK);
+        backgroundColorChooserPanel.setBorder(blackLineBorder);
+        backgroundColorChooserPanel.addMouseListener(this);
+
+        cropWidthLabel = new JLabel("CROP WIDTH");
+        cropWidthLabel.setLabelFor(cropWidthField);
+        cropHeightLabel = new JLabel("CROP HEIGHT");
+        cropHeightLabel.setLabelFor(cropHeightField);
+        cropXLabel = new JLabel("CROP X-VALUE");
+        cropXLabel.setLabelFor(cropXLabel);
+        cropYLabel = new JLabel("CROP Y-VALUE");
+        cropYLabel.setLabelFor(cropYField);
+        offsetLabel = new JLabel("OFFSETS");
+        offsetLabel.setLabelFor(offsetField);
+        backgroundColorLabel = new JLabel("BACKGROUND");
+        backgroundColorLabel.setLabelFor(backgroundColorChooserPanel);
+    }
+
+    private void initializeFields() {
+        cropWidthField = new JFormattedTextField(widthFormat);
+        cropWidthField.setColumns(4);
+        cropWidthField.setValue(baseWidth);
+        cropWidthField.addPropertyChangeListener("value", this);
+        cropWidthField.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        cropHeightField = new JFormattedTextField(heightFormat);
+        cropHeightField.setColumns(4);
+        cropHeightField.setValue(baseHeight);
+        cropHeightField.addPropertyChangeListener("value", this);
+        cropHeightField.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        cropXField = new JFormattedTextField(xFormat);
+        cropXField.setColumns(4);
+        cropXField.setValue(baseWidth);
+        cropXField.addPropertyChangeListener("value", this);
+        cropXField.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        cropYField = new JFormattedTextField(yFormat);
+        cropYField.setColumns(4);
+        cropYField.setValue(baseHeight);
+        cropYField.addPropertyChangeListener("value", this);
+        cropYField.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        offsetField = new JFormattedTextField(offsetFormat);
+        offsetField.setColumns(2);
+        offsetField.setValue(baseOffset);
+        offsetField.addPropertyChangeListener("value", this);
+        offsetField.setHorizontalAlignment(SwingConstants.RIGHT);
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         Object source = evt.getSource();
-        if (source == widthField) {
-            width = ((int) widthField.getValue());
-        } else if (source == heightField) {
-            height = ((int) heightField.getValue());
+        if (source == cropWidthField) {
+            mapMakerWindow.setCropWidth((int) (long) cropWidthField.getValue());
+        } else if (source == cropHeightField) {
+            mapMakerWindow.setCropHeight((int) (long) cropHeightField.getValue());
+        } else if (source == cropXField) {
+            mapMakerWindow.setCropX((int) (long) cropXField.getValue());
+        } else if (source == cropYField) {
+            mapMakerWindow.setCropY((int) (long) cropYField.getValue());
         } else if (source == offsetField) {
-            offset = ((int) offsetField.getValue());
+            mapMakerWindow.setOffsets((int) (long) offsetField.getValue());
+        }
+        mapMakerWindow.getMapMakerImagePanel().updateImages();
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (e.getSource() == backgroundColorChooserPanel) {
+            Color newBackgroundColor = JColorChooser.showDialog(null, "Choose a new background color",
+                    mapMakerWindow.getBackgroundColor());
+            mapMakerWindow.setBackgroundColor(newBackgroundColor);
+            backgroundColorChooserPanel.setBackground(mapMakerWindow.getBackgroundColor());
+            mapMakerWindow.getMapMakerImagePanel().updateImages();
         }
     }
+
+    @Override
+    public void mousePressed(MouseEvent e) { }
+
+    @Override
+    public void mouseReleased(MouseEvent e) { }
+
+    @Override
+    public void mouseEntered(MouseEvent e) { }
+
+    @Override
+    public void mouseExited(MouseEvent e) { }
 }
