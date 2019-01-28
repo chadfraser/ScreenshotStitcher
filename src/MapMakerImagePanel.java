@@ -19,25 +19,32 @@ public class MapMakerImagePanel extends JPanel implements MouseInputListener, Se
     private BufferedImage scaledDisplayImage;
 
     private MapMakerWindow mapMakerWindow;
+    private boolean shouldFollowCursor;
 
     MapMakerImagePanel(MapMakerWindow mapMakerWindow) {
         this.mapMakerWindow = mapMakerWindow;
 
         cursorX = (WIDTH - mapMakerWindow.getCropWidth()) / 2;
         cursorY = (HEIGHT - mapMakerWindow.getCropHeight()) / 2;
+        shouldFollowCursor = false;
+
+        addMouseListener(this);
+        addMouseMotionListener(this);
 
         setBackground(Color.DARK_GRAY);
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
-//        setMaximumSize(new Dimension(WIDTH, HEIGHT));
+        setMaximumSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
 
+        initializeImages();
+    }
+
+    private void initializeImages() {
         storedImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
         displayImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
         scaledDisplayImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
-        addMouseListener(this);
-        addMouseMotionListener(this);
 
         Graphics2D g = scaledDisplayImage.createGraphics();
         g.setColor(mapMakerWindow.getBackgroundColor());
@@ -60,6 +67,11 @@ public class MapMakerImagePanel extends JPanel implements MouseInputListener, Se
     public void updateImages() {
         updateDisplayImage();
         updateScaledDisplayImage();
+        System.out.println(" " + mapMakerWindow.getScrollPanelWidth() + " " + mapMakerWindow.getScrollPanelHeight() +
+                " " + mapMakerWindow.getZoomValue());
+//        System.out.println(" " + scaledDisplayImage.getWidth() + " " + scaledDisplayImage.getHeight() +
+//                " " + mapMakerWindow.getZoomValue());
+        revalidate();
         repaint();
     }
 
@@ -74,23 +86,24 @@ public class MapMakerImagePanel extends JPanel implements MouseInputListener, Se
 
     private void updateScaledDisplayImage() {
         double[] scaledWidthAndHeight = getScaledWidthAndHeight();
-        double scaleWidth = scaledWidthAndHeight[0];
-        double scaleHeight = scaledWidthAndHeight[1];
+        double scaledWidth = scaledWidthAndHeight[0];
+        double scaledHeight = scaledWidthAndHeight[1];
         int imageWidth = mapMakerWindow.getScrollPanelWidth();
         int imageHeight = mapMakerWindow.getScrollPanelHeight();
 
         if (mapMakerWindow.getZoomValue() != ZoomValue.FIT_TO_SCREEN) {
-            imageWidth = (int) (storedImage.getWidth() * scaleWidth);
-            imageHeight = (int) (storedImage.getHeight() * scaleHeight);
+            imageWidth = (int) (storedImage.getWidth() * scaledWidth);
+            imageHeight = (int) (storedImage.getHeight() * scaledHeight);
         }
-        int scaleCursorX = (int) (cursorX * scaleWidth);
-        int scaleCursorY = (int) (cursorY * scaleHeight);
-        int scaleCropWidth = (int) (mapMakerWindow.getCropWidth() * scaleWidth);
-        int scaleCropHeight = (int) (mapMakerWindow.getCropHeight() * scaleHeight);
+        int scaledCursorX = (int) (cursorX * scaledWidth);
+        int scaledCursorY = (int) (cursorY * scaledHeight);
+        int scaledCropWidth = (int) (mapMakerWindow.getCropWidth() * scaledWidth);
+        int scaledCropHeight = (int) (mapMakerWindow.getCropHeight() * scaledHeight);
 
         BufferedImage tempImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
 
-        tempImage = buildImageFromStoredImage(tempImage, scaleCursorX, scaleCursorY, scaleCropWidth, scaleCropHeight);
+        tempImage = buildImageFromStoredImage(tempImage, scaledCursorX, scaledCursorY, scaledCropWidth,
+                scaledCropHeight);
         scaledDisplayImage = tempImage;
     }
 
@@ -105,18 +118,18 @@ public class MapMakerImagePanel extends JPanel implements MouseInputListener, Se
         return tempImage;
     }
 
-    private double[] getScaledWidthAndHeight() {
-        double scaleWidth;
-        double scaleHeight;
+    public double[] getScaledWidthAndHeight() {
+        double scaledWidth;
+        double scaledHeight;
 
         if (mapMakerWindow.getZoomValue() == ZoomValue.FIT_TO_SCREEN) {
-            scaleWidth = (double) mapMakerWindow.getScrollPanelWidth() / (double) storedImage.getWidth();
-            scaleHeight = (double) mapMakerWindow.getScrollPanelHeight() / (double) storedImage.getHeight();
+            scaledWidth = (double) mapMakerWindow.getScrollPanelWidth() / (double) storedImage.getWidth();
+            scaledHeight = (double) mapMakerWindow.getScrollPanelHeight() / (double) storedImage.getHeight();
         } else {
-            scaleWidth = mapMakerWindow.getZoomValue().getPercentage();
-            scaleHeight = mapMakerWindow.getZoomValue().getPercentage();
+            scaledWidth = mapMakerWindow.getZoomValue().getPercentage();
+            scaledHeight = mapMakerWindow.getZoomValue().getPercentage();
         }
-        return new double[] {scaleWidth, scaleHeight};
+        return new double[] {scaledWidth, scaledHeight};
     }
 
     private Dimension adjustPreviewCoordinates(int previewX, int previewY, int previewWidth, int previewHeight) {
@@ -161,11 +174,53 @@ public class MapMakerImagePanel extends JPanel implements MouseInputListener, Se
         return newImage;
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    public void increaseImageSize(int widthOfNewImage, int heightOfNewImage) {
+        BufferedImage storedImage = mapMakerWindow.getMapMakerImagePanel().getStoredImage();
+        int newWidth = storedImage.getWidth();
+        int newHeight = storedImage.getHeight();
 
-        g.drawImage(scaledDisplayImage, 0, 0, null);
+        newWidth = (newWidth >= widthOfNewImage) ? newWidth : widthOfNewImage;
+        newHeight = (newHeight >= heightOfNewImage) ? newHeight : heightOfNewImage;
+
+        BufferedImage finalImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = finalImage.createGraphics();
+        g.drawImage(storedImage, (newWidth - storedImage.getWidth()) / 2, (newHeight - storedImage.getHeight()) / 2,
+                null);
+        g.dispose();
+        mapMakerWindow.getMapMakerImagePanel().setStoredImage(finalImage);
+    }
+
+    private void setScrollBarValue(JScrollBar scrollBar, int value) {
+        int visibleAmount = scrollBar.getVisibleAmount();
+        value = (value - visibleAmount / 2);
+//        System.out.println(scrollBar.getValue());
+        scrollBar.setValue(value);
+        System.out.println(value + "  " + visibleAmount + " " + scrollBar.getValue() + "\n");
+    }
+
+    private int findCenterOfScaledCursor(int value, double scaleRatio, int cropMeasurement) {
+        value = (int) (value * scaleRatio);
+        int scaledCropMeasurement = (int) (cropMeasurement * scaleRatio);
+//        System.out.println(value);
+        value = value + scaledCropMeasurement / 2;
+//        System.out.println(value + " " + scaledCropMeasurement);
+        return value;
+    }
+
+    public void focusOnCursor() {
+        JScrollBar scrollBar;
+        int value;
+        double[] scaledWidthAndHeight = getScaledWidthAndHeight();
+
+        scrollBar = mapMakerWindow.getMapMakerImageScrollPane().getHorizontalScrollBar();
+        value = findCenterOfScaledCursor(cursorX, scaledWidthAndHeight[0], mapMakerWindow.getCropWidth());
+        System.out.println(value);
+        setScrollBarValue(scrollBar, value);
+
+        scrollBar = mapMakerWindow.getMapMakerImageScrollPane().getVerticalScrollBar();
+        value = findCenterOfScaledCursor(cursorY, scaledWidthAndHeight[1], mapMakerWindow.getCropHeight());
+        System.out.println(value);
+        setScrollBarValue(scrollBar, value);
     }
 
     public BufferedImage getDisplayImage() {
@@ -175,7 +230,6 @@ public class MapMakerImagePanel extends JPanel implements MouseInputListener, Se
     public BufferedImage getStoredImage() {
         return storedImage;
     }
-
 
     public BufferedImage getScaledDisplayImage() {
         return scaledDisplayImage;
@@ -199,6 +253,33 @@ public class MapMakerImagePanel extends JPanel implements MouseInputListener, Se
 
     public void setCursorY(int cursorY) {
         this.cursorY = cursorY;
+    }
+
+    public void setShouldFollowCursor(boolean shouldFollowCursor) {
+        this.shouldFollowCursor = shouldFollowCursor;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        g.drawImage(scaledDisplayImage, 0, 0, null);
+        if (shouldFollowCursor) {
+            focusOnCursor();
+            shouldFollowCursor = false;
+        }
+    }
+
+    @Override
+    public final Dimension getPreferredSize() {
+//        int width = (int) prefSize.getWidth();
+//        int height = (int) prefSize.getHeight();
+//        if (mapMakerWindow.getZoomValue() == ZoomValue.FIT_TO_SCREEN) {
+//            return new Dimension(mapMakerWindow.getScrollPanelWidth(), mapMakerWindow.getScrollPanelHeight());
+//        }
+        int newWidth = (scaledDisplayImage.getWidth() > WIDTH ? scaledDisplayImage.getWidth() : WIDTH);
+        int newHeight = (scaledDisplayImage.getHeight() > HEIGHT ? scaledDisplayImage.getHeight() : HEIGHT);
+        return new Dimension(newWidth, newHeight);
     }
 
     @Override
@@ -253,6 +334,4 @@ public class MapMakerImagePanel extends JPanel implements MouseInputListener, Se
     public void mouseMoved(MouseEvent e) {
         mouseEntered(e);
     }
-
-
 }

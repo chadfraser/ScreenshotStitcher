@@ -1,3 +1,6 @@
+// TODO: Make scrollpane follow cursor
+// Rename to Edit Button Panel?
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -173,6 +176,115 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
         editButtonPanel.add(deleteButton, c);
     }
 
+    @Override
+    public final Dimension getPreferredSize() {
+        Dimension dimension = super.getPreferredSize();
+        Dimension prefSize;
+        Component component = getParent();
+
+        if (component == null) {
+            prefSize = new Dimension((int) dimension.getWidth(), (int) dimension.getHeight());
+        } else if (component.getWidth() > dimension.getWidth() && component.getHeight() > dimension.getHeight()) {
+            prefSize = component.getSize();
+        } else {
+            prefSize = dimension;
+        }
+        int width = (int) prefSize.getWidth();
+        int height = (int) prefSize.getHeight();
+        int newWidth = (width > height * 1.2 ? (int) (height * 1.2) : width);
+        int newHeight = (height > width * 1.2 ? (int) (width * 1.2) : height);
+        return new Dimension(newWidth, newHeight);
+    }
+
+    @Override
+    public final Dimension getMinimumSize() {
+        return new Dimension(200, 200);  // TODO: Fix this method to return a size based on JButton contents
+    }
+
+    @Override
+    public final Dimension getMaximumSize() {
+        Dimension dimension = super.getMaximumSize();
+        Dimension maxSize;
+        Component component = getParent();
+
+        if (component == null) {
+            maxSize = new Dimension((int) dimension.getWidth(), (int) dimension.getHeight());
+        } else if (component.getWidth() > dimension.getWidth() && component.getHeight() > dimension.getHeight()) {
+            maxSize = component.getSize();
+        } else {
+            maxSize = dimension;
+        }
+        int width = (int) maxSize.getWidth();
+        int height = (int) maxSize.getHeight();
+        int newWidth = (width > height * 1.2) ? (int) (height * 1.2) : width;
+        int newHeight = (height > width * 1.2) ? (int) (width * 1.2) : height;
+        return new Dimension(newWidth, newHeight);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        MapMakerImagePanel mapMakerImageWindow = mapMakerWindow.getMapMakerImagePanel();
+        BufferedImage mapMakerStoredImage = mapMakerImageWindow.getStoredImage();
+
+        int x = mapMakerImageWindow.getCursorX();
+        int y = mapMakerImageWindow.getCursorY();
+        int cropWidth = mapMakerWindow.getCropWidth();
+        int cropHeight = mapMakerWindow.getCropHeight();
+
+        if (e.getSource() == pasteButton) {
+            pasteImage();
+        } else if (e.getSource() == deleteButton) {
+            Graphics2D g = mapMakerStoredImage.createGraphics();
+            g.setComposite(AlphaComposite.Src);
+            g.setColor(new Color(0, 0, 0, 0));
+            g.fillRect(x, y, cropWidth, cropHeight);
+            g.dispose();
+        } else {
+            moveDirectionalBox(e);
+        }
+
+        mapMakerImageWindow.updateImages();
+        mapMakerImageWindow.focusOnCursor();
+    }
+
+    private void pasteImage() {
+        MapMakerImagePanel mapMakerImageWindow = mapMakerWindow.getMapMakerImagePanel();
+        BufferedImage mapMakerStoredImage = mapMakerImageWindow.getStoredImage();
+
+        int x = mapMakerImageWindow.getCursorX();
+        int y = mapMakerImageWindow.getCursorY();
+        int cropX = mapMakerWindow.getCropX();
+        int cropY = mapMakerWindow.getCropY();
+        int cropWidth = mapMakerWindow.getCropWidth();
+        int cropHeight = mapMakerWindow.getCropHeight();
+
+        Graphics2D g = mapMakerStoredImage.createGraphics();
+        try {
+            BufferedImage currentImage = ImageSaver.cropClipboardImage(cropX, cropY, cropWidth, cropHeight);
+            if (currentImage.getWidth() > mapMakerStoredImage.getWidth() ||
+                    currentImage.getHeight() > mapMakerStoredImage.getHeight()) {
+                mapMakerWindow.getMapMakerImagePanel().increaseImageSize(currentImage.getWidth(),
+                        currentImage.getHeight());
+                g = mapMakerWindow.getMapMakerImagePanel().getStoredImage().createGraphics();
+            }
+            g.drawImage(currentImage, x, y, null);
+        } catch (RasterFormatException except) {
+            JOptionPane.showMessageDialog(mapMakerWindow,
+                    "The current width or height values are too large to crop.",
+                    "Clipboard Image Error",
+                    JOptionPane.ERROR_MESSAGE);
+        } catch (UnsupportedFlavorException except) {
+            JOptionPane.showMessageDialog(mapMakerWindow,
+                    "You do not currently have an image copied to the clipboard.",
+                    "Clipboard Image Error",
+                    JOptionPane.ERROR_MESSAGE);
+        } catch (IOException except) {
+            except.printStackTrace();
+        } finally {
+            g.dispose();
+        }
+    }
+
     private void moveDirectionalBox(ActionEvent e) {
         MapMakerImagePanel mapMakerImageWindow = mapMakerWindow.getMapMakerImagePanel();
         BufferedImage mapMakerStoredImage = mapMakerImageWindow.getStoredImage();
@@ -223,97 +335,6 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
 
         mapMakerImageWindow.setCursorX(x);
         mapMakerImageWindow.setCursorY(y);
-    }
-
-    @Override
-    public final Dimension getPreferredSize() {
-        Dimension dimension = super.getPreferredSize();
-        Dimension prefSize;
-        Component component = getParent();
-
-        if (component == null) {
-            prefSize = new Dimension((int) dimension.getWidth(), (int) dimension.getHeight());
-        } else if (component.getWidth() > dimension.getWidth() && component.getHeight() > dimension.getHeight()) {
-            prefSize = component.getSize();
-        } else {
-            prefSize = dimension;
-        }
-        int width = (int) prefSize.getWidth();
-        int height = (int) prefSize.getHeight();
-        int newWidth = (width > height * 1.2 ? (int) (height * 1.2) : width);
-        int newHeight = (height > width * 1.2 ? (int) (width * 1.2) : height);
-        return new Dimension(newWidth, newHeight);
-    }
-
-    @Override
-    public final Dimension getMinimumSize() {
-        return new Dimension(200, 200);  // TODO: Fix this method to return a size based on JButton contents
-    }
-
-    @Override
-    public final Dimension getMaximumSize() {
-        Dimension dimension = super.getMaximumSize();
-        Dimension maxSize;
-        Component component = getParent();
-
-        if (component == null) {
-            maxSize = new Dimension((int) dimension.getWidth(), (int) dimension.getHeight());
-        } else if (component.getWidth() > dimension.getWidth() && component.getHeight() > dimension.getHeight()) {
-            maxSize = component.getSize();
-        } else {
-            maxSize = dimension;
-        }
-        int width = (int) maxSize.getWidth();
-        int height = (int) maxSize.getHeight();
-        int newWidth = (width > height * 1.2 ? (int) (height * 1.2) : width);
-        int newHeight = (height > width * 1.2 ? (int) (width * 1.2) : height);
-        return new Dimension(newWidth, newHeight);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        MapMakerImagePanel mapMakerImageWindow = mapMakerWindow.getMapMakerImagePanel();
-        BufferedImage mapMakerStoredImage = mapMakerImageWindow.getStoredImage();
-
-        int x = mapMakerImageWindow.getCursorX();
-        int y = mapMakerImageWindow.getCursorY();
-        int cropX = mapMakerWindow.getCropX();
-        int cropY = mapMakerWindow.getCropY();
-        int cropWidth = mapMakerWindow.getCropWidth();
-        int cropHeight = mapMakerWindow.getCropHeight();
-
-        if (e.getSource() == pasteButton) {
-            Graphics2D g = mapMakerStoredImage.createGraphics();
-            try {
-                BufferedImage currentImage = ImageSaver.cropClipboardImage(cropX, cropY, cropWidth, cropHeight);
-                g.drawImage(currentImage, x, y, null);
-            } catch (RasterFormatException except) {
-                JOptionPane.showMessageDialog(mapMakerWindow,
-                        "The current width or height values are too large to crop.",
-                        "Clipboard Image Error",
-                        JOptionPane.ERROR_MESSAGE);
-            } catch (UnsupportedFlavorException except) {
-                JOptionPane.showMessageDialog(mapMakerWindow,
-                        "You do not currently have an image copied to the clipboard.",
-                        "Clipboard Image Error",
-                        JOptionPane.ERROR_MESSAGE);
-            } catch (IOException except) {
-                except.printStackTrace();
-            } finally {
-                g.dispose();
-            }
-
-        } else if (e.getSource() == deleteButton) {
-            Graphics2D g = mapMakerStoredImage.createGraphics();
-            g.setComposite(AlphaComposite.Src);
-            g.setColor(new Color(0, 0, 0, 0));
-            g.fillRect(x, y, cropWidth, cropHeight);
-            g.dispose();
-
-        } else {
-            moveDirectionalBox(e);
-        }
-
-        mapMakerImageWindow.updateImages();
+        mapMakerImageWindow.setShouldFollowCursor(true);
     }
 }
