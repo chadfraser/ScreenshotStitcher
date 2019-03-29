@@ -1,9 +1,13 @@
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.EventListener;
 
 public class MapMakerWindow extends JFrame implements Serializable {
     private static final int WIDTH = 1000;
@@ -19,7 +23,8 @@ public class MapMakerWindow extends JFrame implements Serializable {
 //    private int cropHeight;
     private int offsets = 6;
     private Color backgroundColor = Color.WHITE;
-    private ZoomValue zoomValue = ZoomValue.FIT_TO_SCREEN;
+//    private ZoomValue zoomValue = ZoomValue.FIT_TO_SCREEN;
+    private ZoomValue zoomValue = ZoomValue.ONE_HUNDRED_PERCENT;
     private JScrollPane mapMakerImageScrollPane;
 
     private MapMakerImagePanel mapMakerImagePanel;
@@ -28,14 +33,18 @@ public class MapMakerWindow extends JFrame implements Serializable {
     private ZoomPanel zoomPanel;
     private SavePanel savePanel;
     private UndoButtonPanel undoButtonPanel;
-    private JPanel imagePreviewSubPanel;
+    private TrimPanel trimPanel;
+    private DataPanel dataPanel;
 
+    private JPanel imagePreviewSubPanel;
     private JPanel directionalButtonSubPanel;
     private JPanel zoomSubPanel;
     private JPanel saveSubPanel;
     private JPanel undoSubPanel;
-    private JPanel directionalButtonAndImagePreviewPanel;
+    private JPanel trimSubPanel;
+    private JPanel dataSubPanel;
 
+    private JPanel directionalButtonAndImagePreviewPanel;
     private JPanel zoomAndImagePreviewPanel;
     private JPanel saveAndImagePreviewPanel;
     private JPanel undoAndImagePreviewPanel;
@@ -58,6 +67,8 @@ public class MapMakerWindow extends JFrame implements Serializable {
         zoomPanel = new ZoomPanel(this);
         savePanel = new SavePanel(this);
         undoButtonPanel = new UndoButtonPanel(this);
+        trimPanel = new TrimPanel(this);
+        dataPanel = new DataPanel(this);
 
         imagePreviewSubPanel = new JPanel();
         directionalButtonSubPanel = new JPanel();
@@ -68,19 +79,30 @@ public class MapMakerWindow extends JFrame implements Serializable {
         saveAndImagePreviewPanel = new JPanel();
         undoSubPanel = new JPanel();
         undoAndImagePreviewPanel = new JPanel();
+        trimSubPanel = new JPanel();
+        dataSubPanel = new JPanel();
 
         optionTabbedPane = new JTabbedPane(SwingConstants.RIGHT, JTabbedPane.SCROLL_TAB_LAYOUT);
         optionTabbedPane.addTab("EDIT", null, directionalButtonAndImagePreviewPanel, "Edit");
         optionTabbedPane.addTab("ZOOM", null, zoomAndImagePreviewPanel, "Zoom");
         optionTabbedPane.addTab("SAVE", null, saveAndImagePreviewPanel, "Save/Open");
         optionTabbedPane.addTab("UNDO", null, undoAndImagePreviewPanel, "Undo/Redo");
-        optionTabbedPane.addTab("OPT.", null, new JPanel(), "Settings");
+        optionTabbedPane.addTab("TRIM", null, trimSubPanel, "Trim");
+        optionTabbedPane.addTab("OPT.", null, dataSubPanel, "Settings");
+        optionTabbedPane.addChangeListener(e -> {
+            JPanel selectedPanel = (JPanel) optionTabbedPane.getSelectedComponent();
+            moveImagePreviewPanelToActivePanel(selectedPanel);
+        });
 
         initializePanels();
         initializeLayout();
         pack();
         setLocationRelativeTo(null);
+        mapMakerImagePanel.updateImages();
         setVisible(true);
+        revalidate();
+        // TODO: Add component listener for window resize
+        // TODO: Fix initialization of MapMakerImagePanel size
     }
 
     public static void main(String[] args) {
@@ -96,16 +118,22 @@ public class MapMakerWindow extends JFrame implements Serializable {
 
     private void initializePanels() {
         initializeSubPanel(imagePreviewSubPanel, imagePreviewPanel);
+
+        imagePreviewSubPanel.setBackground(Color.YELLOW);  // TODO: Remove after testing size of panel is done
 //        initializeDirectionalButtonSubPanel();  // TODO: Figure out how to prevent this panel resizing immediately
         initializeSubPanel(directionalButtonSubPanel, directionalButtonPanel);
-//        initializeSubPanel(zoomSubPanel, zoomPanel);
-//        initializeSubPanel(saveSubPanel, savePanel);
-//        initializeSubPanel(undoSubPanel, undoButtonPanel);
+        initializeSubPanel(zoomSubPanel, zoomPanel);
+        initializeSubPanel(saveSubPanel, savePanel);
+        initializeSubPanel(undoSubPanel, undoButtonPanel);
+        initializeSubPanel(dataSubPanel, dataPanel);
+        initializeSubPanel(trimSubPanel, trimPanel);
 
         initializeSidePanel(directionalButtonAndImagePreviewPanel, directionalButtonSubPanel);
-//        initializeSidePanel(zoomAndImagePreviewPanel, zoomSubPanel);
-//        initializeSidePanel(saveAndImagePreviewPanel, saveSubPanel);
-//        initializeSidePanel(undoAndImagePreviewPanel, undoSubPanel);
+        initializeSidePanel(zoomAndImagePreviewPanel, zoomSubPanel);
+        initializeSidePanel(saveAndImagePreviewPanel, saveSubPanel);
+        initializeSidePanel(undoAndImagePreviewPanel, undoSubPanel);
+
+        moveImagePreviewPanelToActivePanel(directionalButtonAndImagePreviewPanel);
     }
 
     private void initializeSubPanel(JPanel subPanel, JPanel mainPanel) {
@@ -121,25 +149,15 @@ public class MapMakerWindow extends JFrame implements Serializable {
         sidePanel.add(partialPanel);
 //        directionalButtonAndImagePreviewPanel.add(Box.createVerticalGlue());
         JSeparator separator = new JSeparator();
-        separator.setBackground(Color.GRAY);
+//        separator.setBackground(Color.GRAY);
         sidePanel.add(Box.createRigidArea(new Dimension(5, 5)));
         sidePanel.add(separator);
         sidePanel.add(Box.createRigidArea(new Dimension(5, 5)));
-        sidePanel.add(imagePreviewSubPanel);
-        sidePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     }
 
-    public void serializeData(FileOutputStream fileOutputStream) {
-        try {
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-            objectOutputStream.writeObject(this);
-            objectOutputStream.close();
-            fileOutputStream.close();
-            System.out.println("Serialized data is saved in " + fileOutputStream.toString());
-        } catch (IOException i) {
-            i.printStackTrace();
-        }
-
+    private void moveImagePreviewPanelToActivePanel(JPanel activePanel) {
+        activePanel.add(imagePreviewSubPanel);
+        activePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     }
 
     public void setCropX(int cropX) {
@@ -204,6 +222,10 @@ public class MapMakerWindow extends JFrame implements Serializable {
 
     public Color getBackgroundColor() {
         return backgroundColor;
+    }
+
+    public JScrollPane getMapMakerImageScrollPane() {
+        return mapMakerImageScrollPane;
     }
 
     public int getScrollPanelHeight() {
