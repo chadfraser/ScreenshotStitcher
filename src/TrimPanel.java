@@ -40,28 +40,6 @@ public class TrimPanel extends JPanel implements ActionListener {
         trimVerticalButton.addActionListener(this);
     }
 
-    private void initializeLayout() {
-        setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.weightx = 0.5;
-        c.weighty = 0.5;
-        c.gridwidth = 1;
-        c.gridheight = 1;
-        c.gridx = 0;
-        c.gridy = 0;
-        add(buttonPanel, c);
-
-        c.weightx = 0.5;
-        c.weighty = 0.5;
-        c.gridwidth = 1;
-        c.gridheight = 1;
-        c.gridx = 0;
-        c.gridy = 1;
-        add(checkBoxPanel, c);
-    }
-
     private void initializePanels() {
         buttonPanel = new JPanel(new GridBagLayout());
         checkBoxPanel = new JPanel(new GridBagLayout());
@@ -109,6 +87,28 @@ public class TrimPanel extends JPanel implements ActionListener {
         c.gridx = 0;
         c.gridy = 2;
         buttonPanel.add(trimVerticalButton, c);
+    }
+
+    private void initializeLayout() {
+        setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.weightx = 0.5;
+        c.weighty = 0.5;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 0;
+        add(buttonPanel, c);
+
+        c.weightx = 0.5;
+        c.weighty = 0.5;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.gridx = 0;
+        c.gridy = 1;
+        add(checkBoxPanel, c);
     }
 
     private int getOffsetAdjustment() {
