@@ -1,15 +1,21 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.awt.image.RasterFormatException;
 
 public class ImagePreviewPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     private static final int WIDTH = 250;
     private static final int HEIGHT = 250;
+    private boolean isMouseOverImage = false;
 
     private BufferedImage previewImage;
     private MapMakerWindow mapMakerWindow;
+    private Timer timer;
 
     ImagePreviewPanel(MapMakerWindow mapMakerWindow) {
         this.mapMakerWindow = mapMakerWindow;
@@ -22,11 +28,120 @@ public class ImagePreviewPanel extends JPanel {
         setFocusable(true);
 
         previewImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+
+        ActionListener actionListener = e -> {
+            BufferedImage newImage;
+            if (isMouseOverImage) {
+                newImage = createFocusedPreviewImage();
+            } else if (mapMakerWindow.getZoomValue() == ZoomValue.FIT_TO_SCREEN) {
+                newImage = createBlankPreviewImage();
+            } else {
+                newImage = createScaledPreviewImage();
+            }
+            updatePreviewPanel(newImage);
+        };
+        timer = new Timer(50, actionListener);
+    }
+
+    private BufferedImage createBlankPreviewImage() {
+        BufferedImage blankPreviewImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = blankPreviewImage.createGraphics();
+        g.setColor(mapMakerWindow.getBackgroundColor());
+        g.fillRect(0, 0, getWidth(), getHeight());
+        g.dispose();
+        return blankPreviewImage;
+    }
+
+    private BufferedImage createScaledPreviewImage() {
+        BufferedImage storedImage = mapMakerWindow.getMapMakerImagePanel().getStoredImage();
+        BufferedImage scaledPreviewImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = scaledPreviewImage.createGraphics();
+        g.setColor(mapMakerWindow.getBackgroundColor());
+        g.fillRect(0, 0, getWidth(), getHeight());
+        g.drawImage(storedImage, 0, 0, scaledPreviewImage.getWidth(), scaledPreviewImage.getHeight(), null);
+        g.dispose();
+        return scaledPreviewImage;
+    }
+
+    private BufferedImage createFocusedPreviewImage() {
+        BufferedImage focusedPreviewImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        MapMakerImagePanel mapMakerImagePanel = mapMakerWindow.getMapMakerImagePanel();
+        double[] scaledWidthAndHeight = mapMakerImagePanel.getScaledWidthAndHeight();
+        double scaledWidth = scaledWidthAndHeight[0];
+        double scaledHeight = scaledWidthAndHeight[1];
+
+        int previewX = (int) (mapMakerImagePanel.getMostRecentMouseX() / scaledWidth);
+        int previewY = (int) (mapMakerImagePanel.getMostRecentMouseY() / scaledHeight);
+
+        previewX -= getWidth() / 2;
+        previewY -= getHeight() / 2;
+
+        Dimension temp = adjustPreviewCoordinates(previewX, previewY, getWidth(), getHeight());
+        previewX = temp.width;
+        previewY = temp.height;
+
+        try {
+            BufferedImage croppedImage = mapMakerImagePanel.getStoredImage().getSubimage(previewX, previewY,
+                    getWidth(), getHeight());
+            Graphics2D g = focusedPreviewImage.createGraphics();
+            g.setColor(mapMakerWindow.getBackgroundColor());
+            g.fillRect(0, 0, getWidth(), getHeight());
+            g.drawImage(croppedImage, 0, 0, getWidth(), getHeight(), null);
+            g.dispose();
+        } catch (RasterFormatException except) {
+            focusedPreviewImage = adjustForUndersizedStoredImage(previewX, previewY);
+        }
+        return focusedPreviewImage;
     }
 
     public void updatePreviewPanel(BufferedImage newPreviewImage) {
         previewImage = newPreviewImage;
         repaint();
+    }
+
+    private Dimension adjustPreviewCoordinates(int previewX, int previewY, int previewWidth, int previewHeight) {
+        BufferedImage storedImage = mapMakerWindow.getMapMakerImagePanel().getStoredImage();
+        if (previewX < 0) {
+            previewX = 0;
+        } else if (previewX + previewWidth > storedImage.getWidth()) {
+            previewX = storedImage.getWidth() - previewWidth;
+        }
+
+        if (previewY < 0) {
+            previewY = 0;
+        } else if (previewY + previewHeight > storedImage.getHeight()) {
+            previewY = storedImage.getHeight() - previewHeight;
+        }
+
+        return new Dimension(previewX, previewY);
+    }
+
+    private BufferedImage adjustForUndersizedStoredImage(int previewX, int previewY) {
+        BufferedImage storedImage = mapMakerWindow.getMapMakerImagePanel().getStoredImage();
+        int xToDraw = 0;
+        int yToDraw = 0;
+        int width = getWidth();
+        int height = getHeight();
+
+        if (width > storedImage.getWidth()) {
+            previewX = 0;
+            xToDraw = (width - storedImage.getWidth()) / 2;
+            width = storedImage.getWidth();
+        }
+
+        if (height > storedImage.getHeight()) {
+            previewY = 0;
+            yToDraw = (height - storedImage.getHeight()) / 2;
+            height = storedImage.getHeight();
+        }
+        BufferedImage croppedImage = storedImage.getSubimage(previewX, previewY, width, height);
+        BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = newImage.createGraphics();
+        g.setColor(mapMakerWindow.getBackgroundColor());
+        g.fillRect(0, 0, width, height);
+        g.drawImage(croppedImage, xToDraw, yToDraw, null);
+
+        return newImage;
     }
 
     @Override
@@ -62,5 +177,13 @@ public class ImagePreviewPanel extends JPanel {
 
     public BufferedImage getPreviewImage() {
         return previewImage;
+    }
+
+    public Timer getTimer() {
+        return timer;
+    }
+
+    public void setMouseOverImage(boolean isMouseOverImage) {
+        this.isMouseOverImage = isMouseOverImage;
     }
 }

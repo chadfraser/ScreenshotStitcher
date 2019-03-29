@@ -3,7 +3,6 @@ import javax.swing.event.MouseInputListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.awt.image.RasterFormatException;
 import java.io.Serializable;
 
 public class MapMakerImagePanel extends JPanel implements MouseInputListener, Serializable {
@@ -20,6 +19,8 @@ public class MapMakerImagePanel extends JPanel implements MouseInputListener, Se
 
     private MapMakerWindow mapMakerWindow;
     private boolean shouldFollowCursor;
+    private int mostRecentMouseX;
+    private int mostRecentMouseY;
 
     MapMakerImagePanel(MapMakerWindow mapMakerWindow) {
         this.mapMakerWindow = mapMakerWindow;
@@ -128,48 +129,6 @@ public class MapMakerImagePanel extends JPanel implements MouseInputListener, Se
         return new double[] {scaledWidth, scaledHeight};
     }
 
-    private Dimension adjustPreviewCoordinates(int previewX, int previewY, int previewWidth, int previewHeight) {
-        if (previewX < 0) {
-            previewX = 0;
-        } else if (previewX + previewWidth > storedImage.getWidth()) {
-            previewX = storedImage.getWidth() - previewWidth;
-        }
-
-        if (previewY < 0) {
-            previewY = 0;
-        } else if (previewY + previewHeight > storedImage.getHeight()) {
-            previewY = storedImage.getHeight() - previewHeight;
-        }
-
-        return new Dimension(previewX, previewY);
-    }
-
-    private BufferedImage adjustForUndersizedStoredImage(int previewX, int previewY, int previewWidth,
-                                                         int previewHeight) {
-        int xToDraw = 0;
-        int yToDraw = 0;
-
-        if (previewWidth > storedImage.getWidth()) {
-            previewX = 0;
-            xToDraw = (previewWidth - storedImage.getWidth()) / 2;
-            previewWidth = storedImage.getWidth();
-        }
-
-        if (previewHeight > storedImage.getHeight()) {
-            previewY = 0;
-            yToDraw = (previewHeight - storedImage.getHeight()) / 2;
-            previewHeight = storedImage.getHeight();
-        }
-        BufferedImage newImage = new BufferedImage((int) mapMakerWindow.getImagePreviewPanel().getSize().getWidth(),
-                (int) mapMakerWindow.getImagePreviewPanel().getSize().getHeight(),
-                BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = newImage.createGraphics();
-        BufferedImage croppedImage = storedImage.getSubimage(previewX, previewY, previewWidth, previewHeight);
-        g.drawImage(croppedImage, xToDraw, yToDraw, null);
-
-        return newImage;
-    }
-
     public void increaseImageSize(int widthOfNewImage, int heightOfNewImage) {
         BufferedImage storedImage = mapMakerWindow.getMapMakerImagePanel().getStoredImage();
         int newWidth = storedImage.getWidth();
@@ -235,6 +194,14 @@ public class MapMakerImagePanel extends JPanel implements MouseInputListener, Se
         return cursorY;
     }
 
+    public int getMostRecentMouseX() {
+        return mostRecentMouseX;
+    }
+
+    public int getMostRecentMouseY() {
+        return mostRecentMouseY;
+    }
+
     public void setStoredImage(BufferedImage storedImage) {
         this.storedImage = storedImage;
     }
@@ -285,38 +252,14 @@ public class MapMakerImagePanel extends JPanel implements MouseInputListener, Se
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        BufferedImage newPreviewImage;
-        double[] scaledWidthAndHeight = getScaledWidthAndHeight();
-        double scaledWidth = scaledWidthAndHeight[0];
-        double scaledHeight = scaledWidthAndHeight[1];
-
-        int previewX = (int) (e.getX() / scaledWidth);
-        int previewY = (int) (e.getY() / scaledHeight);
-        int previewWidth = (int) mapMakerWindow.getImagePreviewPanel().getSize().getWidth();
-        int previewHeight = (int) mapMakerWindow.getImagePreviewPanel().getSize().getHeight();
-
-        previewX -= previewWidth / 2;
-        previewY -= previewHeight / 2;
-
-        Dimension temp = adjustPreviewCoordinates(previewX, previewY, previewWidth, previewHeight);
-        previewX = temp.width;
-        previewY = temp.height;
-
-        try {
-            newPreviewImage = storedImage.getSubimage(previewX, previewY, previewWidth, previewHeight);
-        } catch (RasterFormatException except) {
-            newPreviewImage = adjustForUndersizedStoredImage(previewX, previewY, previewWidth, previewHeight);
-        }
-        mapMakerWindow.getImagePreviewPanel().updatePreviewPanel(newPreviewImage);
+        mostRecentMouseX = e.getX();
+        mostRecentMouseY = e.getY();
+        mapMakerWindow.getImagePreviewPanel().setMouseOverImage(true);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        int previewWidth = mapMakerWindow.getImagePreviewPanel().getPreviewImage().getWidth();
-        int previewHeight = mapMakerWindow.getImagePreviewPanel().getPreviewImage().getHeight();
-
-        BufferedImage blankPreviewImage = new BufferedImage(previewWidth, previewHeight, BufferedImage.TYPE_INT_ARGB);
-        mapMakerWindow.getImagePreviewPanel().updatePreviewPanel(blankPreviewImage);
+        mapMakerWindow.getImagePreviewPanel().setMouseOverImage(false);
     }
 
     @Override
