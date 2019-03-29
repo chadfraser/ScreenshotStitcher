@@ -34,6 +34,8 @@ public class TrimPanel extends JPanel implements ActionListener {
         trimHorizontalButton = new JButton("TRIM HORIZONTALLY");
         trimVerticalButton = new JButton("TRIM VERTICALLY");
         trimOffsetsCheckBox = new JCheckBox("Include offsets in trim");
+        trimOffsetsCheckBox.setSelected(true);
+
         trimHorizontalButton.addActionListener(this);
         trimVerticalButton.addActionListener(this);
     }
@@ -129,8 +131,8 @@ public class TrimPanel extends JPanel implements ActionListener {
             return;
         }
 
-        newImage = new BufferedImage(storedImage.getWidth(),
-                storedImage.getHeight() - (cropHeight + 2 * offsetAdjustment), BufferedImage.TYPE_INT_ARGB);
+        newImage = new BufferedImage(storedImage.getWidth(), storedImage.getHeight() - (cropHeight + offsetAdjustment),
+                BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = newImage.createGraphics();
         if (cursorY - offsetAdjustment > 0) {
             upperSubImage = storedImage.getSubimage(0, 0, storedImage.getWidth(), cursorY - offsetAdjustment);
@@ -161,22 +163,25 @@ public class TrimPanel extends JPanel implements ActionListener {
             return;
         }
 
-        newImage = new BufferedImage(storedImage.getWidth() - (cropWidth + 2 * offsetAdjustment),
-                storedImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        // subtract offsetAdjustment once from the width of storedImage. If offsetAdjustment = 0, this has no effect
+        // otherwise,
+        newImage = new BufferedImage(storedImage.getWidth() - (cropWidth - offsetAdjustment), storedImage.getHeight(),
+                BufferedImage.TYPE_INT_ARGB);  // TODO: Look into how this works
         Graphics2D g = newImage.createGraphics();
         if (cursorX - offsetAdjustment > 0) {
             leftSubImage = storedImage.getSubimage(0, 0, cursorX - offsetAdjustment, storedImage.getHeight());
             g.drawImage(leftSubImage, 0, 0, null);
         }
-        if (cursorX + cropWidth + offsetAdjustment < storedImage.getWidth()) {
+        if (cursorX + cropWidth + offsetAdjustment <= storedImage.getWidth()) {
             rightSubImage = storedImage.getSubimage(cursorX + cropWidth + offsetAdjustment, 0,
                     storedImage.getWidth() - (cursorX + cropWidth + offsetAdjustment), storedImage.getHeight());
             g.drawImage(rightSubImage, cursorX, 0, null);
         }
+
         g.dispose();
 
         mapMakerWindow.getMapMakerImagePanel().setStoredImage(newImage);
-        adjustCursorAfterTrimming(); // TODO: Fix
+        adjustCursorAfterTrimming();
         mapMakerWindow.getMapMakerImagePanel().updateImages();
     }
 
@@ -189,17 +194,17 @@ public class TrimPanel extends JPanel implements ActionListener {
 
         if (cropWidth > storedImage.getWidth()) {
             mapMakerWindow.setCropWidth(storedImage.getWidth());
+            cropWidth = storedImage.getWidth();
         }
         if (cropHeight > storedImage.getHeight()) {
             mapMakerWindow.setCropHeight(storedImage.getHeight());
+            cropHeight = storedImage.getHeight();
         }
         if (cursorX + cropWidth > storedImage.getWidth()) {
-            int sizeDifference = (cursorX + cropWidth) - (storedImage.getWidth() - cursorX);
-            mapMakerWindow.getMapMakerImagePanel().setCursorX(cursorX - sizeDifference);
+            mapMakerWindow.getMapMakerImagePanel().setCursorX(storedImage.getWidth() - cropWidth);
         }
         if (cursorY + cropHeight > storedImage.getHeight()) {
-            int sizeDifference = (cursorY + cropHeight) - (storedImage.getHeight() - cursorY);
-            mapMakerWindow.getMapMakerImagePanel().setCursorY(cursorY - sizeDifference);
+            mapMakerWindow.getMapMakerImagePanel().setCursorY(storedImage.getHeight() - cropHeight);
         }
     }
 
