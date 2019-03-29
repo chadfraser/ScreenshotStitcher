@@ -153,11 +153,28 @@ public class ZoomPanel extends JPanel implements ActionListener {
         return value;
     }
 
+    public void focusOnCursor() {
+        JScrollBar scrollBar;
+        int value;
+        double[] scaledWidthAndHeight = mapMakerWindow.getMapMakerImagePanel().getScaledWidthAndHeight();
+
+        scrollBar = mapMakerWindow.getMapMakerImageScrollPane().getHorizontalScrollBar();
+        value = mapMakerWindow.getMapMakerImagePanel().getCursorX();
+        value = findCenterOfScaledCursor(value, scaledWidthAndHeight[0], mapMakerWindow.getCropWidth());
+        setScrollBarValue(scrollBar, value);
+
+        scrollBar = mapMakerWindow.getMapMakerImageScrollPane().getVerticalScrollBar();
+        value = mapMakerWindow.getMapMakerImagePanel().getCursorY();
+        value = findCenterOfScaledCursor(value, scaledWidthAndHeight[1], mapMakerWindow.getCropHeight());
+        setScrollBarValue(scrollBar, value);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == zoomComboBox) {
             mapMakerWindow.setZoomValue((ZoomValue) zoomComboBox.getSelectedItem());
             mapMakerWindow.getMapMakerImagePanel().updateImages();
+            mapMakerWindow.getMapMakerImagePanel().focusOnCursor();
         } else if (e.getSource() == focusOriginButton) {
             JScrollBar scrollBar;
             int value;
@@ -170,19 +187,7 @@ public class ZoomPanel extends JPanel implements ActionListener {
             value = mapMakerWindow.getMapMakerImagePanel().getScaledDisplayImage().getHeight() / 2;
             setScrollBarValue(scrollBar, value);
         } else if (e.getSource() == focusCursorButton) {
-            JScrollBar scrollBar;
-            int value;
-            double[] scaledWidthAndHeight = mapMakerWindow.getMapMakerImagePanel().getScaledWidthAndHeight();
-
-            scrollBar = mapMakerWindow.getMapMakerImageScrollPane().getHorizontalScrollBar();
-            value = mapMakerWindow.getMapMakerImagePanel().getCursorX();
-            value = findCenterOfScaledCursor(value, scaledWidthAndHeight[0], mapMakerWindow.getCropWidth());
-            setScrollBarValue(scrollBar, value);
-
-            scrollBar = mapMakerWindow.getMapMakerImageScrollPane().getVerticalScrollBar();
-            value = mapMakerWindow.getMapMakerImagePanel().getCursorY();
-            value = findCenterOfScaledCursor(value, scaledWidthAndHeight[1], mapMakerWindow.getCropHeight());
-            setScrollBarValue(scrollBar, value);
+            mapMakerWindow.getMapMakerImagePanel().focusOnCursor();
         }
     }
 }
