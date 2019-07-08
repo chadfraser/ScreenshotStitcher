@@ -42,11 +42,10 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
         this.mainFrame = mainFrame;
         this.imageHandler = new ImageHandler(this);
         initializeCursor();
+        initializeImages();
 
         addMouseListener(this);
         addMouseMotionListener(this);
-
-        initializeImages();
     }
 
     private void initializeCursor() {
@@ -59,7 +58,7 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
     }
 
     private void initializeImages() {
-        updateDisplayedImage();
+        displayedImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
         scaledImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = scaledImage.createGraphics();
         g.drawImage(scaledImage, 0, 0, getWidth(), getHeight(), null);
@@ -115,6 +114,7 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
         g.dispose();
     }
 
+    // TODO: Move to own class
     public double[] getScaledWidthAndHeightRatios() {
         double scaledWidthRatio;
         double scaledHeightRatio;
@@ -190,59 +190,6 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
         verticalScrollBar = mainFrame.getMapMakerImageScrollPane().getVerticalScrollBar();
         verticalValue = scaledImage.getHeight() / 2;
         SwingUtilities.invokeLater(() -> setScrollBarValue(verticalScrollBar, verticalValue));
-    }
-
-    public void moveCursor(String direction) {
-        BufferedImage storedImage = imageHandler.getStoredImage();
-        BufferedImage newImage;
-
-        int x = rectCursor.getX();
-        int y = rectCursor.getY();
-        int cropWidth = mainFrame.getCropWidth();
-        int cropHeight = mainFrame.getCropHeight();
-        int offsets = mainFrame.getOffsets();
-
-        int newWidth = storedImage.getWidth();
-        int newHeight = storedImage.getHeight();
-        int horizontalAdjustment = 0;
-        int verticalAdjustment = 0;
-
-        if ("up".equals(direction)) {
-            y -= (cropHeight + offsets);
-            if (y < 0) {
-                newHeight -= y;
-                verticalAdjustment -= y;
-                y = 0;
-            }
-        } else if ("down".equals(direction)) {
-            y += (cropHeight + offsets);
-            if ((y + cropHeight) > storedImage.getHeight()) {
-                newHeight = y + cropHeight;
-            }
-        } else if ("left".equals(direction)) {
-            x -= (cropWidth + offsets);
-            if (x < 0) {
-                newWidth -= x;
-                horizontalAdjustment -= x;
-                x = 0;
-            }
-        } else if ("right".equals(direction)) {
-            x += (cropWidth + offsets);
-            if ((x + cropWidth) > storedImage.getWidth()) {
-                newWidth = x + cropWidth;
-            }
-        }
-        rectCursor.setX(x);
-        rectCursor.setY(y);
-//        cursorX = x;
-//        cursorY = y;
-//        shouldFollowCursor = true;
-
-        newImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = newImage.createGraphics();
-        g.drawImage(imageHandler.getStoredImage(), horizontalAdjustment, verticalAdjustment, null);
-        g.dispose();
-        imageHandler.updateImages(newImage);
     }
 
     public void trimImageHorizontally(int offsetAdjustment) {

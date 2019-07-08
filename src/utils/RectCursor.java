@@ -45,6 +45,38 @@ public class RectCursor {
         return new RectCursor(imagePanel, scaledX, scaledY, scaledWidth, scaledHeight);
     }
 
+    public int moveCursorLeft(int offset) {
+        x -= (width + offset);
+        if (x < 0) {
+            x = 0;
+            return -x;
+        }
+        return 0;
+    }
+
+    public void shiftCursor(String direction, int offsets) {
+        switch (direction) {
+            case "up":
+                y -= (height + offsets);
+                break;
+            case "down":
+                y += (height + offsets);
+                break;
+            case "left":
+                x -= (width + offsets);
+                break;
+            case "right":
+                x += (width + offsets);
+                break;
+        }
+//        shouldFollowCursor = true;
+    }
+
+    public void makeXAndYNonNegative() {
+        x = Math.max(0, x);
+        y = Math.max(0, y);
+    }
+
     public int getX() {
         return x;
     }

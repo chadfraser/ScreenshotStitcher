@@ -2,6 +2,7 @@ package panels;
 
 // TODO: Make scrollpane follow cursor
 
+import actions.MoveCursorAction;
 import handler.ImageHandler;
 import handler.ImageSaver;
 import main.MainFrame;
@@ -36,7 +37,7 @@ public class EditButtonPanel extends JPanel implements ActionListener {
     private JButton deleteButton;
 
     private MainFrame mainFrame;
-    private Action moveCursor;
+    private MoveCursorAction moveCursor;
     private Action moveUpAction;
     private Action moveDownAction;
     private Action moveLeftAction;
@@ -57,6 +58,7 @@ public class EditButtonPanel extends JPanel implements ActionListener {
         initializeButtons();
         initializePanels();
         initializeLayout();
+        moveCursor = new MoveCursorAction(mainFrame.getImagePanel().getRectCursor());
 
 //        moveLeftAction()
 
@@ -307,8 +309,9 @@ public class EditButtonPanel extends JPanel implements ActionListener {
         return null;
     }
 
+    // TODO: Change this to use an enum?
     private void handleMovement(ActionEvent e) {
-        String direction = null;
+        String direction = "";
         if (e.getSource() == upButton) {
             direction = "up";
         } else if (e.getSource() == downButton) {
@@ -319,7 +322,7 @@ public class EditButtonPanel extends JPanel implements ActionListener {
             direction = "right";
         }
 
-        mainFrame.getImagePanel().moveCursor(direction);
-    }  // TODO: Change this to use an enum?
+        moveCursor.moveCursor(direction);
+    }
 }
 
