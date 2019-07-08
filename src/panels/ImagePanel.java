@@ -46,18 +46,16 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
 
         addMouseListener(this);
         addMouseMotionListener(this);
+
         initializeImages();
     }
 
     private void initializeImages() {
-        scaledImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
         updateDisplayedImage();
-//        Graphics2D g = displayedImage.createGraphics();
-//        g.setColor(mainFrame.getBackgroundColor());
-//        g.fillRect(0, 0, getWidth(), getHeight());
-//        g.setColor(getContrastingColor(mainFrame.getBackgroundColor()));
-//        g.drawRect(cursorX, cursorY, mainFrame.getCropWidth(), mainFrame.getCropHeight());  // TODO: Double check scale
-//        g.dispose();
+        scaledImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = scaledImage.createGraphics();
+        g.drawImage(scaledImage, 0, 0, getWidth(), getHeight(), null);
+        g.dispose();
     }
 
     // Returns black if the main color is light, or white if the main color is dark
@@ -77,8 +75,8 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
         BufferedImage storedImage = imageHandler.getStoredImage();
         BufferedImage tempImage = new BufferedImage(storedImage.getWidth(), storedImage.getHeight(),
                 BufferedImage.TYPE_INT_ARGB);
-        displayedImage = buildImageWithBackgroundColorAndCursor(tempImage, mainFrame.getBackgroundColor(), cursorX,
-                cursorY, mainFrame.getCropWidth(), mainFrame.getCropHeight());
+        displayedImage = buildNewImage(tempImage, mainFrame.getBackgroundColor(), cursorX, cursorY,
+                mainFrame.getCropWidth(), mainFrame.getCropHeight());
     }
 
     private void updateScaledImage() {
@@ -98,21 +96,33 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
         int scaledCropHeight = (int) (mainFrame.getCropHeight() * scaledHeightRatio);
 
         BufferedImage tempImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
-        scaledImage = buildImageWithBackgroundColorAndCursor(tempImage, mainFrame.getBackgroundColor(), scaledCursorX,
-                scaledCursorY, scaledCropWidth, scaledCropHeight);
+        scaledImage = buildNewImage(tempImage, mainFrame.getBackgroundColor(), scaledCursorX, scaledCursorY,
+                scaledCropWidth, scaledCropHeight);
     }
 
-    // TODO: Split into two methods?
-    private BufferedImage buildImageWithBackgroundColorAndCursor(BufferedImage tempImage, Color backgroundColor, int x,
-                                                                 int y, int width, int height) {
+    private BufferedImage buildNewImage(BufferedImage tempImage, Color backgroundColor, int x, int y, int width,
+                                        int height) {
         BufferedImage storedImage = imageHandler.getStoredImage();
+        tempImage = buildImageWithBackgroundColor(tempImage, backgroundColor);
+        Graphics2D g = tempImage.createGraphics();
+        g.drawImage(storedImage, 0, 0, tempImage.getWidth(), tempImage.getHeight(), null);
+        g.dispose();
+        tempImage = buildImageWithCursor(tempImage, getContrastingColor(backgroundColor), x, y, width, height);
+        return tempImage;
+    }
+
+    private BufferedImage buildImageWithBackgroundColor(BufferedImage tempImage, Color backgroundColor) {
         Graphics2D g = tempImage.createGraphics();
         g.setColor(backgroundColor);
         g.fillRect(0, 0, tempImage.getWidth(), tempImage.getHeight());
-        g.drawImage(storedImage, 0, 0, tempImage.getWidth(), tempImage.getHeight(), null);
+        g.dispose();
+        return tempImage;
+    }
 
-        // Draw cursor
-        g.setColor(getContrastingColor(backgroundColor));
+    private BufferedImage buildImageWithCursor(BufferedImage tempImage, Color cursorColor, int x, int y, int width,
+                                               int height) {
+        Graphics2D g = tempImage.createGraphics();
+        g.setColor(cursorColor);
         g.drawRect(x, y, width, height);
         g.dispose();
         return tempImage;

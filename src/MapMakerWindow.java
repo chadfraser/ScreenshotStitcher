@@ -48,10 +48,13 @@ public class MapMakerWindow extends JFrame implements Serializable {
     private JPanel zoomAndImagePreviewPanel;
     private JPanel saveAndImagePreviewPanel;
     private JPanel undoAndImagePreviewPanel;
+    private JPanel trimAndImagePreviewPanel;
+    private JPanel dataAndImagePreviewPanel;
     private JTabbedPane optionTabbedPane;
 
     private MapMakerWindow() {
         setTitle("NES Map Maker");
+        setTitle("Screenshot Stitcher");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(true);
         setFocusable(true);
@@ -80,15 +83,17 @@ public class MapMakerWindow extends JFrame implements Serializable {
         undoSubPanel = new JPanel();
         undoAndImagePreviewPanel = new JPanel();
         trimSubPanel = new JPanel();
+        trimAndImagePreviewPanel = new JPanel();
         dataSubPanel = new JPanel();
+        dataAndImagePreviewPanel = new JPanel();
 
         optionTabbedPane = new JTabbedPane(SwingConstants.RIGHT, JTabbedPane.SCROLL_TAB_LAYOUT);
         optionTabbedPane.addTab("EDIT", null, directionalButtonAndImagePreviewPanel, "Edit");
         optionTabbedPane.addTab("ZOOM", null, zoomAndImagePreviewPanel, "Zoom");
         optionTabbedPane.addTab("SAVE", null, saveAndImagePreviewPanel, "Save/Open");
         optionTabbedPane.addTab("UNDO", null, undoAndImagePreviewPanel, "Undo/Redo");
-        optionTabbedPane.addTab("TRIM", null, trimSubPanel, "Trim");
-        optionTabbedPane.addTab("OPT.", null, dataSubPanel, "Settings");
+        optionTabbedPane.addTab("TRIM", null, trimAndImagePreviewPanel, "Trim");
+        optionTabbedPane.addTab("OPT.", null, dataAndImagePreviewPanel, "Settings");
         optionTabbedPane.addChangeListener(e -> {
             JPanel selectedPanel = (JPanel) optionTabbedPane.getSelectedComponent();
             moveImagePreviewPanelToActivePanel(selectedPanel);
@@ -101,6 +106,8 @@ public class MapMakerWindow extends JFrame implements Serializable {
         mapMakerImagePanel.updateImages();
         setVisible(true);
         revalidate();
+
+        imagePreviewPanel.getTimer().start();
         // TODO: Add component listener for window resize
         // TODO: Fix initialization of MapMakerImagePanel size
     }
@@ -119,19 +126,21 @@ public class MapMakerWindow extends JFrame implements Serializable {
     private void initializePanels() {
         initializeSubPanel(imagePreviewSubPanel, imagePreviewPanel);
 
-        imagePreviewSubPanel.setBackground(Color.YELLOW);  // TODO: Remove after testing size of panel is done
+//        imagePreviewSubPanel.setBackground(Color.YELLOW);  // TODO: Remove after testing size of panel is done
 //        initializeDirectionalButtonSubPanel();  // TODO: Figure out how to prevent this panel resizing immediately
         initializeSubPanel(directionalButtonSubPanel, directionalButtonPanel);
         initializeSubPanel(zoomSubPanel, zoomPanel);
         initializeSubPanel(saveSubPanel, savePanel);
         initializeSubPanel(undoSubPanel, undoButtonPanel);
-        initializeSubPanel(dataSubPanel, dataPanel);
         initializeSubPanel(trimSubPanel, trimPanel);
+        initializeSubPanel(dataSubPanel, dataPanel);
 
         initializeSidePanel(directionalButtonAndImagePreviewPanel, directionalButtonSubPanel);
         initializeSidePanel(zoomAndImagePreviewPanel, zoomSubPanel);
         initializeSidePanel(saveAndImagePreviewPanel, saveSubPanel);
         initializeSidePanel(undoAndImagePreviewPanel, undoSubPanel);
+        initializeSidePanel(trimAndImagePreviewPanel, trimSubPanel);
+        initializeSidePanel(dataAndImagePreviewPanel, dataSubPanel);
 
         moveImagePreviewPanelToActivePanel(directionalButtonAndImagePreviewPanel);
     }

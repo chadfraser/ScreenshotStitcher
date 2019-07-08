@@ -58,7 +58,7 @@ public class MapMaker {
                 }
                 System.out.println(lastX + " " + lastY);
             } catch (UnsupportedFlavorException | IOException ignore) {
-                
+
             }
         }
     }

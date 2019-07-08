@@ -15,7 +15,7 @@ public class PasteButtonPanel extends JPanel {
 
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setMaximumSize(new Dimension(WIDTH, HEIGHT));
-        setBackground(Color.RED);
+//        setBackground(Color.RED);
         setFocusable(true);
 
         JButton pasteRoomButton = new JButton("PASTE ROOM");

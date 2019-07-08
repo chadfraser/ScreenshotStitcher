@@ -6,7 +6,7 @@ public class PreviewAndSelectionPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     private static final int WIDTH = 250;
-    private static final int HEIGHT = MapMakerWindow.getConstantHeight();
+//    private static final int HEIGHT = MapMakerWindow.getConstantHeight();
 
     private BufferedImage previewPanel;
     private MapMakerWindow mapMakerWindow;
@@ -17,6 +17,7 @@ public class PreviewAndSelectionPanel extends JPanel {
     PreviewAndSelectionPanel(MapMakerWindow mapMakerWindow) {
         this.mapMakerWindow = mapMakerWindow;
 
+        final int HEIGHT = mapMakerWindow.getHeight();
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
         setMaximumSize(new Dimension(WIDTH, HEIGHT));

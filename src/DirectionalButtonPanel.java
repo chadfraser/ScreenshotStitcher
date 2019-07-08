@@ -35,7 +35,7 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
 
 //        setPreferredSize(new Dimension(WIDTH, HEIGHT));
 //        setMaximumSize(new Dimension(WIDTH, HEIGHT));
-        setBackground(Color.RED);
+//        setBackground(Color.RED);
         setFocusable(true);
 
         leftButtonPanel = new JPanel(new GridBagLayout());
@@ -55,6 +55,14 @@ class DirectionalButtonPanel extends JPanel implements ActionListener {
         rightButton = new JButton("RIGHT");
         pasteButton = new JButton("PASTE");
         deleteButton = new JButton("DELETE");
+
+//        JTextField tf = new JTextField(4);
+//        pasteButton.setPreferredSize(tf.getPreferredSize());
+//        deleteButton.setPreferredSize(tf.getPreferredSize());
+//        pasteButton.setMargin(new Insets(0,0,0,0));
+//        deleteButton.setMargin(new Insets(0,0,0,0));
+//        pasteButton.setBorder(null);
+//        deleteButton.setBorder(null);
 
         upButton.addActionListener(this);
         downButton.addActionListener(this);

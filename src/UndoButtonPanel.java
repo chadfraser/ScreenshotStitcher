@@ -1,7 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
-public class UndoButtonPanel extends JPanel {
+public class UndoButtonPanel extends JPanel implements ActionListener {
     private static final long serialVersionUID = 1L;
 
     private static final int WIDTH = 250;
@@ -13,17 +18,20 @@ public class UndoButtonPanel extends JPanel {
 
     private JButton undoButton;
     private JButton redoButton;
-//    private JLabel autoSaveLabel;
-//    private ButtonGroup autoSaveButtonGroup;
     private JLabel previewOptionLabel;
     private ButtonGroup previewOptionButtonGroup;
     private JRadioButton previewUndoOption;
     private JRadioButton previewRedoOption;
 
     private MapMakerWindow mapMakerWindow;
+    private List<BufferedImage> undoQueue;
+    private int undoIndex;
+    final private int MAX_QUEUE_SIZE = 10;
 
     UndoButtonPanel(MapMakerWindow mapMakerWindow) {
         this.mapMakerWindow = mapMakerWindow;
+        undoIndex = 0;
+        undoQueue = new ArrayList<>();
 
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
@@ -35,7 +43,9 @@ public class UndoButtonPanel extends JPanel {
 
         undoButton = new JButton("UNDO");
         redoButton = new JButton("REDO");
-//        previewOptionLabel = new JLabel("Action to preview in the image preview panel:");
+        undoButton.addActionListener(this);
+        redoButton.addActionListener(this);
+
         previewOptionLabel = new JLabel("<html>Action to preview in the image preview panel:</html>");
         previewUndoOption = new JRadioButton("Preview undo option");
         previewRedoOption = new JRadioButton("Preview redo option");
@@ -44,12 +54,6 @@ public class UndoButtonPanel extends JPanel {
         previewOptionButtonGroup = new ButtonGroup();
         previewOptionButtonGroup.add(previewUndoOption);
         previewOptionButtonGroup.add(previewRedoOption);
-
-//        autoSaveLabel = new JLabel("Automatically store your progress as you work");
-//        autoSaveButtonGroup = new ButtonGroup();
-//
-//        JRadioButton autoSaveOnOption = new JRadioButton("Turn autosave on");
-//        JRadioButton autoSaveOffOption = new JRadioButton("Turn autosave off");
 
         initializePanels();
         initializeLayout();
@@ -171,5 +175,52 @@ public class UndoButtonPanel extends JPanel {
         c.gridx = 0;
         c.gridy = 2;
         radioPanel.add(previewRedoOption, c);
+    }
+
+    public void add(BufferedImage newImage) {
+        while (undoIndex < undoQueue.size()) {
+            undoQueue.remove(undoQueue.size() - 1);
+        }
+        undoQueue.add(newImage);
+        undoIndex++;
+        while (undoQueue.size() > MAX_QUEUE_SIZE) {
+            undoQueue.remove(0);
+            undoIndex--;
+        }
+    }
+
+    private BufferedImage undo() {
+        if (undoIndex <= 0 || undoIndex > undoQueue.size() - 1) {
+            return null;
+        }
+        undoIndex -= 1;
+        return getImageFromUndoQueue();
+    }
+
+    private BufferedImage redo() {
+        if (undoIndex < 0 || undoIndex >= undoQueue.size() - 1) {
+            return null;
+        }
+        undoIndex += 1;
+        return getImageFromUndoQueue();
+    }
+
+    private BufferedImage getImageFromUndoQueue() {
+        return undoQueue.get(undoIndex);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        BufferedImage newImage = null;
+        if (e.getSource() == undoButton) {
+            newImage = undo();
+        } else if (e.getSource() == redoButton) {
+            newImage = redo();
+        }
+        if (newImage == null) {
+            return;
+        }
+        mapMakerWindow.getMapMakerImagePanel().setStoredImage(newImage);
+        mapMakerWindow.getMapMakerImagePanel().updateImages();
     }
 }

@@ -76,7 +76,7 @@ public class DataPanel extends JPanel implements MouseListener, PropertyChangeLi
         initializePanels();
         initializeLayout();
 
-        setBackground(Color.ORANGE);
+//        setBackground(Color.ORANGE);
     }
 
     private void initializeLayout() {
