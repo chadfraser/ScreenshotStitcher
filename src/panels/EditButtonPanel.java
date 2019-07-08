@@ -1,6 +1,6 @@
 package panels;
 
-// TODO: Make scrollpane follow cursor
+// TODO: Make scrollpane follow cursor, adjust size responsiveness
 
 import actions.*;
 import handler.ImageHandler;
@@ -70,6 +70,7 @@ public class EditButtonPanel extends JPanel implements ActionListener {
         moveCursorRight = new MoveCursorRightAction(mainFrame.getImagePanel().getRectCursor());
     }
 
+    // TODO: Consider moving to allow when EditButtonPanel is not visible
     private void initializeActionMap() {
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_UP,
                 InputEvent.SHIFT_DOWN_MASK), "moveUp");
@@ -240,6 +241,7 @@ public class EditButtonPanel extends JPanel implements ActionListener {
         Dimension prefSize;
         Component component = getParent();
 
+        // TODO: move to new method
         if (component == null) {
             prefSize = new Dimension((int) dimension.getWidth(), (int) dimension.getHeight());
         } else if (component.getWidth() > dimension.getWidth() && component.getHeight() > dimension.getHeight()) {
@@ -250,7 +252,7 @@ public class EditButtonPanel extends JPanel implements ActionListener {
         int width = (int) prefSize.getWidth();
         int height = (int) prefSize.getHeight();
         int newWidth = (width > height * 1.2) ? (int) (height * 1.2) : width;
-        int newHeight = (height > width * 1.2) ? (int) (width * 1.2) : height;
+        int newHeight = (height > width * 1.2) ? (int) (width * 1.2) : height;  // TODO: Replace magic number
         return new Dimension(newWidth, newHeight);
     }
 
@@ -258,7 +260,7 @@ public class EditButtonPanel extends JPanel implements ActionListener {
     public final Dimension getMinimumSize() {
         Dimension dimensionOfLargestButton = getDimensionOfLargestButtonText();
         int minimumWidth = dimensionOfLargestButton.width * 3;
-        int minimumHeight = dimensionOfLargestButton.width * 3;
+        int minimumHeight = dimensionOfLargestButton.width * 3;  // TODO: Replace magic number
 
         return new Dimension(minimumWidth, minimumHeight);  // TODO: Test this method
     }
@@ -279,7 +281,7 @@ public class EditButtonPanel extends JPanel implements ActionListener {
         int width = (int) maxSize.getWidth();
         int height = (int) maxSize.getHeight();
         int newWidth = (width > height * 1.2) ? (int) (height * 1.2) : width;
-        int newHeight = (height > width * 1.2) ? (int) (width * 1.2) : height;
+        int newHeight = (height > width * 1.2) ? (int) (width * 1.2) : height;  // TODO: Replace magic number
         return new Dimension(newWidth, newHeight);
     }
 
@@ -299,9 +301,8 @@ public class EditButtonPanel extends JPanel implements ActionListener {
         }
     }
 
+    // TODO: Consider moving with crop values (mainframe?)
     private BufferedImage cropImageToPaste() {
-        int x = mainFrame.getImagePanel().getRectCursor().getX();
-        int y = mainFrame.getImagePanel().getRectCursor().getY();
         int cropX = mainFrame.getCropX();
         int cropY = mainFrame.getCropY();
         int cropWidth = mainFrame.getCropWidth();
@@ -337,7 +338,6 @@ public class EditButtonPanel extends JPanel implements ActionListener {
         } else if (e.getSource() == rightButton) {
             direction = "right";
         }
-
         moveCursor.moveCursor(direction);
     }
 }
