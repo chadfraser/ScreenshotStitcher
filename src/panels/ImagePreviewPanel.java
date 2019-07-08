@@ -73,8 +73,8 @@ public class ImagePreviewPanel extends JPanel {
         double scaledWidth = scaledWidthAndHeight[0];
         double scaledHeight = scaledWidthAndHeight[1];
 
-        int previewX = (int) (imagePanel.getMostRecentMouseX() / scaledWidth);
-        int previewY = (int) (imagePanel.getMostRecentMouseY() / scaledHeight);
+        int previewX = 0;//(int) (imagePanel.getMostRecentMouseX() / scaledWidth);
+        int previewY = 0;//(int) (imagePanel.getMostRecentMouseY() / scaledHeight);
 
         previewX -= getWidth() / 2;
         previewY -= getHeight() / 2;

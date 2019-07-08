@@ -11,6 +11,8 @@ import java.awt.*;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.RasterFormatException;
 import java.io.IOException;
@@ -34,6 +36,11 @@ public class EditButtonPanel extends JPanel implements ActionListener {
     private JButton deleteButton;
 
     private MainFrame mainFrame;
+    private Action moveCursor;
+    private Action moveUpAction;
+    private Action moveDownAction;
+    private Action moveLeftAction;
+    private Action moveRightAction;
 
     public EditButtonPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -50,6 +57,14 @@ public class EditButtonPanel extends JPanel implements ActionListener {
         initializeButtons();
         initializePanels();
         initializeLayout();
+
+//        moveLeftAction()
+
+//        registerKeyboardAction(moveCursor, "", KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.SHIFT_DOWN_MASK),
+//                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_UP,
+                InputEvent.SHIFT_DOWN_MASK), "moveUp");
+        getActionMap().put("moveUp", moveCursor);
     }
 
     private void initializeButtons() {
@@ -267,8 +282,8 @@ public class EditButtonPanel extends JPanel implements ActionListener {
     }
 
     private BufferedImage cropImageToPaste() {
-        int x = mainFrame.getImagePanel().getCursorX();
-        int y = mainFrame.getImagePanel().getCursorY();
+        int x = mainFrame.getImagePanel().getRectCursor().getX();
+        int y = mainFrame.getImagePanel().getRectCursor().getY();
         int cropX = mainFrame.getCropX();
         int cropY = mainFrame.getCropY();
         int cropWidth = mainFrame.getCropWidth();

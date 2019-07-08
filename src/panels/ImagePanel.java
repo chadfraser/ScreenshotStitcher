@@ -2,6 +2,7 @@ package panels;
 
 import handler.ImageHandler;
 import main.MainFrame;
+import utils.RectCursor;
 import zoom.ZoomValue;
 
 import javax.swing.*;
@@ -12,42 +13,49 @@ import java.awt.image.BufferedImage;
 import java.io.Serializable;
 
 public class ImagePanel extends JPanel implements MouseInputListener, Serializable {
-    private static final long serialVersionUID = 1L;
+//    private static final long serialVersionUID = 1L;
 
     private static final int WIDTH = 600;
     private static final int HEIGHT = 600;
-
-    private int cursorX;
-    private int cursorY;
     private BufferedImage displayedImage;
     private BufferedImage scaledImage;
 
     private MainFrame mainFrame;
     private ImageHandler imageHandler;
-    private boolean shouldFollowCursor;
-    private int mostRecentMouseX;
-    private int mostRecentMouseY;
+    private RectCursor rectCursor;
+//    private boolean shouldFollowCursor;
+//    private int mostRecentMouseX;
+//    private int mostRecentMouseY;
 
     public ImagePanel(MainFrame mainFrame) {
         setBackground(Color.DARK_GRAY);
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        // TODO: Improve this area
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
         setMaximumSize(new Dimension(WIDTH, HEIGHT));
-        setSize(new Dimension(WIDTH, HEIGHT));  // TODO Improve this area
+        setSize(new Dimension(WIDTH, HEIGHT));
+
         setFocusable(true);
 
         this.mainFrame = mainFrame;
         this.imageHandler = new ImageHandler(this);
-
-        cursorX = (WIDTH - mainFrame.getCropWidth()) / 2;
-        cursorY = (HEIGHT - mainFrame.getCropHeight()) / 2;
-        shouldFollowCursor = false;
+        initializeCursor();
 
         addMouseListener(this);
         addMouseMotionListener(this);
 
         initializeImages();
+    }
+
+    private void initializeCursor() {
+        int cursorWidth = mainFrame.getCropWidth();
+        int cursorHeight = mainFrame.getCropHeight();
+        int cursorX = (WIDTH - cursorWidth) / 2;
+        int cursorY = (HEIGHT - cursorHeight) / 2;
+        this.rectCursor = new RectCursor(this, cursorX, cursorY, cursorWidth, cursorHeight);
+//        shouldFollowCursor = false;
     }
 
     private void initializeImages() {
@@ -56,12 +64,6 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
         Graphics2D g = scaledImage.createGraphics();
         g.drawImage(scaledImage, 0, 0, getWidth(), getHeight(), null);
         g.dispose();
-    }
-
-    // Returns black if the main color is light, or white if the main color is dark
-    private Color getContrastingColor(Color mainColor) {
-        double luma = 0.299 * mainColor.getRed() + 0.587 * mainColor.getGreen() + 0.114 * mainColor.getBlue();
-        return (luma >= 128) ? Color.BLACK : Color.WHITE;
     }
 
     public void updateImages() {
@@ -75,14 +77,13 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
         BufferedImage storedImage = imageHandler.getStoredImage();
         BufferedImage tempImage = new BufferedImage(storedImage.getWidth(), storedImage.getHeight(),
                 BufferedImage.TYPE_INT_ARGB);
-        displayedImage = buildNewImage(tempImage, mainFrame.getBackgroundColor(), cursorX, cursorY,
-                mainFrame.getCropWidth(), mainFrame.getCropHeight());
+        displayedImage = buildNewImage(tempImage, mainFrame.getBackgroundColor(), rectCursor);
     }
 
     private void updateScaledImage() {
-        double[] scaledWidthAndHeight = getScaledWidthAndHeightRatios();
-        double scaledWidthRatio = scaledWidthAndHeight[0];
-        double scaledHeightRatio = scaledWidthAndHeight[1];
+        double[] scaledWidthAndHeightRatios = getScaledWidthAndHeightRatios();
+        double scaledWidthRatio = scaledWidthAndHeightRatios[0];
+        double scaledHeightRatio = scaledWidthAndHeightRatios[1];
         int imageWidth = mainFrame.getScrollPanelWidth();
         int imageHeight = mainFrame.getScrollPanelHeight();
 
@@ -90,75 +91,62 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
             imageWidth = (int) (imageHandler.getStoredImage().getWidth() * scaledWidthRatio);
             imageHeight = (int) (imageHandler.getStoredImage().getHeight() * scaledHeightRatio);
         }
-        int scaledCursorX = (int) (cursorX * scaledWidthRatio);
-        int scaledCursorY = (int) (cursorY * scaledHeightRatio);
-        int scaledCropWidth = (int) (mainFrame.getCropWidth() * scaledWidthRatio);
-        int scaledCropHeight = (int) (mainFrame.getCropHeight() * scaledHeightRatio);
+        RectCursor scaledCursor = rectCursor.makeScaledCursor(scaledWidthRatio, scaledHeightRatio);
 
         BufferedImage tempImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
-        scaledImage = buildNewImage(tempImage, mainFrame.getBackgroundColor(), scaledCursorX, scaledCursorY,
-                scaledCropWidth, scaledCropHeight);
+        scaledImage = buildNewImage(tempImage, mainFrame.getBackgroundColor(), scaledCursor);
     }
 
-    private BufferedImage buildNewImage(BufferedImage tempImage, Color backgroundColor, int x, int y, int width,
-                                        int height) {
-        BufferedImage storedImage = imageHandler.getStoredImage();
-        tempImage = buildImageWithBackgroundColor(tempImage, backgroundColor);
+    private BufferedImage buildNewImage(BufferedImage tempImage, Color backgroundColor, RectCursor cursor) {
+        fillImageWithBackgroundColor(tempImage, backgroundColor);
         Graphics2D g = tempImage.createGraphics();
+        BufferedImage storedImage = imageHandler.getStoredImage();
         g.drawImage(storedImage, 0, 0, tempImage.getWidth(), tempImage.getHeight(), null);
         g.dispose();
-        tempImage = buildImageWithCursor(tempImage, getContrastingColor(backgroundColor), x, y, width, height);
+        cursor.setColor(rectCursor.getContrastingColor(backgroundColor));
+        cursor.drawCursorOnImage(tempImage);
         return tempImage;
     }
 
-    private BufferedImage buildImageWithBackgroundColor(BufferedImage tempImage, Color backgroundColor) {
+    private void fillImageWithBackgroundColor(BufferedImage tempImage, Color backgroundColor) {
         Graphics2D g = tempImage.createGraphics();
         g.setColor(backgroundColor);
         g.fillRect(0, 0, tempImage.getWidth(), tempImage.getHeight());
         g.dispose();
-        return tempImage;
-    }
-
-    private BufferedImage buildImageWithCursor(BufferedImage tempImage, Color cursorColor, int x, int y, int width,
-                                               int height) {
-        Graphics2D g = tempImage.createGraphics();
-        g.setColor(cursorColor);
-        g.drawRect(x, y, width, height);
-        g.dispose();
-        return tempImage;
     }
 
     public double[] getScaledWidthAndHeightRatios() {
-        double scaledWidth;
-        double scaledHeight;
+        double scaledWidthRatio;
+        double scaledHeightRatio;
         BufferedImage storedImage = imageHandler.getStoredImage();
 
         if (mainFrame.getZoomValue() == ZoomValue.FIT_TO_SCREEN) {
-            scaledWidth = (double) mainFrame.getScrollPanelWidth() / (double) storedImage.getWidth();
-            scaledHeight = (double) mainFrame.getScrollPanelHeight() / (double) storedImage.getHeight();
+            scaledWidthRatio = (double) mainFrame.getScrollPanelWidth() / (double) storedImage.getWidth();
+            scaledHeightRatio = (double) mainFrame.getScrollPanelHeight() / (double) storedImage.getHeight();
         } else {
-            scaledWidth = mainFrame.getZoomValue().getPercentage();
-            scaledHeight = mainFrame.getZoomValue().getPercentage();
+            scaledWidthRatio = mainFrame.getZoomValue().getPercentage();
+            scaledHeightRatio = mainFrame.getZoomValue().getPercentage();
         }
-        return new double[] {scaledWidth, scaledHeight};
+        return new double[] {scaledWidthRatio, scaledHeightRatio};
     }
 
-    public void increaseImageSize(int widthOfNewImage, int heightOfNewImage) {
-        BufferedImage storedImage = imageHandler.getStoredImage();
-        int updatedWidth = storedImage.getWidth();
-        int updatedHeight = storedImage.getHeight();
-
-        updatedWidth = (updatedWidth >= widthOfNewImage) ? updatedWidth : widthOfNewImage;
-        updatedHeight = (updatedHeight >= heightOfNewImage) ? updatedHeight : heightOfNewImage;
-
-        BufferedImage finalImage = new BufferedImage(updatedWidth, updatedHeight, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = finalImage.createGraphics();
-        g.drawImage(storedImage, (updatedWidth - storedImage.getWidth()) / 2,
-                (updatedHeight - storedImage.getHeight()) / 2,
-                null);
-        g.dispose();
-        imageHandler.updateImages(finalImage);
-    }
+//    //
+//    public void increaseImageSize(int widthOfNewImage, int heightOfNewImage) {
+//        BufferedImage storedImage = imageHandler.getStoredImage();
+//        int updatedWidth = storedImage.getWidth();
+//        int updatedHeight = storedImage.getHeight();
+//
+//        updatedWidth = (updatedWidth >= widthOfNewImage) ? updatedWidth : widthOfNewImage;
+//        updatedHeight = (updatedHeight >= heightOfNewImage) ? updatedHeight : heightOfNewImage;
+//
+//        BufferedImage finalImage = new BufferedImage(updatedWidth, updatedHeight, BufferedImage.TYPE_INT_ARGB);
+//        Graphics2D g = finalImage.createGraphics();
+//        g.drawImage(storedImage, (updatedWidth - storedImage.getWidth()) / 2,
+//                (updatedHeight - storedImage.getHeight()) / 2,
+//                null);
+//        g.dispose();
+//        imageHandler.updateImages(finalImage);
+//    }
 
     private void setScrollBarValue(JScrollBar scrollBar, int value) {
         int visibleAmount = scrollBar.getVisibleAmount();
@@ -181,11 +169,11 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
         double[] scaledWidthAndHeight = getScaledWidthAndHeightRatios();
 
         horizontalScrollBar = mainFrame.getMapMakerImageScrollPane().getHorizontalScrollBar();
-        horizontalValue = findCenterOfScaledCursor(cursorX, scaledWidthAndHeight[0], mainFrame.getCropWidth());
+        horizontalValue = findCenterOfScaledCursor(rectCursor.getX(), scaledWidthAndHeight[0], mainFrame.getCropWidth());
         SwingUtilities.invokeLater(() -> setScrollBarValue(horizontalScrollBar, horizontalValue));
 
         verticalScrollBar = mainFrame.getMapMakerImageScrollPane().getVerticalScrollBar();
-        verticalValue = findCenterOfScaledCursor(cursorY, scaledWidthAndHeight[1], mainFrame.getCropHeight());
+        verticalValue = findCenterOfScaledCursor(rectCursor.getY(), scaledWidthAndHeight[1], mainFrame.getCropHeight());
         SwingUtilities.invokeLater(() -> setScrollBarValue(verticalScrollBar, verticalValue));
     }
 
@@ -208,8 +196,8 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
         BufferedImage storedImage = imageHandler.getStoredImage();
         BufferedImage newImage;
 
-        int x = getCursorX();
-        int y = getCursorY();
+        int x = rectCursor.getX();
+        int y = rectCursor.getY();
         int cropWidth = mainFrame.getCropWidth();
         int cropHeight = mainFrame.getCropHeight();
         int offsets = mainFrame.getOffsets();
@@ -244,16 +232,17 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
                 newWidth = x + cropWidth;
             }
         }
+        rectCursor.setX(x);
+        rectCursor.setY(y);
+//        cursorX = x;
+//        cursorY = y;
+//        shouldFollowCursor = true;
 
         newImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = newImage.createGraphics();
         g.drawImage(imageHandler.getStoredImage(), horizontalAdjustment, verticalAdjustment, null);
         g.dispose();
         imageHandler.updateImages(newImage);
-
-        cursorX = x;
-        cursorY = y;
-        shouldFollowCursor = true;
     }
 
     public void trimImageHorizontally(int offsetAdjustment) {
@@ -271,14 +260,14 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
                 BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D g = newImage.createGraphics();
-        if (cursorY - offsetAdjustment > 0) {
-            upperSubImage = storedImage.getSubimage(0, 0, storedImage.getWidth(), cursorY - offsetAdjustment);
+        if (rectCursor.getY() - offsetAdjustment > 0) {
+            upperSubImage = storedImage.getSubimage(0, 0, storedImage.getWidth(), rectCursor.getY() - offsetAdjustment);
             g.drawImage(upperSubImage, 0, 0, null);
         }
-        if (cursorY + cropHeight + offsetAdjustment < storedImage.getHeight()) {
-            lowerSubImage = storedImage.getSubimage(0, cursorY + cropHeight + offsetAdjustment, storedImage.getWidth(),
-                    storedImage.getHeight() - (cursorY + cropHeight + offsetAdjustment));
-            g.drawImage(lowerSubImage, 0, cursorY, null);
+        if (rectCursor.getY() + cropHeight + offsetAdjustment < storedImage.getHeight()) {
+            lowerSubImage = storedImage.getSubimage(0, rectCursor.getY() + cropHeight + offsetAdjustment, storedImage.getWidth(),
+                    storedImage.getHeight() - (rectCursor.getY() + cropHeight + offsetAdjustment));
+            g.drawImage(lowerSubImage, 0, rectCursor.getY(), null);
         }
         g.dispose();
 
@@ -302,14 +291,14 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
         newImage = new BufferedImage(storedImage.getWidth() - (cropWidth - offsetAdjustment), storedImage.getHeight(),
                 BufferedImage.TYPE_INT_ARGB);  // TODO: Look into how this works
         Graphics2D g = newImage.createGraphics();
-        if (cursorX - offsetAdjustment > 0) {
-            leftSubImage = storedImage.getSubimage(0, 0, cursorX - offsetAdjustment, storedImage.getHeight());
+        if (rectCursor.getX() - offsetAdjustment > 0) {
+            leftSubImage = storedImage.getSubimage(0, 0, rectCursor.getX() - offsetAdjustment, storedImage.getHeight());
             g.drawImage(leftSubImage, 0, 0, null);
         }
-        if (cursorX + cropWidth + offsetAdjustment <= storedImage.getWidth()) {
-            rightSubImage = storedImage.getSubimage(cursorX + cropWidth + offsetAdjustment, 0,
-                    storedImage.getWidth() - (cursorX + cropWidth + offsetAdjustment), storedImage.getHeight());
-            g.drawImage(rightSubImage, cursorX, 0, null);
+        if (rectCursor.getX() + cropWidth + offsetAdjustment <= storedImage.getWidth()) {
+            rightSubImage = storedImage.getSubimage(rectCursor.getX() + cropWidth + offsetAdjustment, 0,
+                    storedImage.getWidth() - (rectCursor.getX() + cropWidth + offsetAdjustment), storedImage.getHeight());
+            g.drawImage(rightSubImage, rectCursor.getX(), 0, null);
         }
         g.dispose();
 
@@ -330,11 +319,11 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
             mainFrame.setCropHeight(storedImage.getHeight());
             cropHeight = storedImage.getHeight();
         }
-        if (cursorX + cropWidth > storedImage.getWidth()) {
-            cursorX = storedImage.getWidth() - cropWidth;
+        if (rectCursor.getX() + cropWidth > storedImage.getWidth()) {
+            rectCursor.setX(storedImage.getWidth() - cropWidth);
         }
-        if (cursorY + cropHeight > storedImage.getHeight()) {
-            cursorY = storedImage.getHeight() - cropHeight;
+        if (rectCursor.getY() + cropHeight > storedImage.getHeight()) {
+            rectCursor.setY(storedImage.getHeight() - cropHeight);
         }
     }
 
@@ -354,43 +343,35 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
         return scaledImage;
     }
 
-    public int getCursorX() {
-        return cursorX;
+    public RectCursor getRectCursor() {
+        return rectCursor;
     }
 
-    public int getCursorY() {
-        return cursorY;
+    public void setRectCursor(RectCursor rectCursor) {
+        this.rectCursor = rectCursor;
     }
 
-    public int getMostRecentMouseX() {
-        return mostRecentMouseX;
-    }
-
-    public int getMostRecentMouseY() {
-        return mostRecentMouseY;
-    }
-
-    public void setCursorX(int cursorX) {
-        this.cursorX = cursorX;
-    }
-
-    public void setCursorY(int cursorY) {
-        this.cursorY = cursorY;
-    }
-
-    public void setShouldFollowCursor(boolean shouldFollowCursor) {
-        this.shouldFollowCursor = shouldFollowCursor;
-    }
+    //    public int getMostRecentMouseX() {
+//        return mostRecentMouseX;
+//    }
+//
+//    public int getMostRecentMouseY() {
+//        return mostRecentMouseY;
+//    }
+//
+//    public void setShouldFollowCursor(boolean shouldFollowCursor) {
+//        this.shouldFollowCursor = shouldFollowCursor;
+//    }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         g.drawImage(scaledImage, 0, 0, null);
-        if (shouldFollowCursor) {
-            focusOnCursor();
-            shouldFollowCursor = false;
-        }
+//        if (shouldFollowCursor) {
+//            focusOnCursor();
+//            shouldFollowCursor = false;
+//        }
     }
 
     @Override
@@ -416,8 +397,8 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        mostRecentMouseX = e.getX();
-        mostRecentMouseY = e.getY();
+//        mostRecentMouseX = e.getX();
+//        mostRecentMouseY = e.getY();
 //        mainFrame.getImagePreviewPanel().setMouseOverImage(true);
     }
 

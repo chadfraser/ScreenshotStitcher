@@ -97,8 +97,8 @@ public class ImageHandler {
 
     // Draw the passed image parameter on the x and y coordinates
     public void pasteToImage(BufferedImage pasteImage) {
-        int x = imagePanel.getCursorX();
-        int y = imagePanel.getCursorY();
+        int x = imagePanel.getRectCursor().getX();
+        int y = imagePanel.getRectCursor().getY();
 
         if (pasteImage.getWidth() > storedImage.getWidth() || pasteImage.getHeight() > storedImage.getHeight()) {
             increaseImageSize(pasteImage.getWidth(), pasteImage.getHeight());
@@ -107,7 +107,7 @@ public class ImageHandler {
         BufferedImage newImage = new BufferedImage(storedImage.getWidth(), storedImage.getHeight(),
                 BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = newImage.createGraphics();
-
+        g.drawImage(storedImage, 0, 0, null);
         g.drawImage(pasteImage, x, y, null);
         g.dispose();
         updateAndStoreChangedImages(newImage);
@@ -115,8 +115,8 @@ public class ImageHandler {
     }
 
     public void deleteFromImage() {
-        int x = imagePanel.getCursorX();
-        int y = imagePanel.getCursorY();
+        int x = imagePanel.getRectCursor().getX();
+        int y = imagePanel.getRectCursor().getY();
         int cropWidth = imagePanel.getMainFrame().getCropWidth();
         int cropHeight = imagePanel.getMainFrame().getCropHeight();
 
