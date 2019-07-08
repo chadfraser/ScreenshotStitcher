@@ -2,7 +2,7 @@ package panels;
 
 // TODO: Make scrollpane follow cursor
 
-import actions.MoveCursorAction;
+import actions.*;
 import handler.ImageHandler;
 import handler.ImageSaver;
 import main.MainFrame;
@@ -38,10 +38,10 @@ public class EditButtonPanel extends JPanel implements ActionListener {
 
     private MainFrame mainFrame;
     private MoveCursorAction moveCursor;
-    private Action moveUpAction;
-    private Action moveDownAction;
-    private Action moveLeftAction;
-    private Action moveRightAction;
+    private MoveCursorUpAction moveCursorUp;
+    private MoveCursorDownAction moveCursorDown;
+    private MoveCursorLeftAction moveCursorLeft;
+    private MoveCursorRightAction moveCursorRight;
 
     public EditButtonPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -55,18 +55,34 @@ public class EditButtonPanel extends JPanel implements ActionListener {
         rightButtonPanel = new JPanel(new GridBagLayout());
         pasteDeleteButtonPanel = new JPanel(new GridBagLayout());
 
+        initializeCursorActions();
+        initializeActionMap();
         initializeButtons();
         initializePanels();
         initializeLayout();
+    }
+
+    private void initializeCursorActions() {
         moveCursor = new MoveCursorAction(mainFrame.getImagePanel().getRectCursor());
+        moveCursorUp = new MoveCursorUpAction(mainFrame.getImagePanel().getRectCursor());
+        moveCursorDown = new MoveCursorDownAction(mainFrame.getImagePanel().getRectCursor());
+        moveCursorLeft = new MoveCursorLeftAction(mainFrame.getImagePanel().getRectCursor());
+        moveCursorRight = new MoveCursorRightAction(mainFrame.getImagePanel().getRectCursor());
+    }
 
-//        moveLeftAction()
-
-//        registerKeyboardAction(moveCursor, "", KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.SHIFT_DOWN_MASK),
-//                JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_UP,
+    private void initializeActionMap() {
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_UP,
                 InputEvent.SHIFT_DOWN_MASK), "moveUp");
-        getActionMap().put("moveUp", moveCursor);
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN,
+                InputEvent.SHIFT_DOWN_MASK), "moveDown");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT,
+                InputEvent.SHIFT_DOWN_MASK), "moveLeft");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,
+                InputEvent.SHIFT_DOWN_MASK), "moveRight");
+        getActionMap().put("moveUp", moveCursorUp);
+        getActionMap().put("moveDown", moveCursorDown);
+        getActionMap().put("moveLeft", moveCursorLeft);
+        getActionMap().put("moveRight", moveCursorRight);
     }
 
     private void initializeButtons() {
