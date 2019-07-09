@@ -4,14 +4,15 @@ import panels.ImagePanel;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 
-public class RectCursor {
+public class RectCursor implements Serializable {
     private int x;
     private int y;
     private int width;
     private int height;
     private Color color;
-    private ImagePanel imagePanel;
+    private transient ImagePanel imagePanel;
 
     public RectCursor(ImagePanel imagePanel, int x, int y, int width, int height) {
         this.x = x;
@@ -28,7 +29,6 @@ public class RectCursor {
         g.setColor(color);
         g.drawRect(x, y, width, height);
         g.dispose();
-//        return tempImage;
     }
 
     // Returns black if the main color is light, or white if the main color is dark
@@ -43,15 +43,6 @@ public class RectCursor {
         int scaledWidth = (int) (width * scaledWidthFactor);
         int scaledHeight = (int) (height * scaledHeightFactor);
         return new RectCursor(imagePanel, scaledX, scaledY, scaledWidth, scaledHeight);
-    }
-
-    public int moveCursorLeft(int offset) {
-        x -= (width + offset);
-        if (x < 0) {
-            x = 0;
-            return -x;
-        }
-        return 0;
     }
 
     public void shiftCursor(String direction, int offsets) {

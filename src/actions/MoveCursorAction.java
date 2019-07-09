@@ -1,5 +1,6 @@
 package actions;
 
+import main.MainFrame;
 import panels.ImagePanel;
 import utils.RectCursor;
 
@@ -9,10 +10,10 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 
 public class MoveCursorAction extends AbstractAction {
-    RectCursor cursor;
+    MainFrame mainFrame;
 
-    public MoveCursorAction(RectCursor cursor) {
-        this.cursor = cursor;
+    public MoveCursorAction(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
     }
 
     @Override
@@ -20,16 +21,17 @@ public class MoveCursorAction extends AbstractAction {
     }
 
     public void moveCursor(String direction) {
-        ImagePanel imagePanel = cursor.getImagePanel();
+        ImagePanel imagePanel = mainFrame.getImagePanel();
+        RectCursor cursor = imagePanel.getRectCursor();
         BufferedImage storedImage = imagePanel.getImageHandler().getStoredImage();
 
         cursor.shiftCursor(direction, imagePanel.getMainFrame().getOffsets());
-        BufferedImage newImage = getResizedImage(storedImage);
+        BufferedImage newImage = getResizedImage(storedImage, cursor);
         cursor.makeXAndYNonNegative();
         imagePanel.getImageHandler().updateImages(newImage);
     }
 
-    private BufferedImage getResizedImage(BufferedImage storedImage) {
+    private BufferedImage getResizedImage(BufferedImage storedImage, RectCursor cursor) {
         int imageWidth = storedImage.getWidth();
         int imageHeight = storedImage.getHeight();
 

@@ -63,11 +63,11 @@ public class EditButtonPanel extends JPanel implements ActionListener {
     }
 
     private void initializeCursorActions() {
-        moveCursor = new MoveCursorAction(mainFrame.getImagePanel().getRectCursor());
-        moveCursorUp = new MoveCursorUpAction(mainFrame.getImagePanel().getRectCursor());
-        moveCursorDown = new MoveCursorDownAction(mainFrame.getImagePanel().getRectCursor());
-        moveCursorLeft = new MoveCursorLeftAction(mainFrame.getImagePanel().getRectCursor());
-        moveCursorRight = new MoveCursorRightAction(mainFrame.getImagePanel().getRectCursor());
+        moveCursor = new MoveCursorAction(mainFrame);
+        moveCursorUp = new MoveCursorUpAction(mainFrame);
+        moveCursorDown = new MoveCursorDownAction(mainFrame);
+        moveCursorLeft = new MoveCursorLeftAction(mainFrame);
+        moveCursorRight = new MoveCursorRightAction(mainFrame);
     }
 
     // TODO: Consider moving to allow when EditButtonPanel is not visible

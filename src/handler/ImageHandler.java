@@ -85,12 +85,11 @@ public class ImageHandler {
     }
 
     public void undo() {
-        System.out.println(">>>");
         BufferedImage newImage = saveStateList.getPreviousState();
         if (newImage != null) {
-            System.out.println("IMAGE");
             updateImages(newImage);
         }
+        // TODO: Adjust cursor on undo
     }
 
     public void redo() {
@@ -102,5 +101,13 @@ public class ImageHandler {
 
     public BufferedImage getStoredImage() {
         return storedImage;
+    }
+
+    public SaveStateList getSaveStateList() {
+        return saveStateList;
+    }
+
+    public void setSaveStateList(SaveStateList saveStateList) {
+        this.saveStateList = saveStateList;
     }
 }

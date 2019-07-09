@@ -1,5 +1,6 @@
 package serialize;
 
+import handler.SaveStateList;
 import main.MainFrame;
 import utils.RectCursor;
 import zoom.ZoomValue;
@@ -23,9 +24,8 @@ public class StoredData implements Serializable {
     private int cropHeight;
     private int offsets;
     private RectCursor rectCursor;
-    private List<BufferedImage> listOfRecentImageChanges;
-    // TODO: Implement data settings: save settings, shortcuts
-    // TODO: Test serialization methods
+    private SaveStateList saveStateList;
+    // TODO: Implement shortcuts
 
     public static void serializeData(MainFrame mainFrame, String fileName) {
         StoredData storedData = new StoredData();
@@ -71,6 +71,7 @@ public class StoredData implements Serializable {
         cropHeight = mainFrame.getCropHeight();
         rectCursor = mainFrame.getImagePanel().getRectCursor();
         offsets = mainFrame.getOffsets();
+        saveStateList = mainFrame.getImagePanel().getImageHandler().getSaveStateList();
     }
 
     private byte[] buildByteArray(MainFrame mainFrame) {
@@ -105,7 +106,9 @@ public class StoredData implements Serializable {
         mainFrame.setCropHeight(cropHeight);
         mainFrame.setOffsets(offsets);
         mainFrame.getImagePanel().setRectCursor(rectCursor);
+        rectCursor.setImagePanel(mainFrame.getImagePanel());
         mainFrame.getImagePanel().getImageHandler().updateImages(tempImage);
+        mainFrame.getImagePanel().getImageHandler().setSaveStateList(saveStateList);
     }
 
     private BufferedImage buildBufferedImage(byte[] bytes, MainFrame mainFrame) {

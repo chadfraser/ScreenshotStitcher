@@ -1,13 +1,13 @@
 package actions;
 
-import utils.RectCursor;
+import main.MainFrame;
 
 import java.awt.event.ActionEvent;
 
 public class MoveCursorLeftAction extends MoveCursorAction {
 
-    public MoveCursorLeftAction(RectCursor cursor) {
-        super(cursor);
+    public MoveCursorLeftAction(MainFrame mainFrame) {
+        super(mainFrame);
     }
 
     @Override

@@ -186,10 +186,8 @@ public class UndoButtonPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == undoButton) {
-            System.out.println("UNDO");
             mainFrame.getImagePanel().getImageHandler().undo();
         } else if (e.getSource() == redoButton) {
-            System.out.println("REDO");
             mainFrame.getImagePanel().getImageHandler().redo();
         }
     }
