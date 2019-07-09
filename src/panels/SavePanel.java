@@ -5,6 +5,8 @@ import serialize.StoredData;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -47,6 +49,25 @@ public class SavePanel extends JPanel implements ActionListener {
         initializeButtons();
         initializePanels();
         initializeLayout();
+        dataFileNameField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                System.out.println("AA");
+                if (isInvalidFileName(".ser", dataFileNameField.getText())) {
+                    autoSaveCheckBox.setEnabled(false);
+                } else {
+                    autoSaveCheckBox.setEnabled(true);
+                }
+            }
+        });
     }
 
     private void initializeFieldsAndLabels() {
@@ -191,6 +212,7 @@ public class SavePanel extends JPanel implements ActionListener {
         c.gridx = 0;
         c.gridy = 1;
         checkBoxPanel.add(autoSaveCheckBox, c);
+        autoSaveCheckBox.setEnabled(false);
     }
 
     private void saveImage() {

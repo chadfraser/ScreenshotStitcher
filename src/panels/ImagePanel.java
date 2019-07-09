@@ -12,9 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 
-public class ImagePanel extends JPanel implements MouseInputListener, Serializable {
-//    private static final long serialVersionUID = 1L;
-
+public class ImagePanel extends JPanel implements MouseInputListener {
     private static final int WIDTH = 600;
     private static final int HEIGHT = 600;
     private BufferedImage displayedImage;

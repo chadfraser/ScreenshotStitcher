@@ -48,6 +48,7 @@ public class UndoButtonPanel extends JPanel implements ActionListener {
         previewOptionButtonGroup = new ButtonGroup();
         previewOptionButtonGroup.add(previewUndoOption);
         previewOptionButtonGroup.add(previewRedoOption);
+        previewUndoOption.setSelected(true);
 
         initializePanels();
         initializeLayout();

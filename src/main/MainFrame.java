@@ -6,9 +6,8 @@ import zoom.ZoomValue;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.Serializable;
 
-public class MainFrame extends JFrame implements Serializable {
+public class MainFrame extends JFrame {
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 650;
 
