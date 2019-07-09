@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 
 public class MoveCursorAction extends AbstractAction {
-    MainFrame mainFrame;
+    private MainFrame mainFrame;
 
     public MoveCursorAction(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
