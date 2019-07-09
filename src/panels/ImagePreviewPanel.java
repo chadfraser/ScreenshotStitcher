@@ -47,6 +47,10 @@ public class ImagePreviewPanel extends JPanel {
         timer = new Timer(50, actionListener);
     }
 
+    // Return a scaled version of the stored image that would occur if the undo button were pressed (assuming the
+    // preview undo option is set) or of the image that would occur if the redo button were pressed (assuming the
+    // preview redo option is set)
+    // Return null if the UNDO tab is not selected in the main frame
     private BufferedImage getScaledPreviewUndoRedoImage() {
         if (!"UNDO".equals(mainFrame.getSelectedTabTitle())) {
             return null;
@@ -86,13 +90,13 @@ public class ImagePreviewPanel extends JPanel {
         double scaledWidth = scaledWidthAndHeight[0];
         double scaledHeight = scaledWidthAndHeight[1];
 
-        int previewX = 0;//(int) (imagePanel.getMostRecentMouseX() / scaledWidth);
-        int previewY = 0;//(int) (imagePanel.getMostRecentMouseY() / scaledHeight);
+        int previewX = (int) (imagePanel.getMostRecentMouseX() / scaledWidth);
+        int previewY = (int) (imagePanel.getMostRecentMouseY() / scaledHeight);
 
         previewX -= getWidth() / 2;
         previewY -= getHeight() / 2;
 
-        Dimension temp = adjustPreviewCoordinates(previewX, previewY, getWidth(), getHeight());
+        Dimension temp = adjustPreviewCoordinatesToFitImageBounds(previewX, previewY, getWidth(), getHeight());
         previewX = temp.width;
         previewY = temp.height;
 
@@ -115,7 +119,10 @@ public class ImagePreviewPanel extends JPanel {
         repaint();
     }
 
-    private Dimension adjustPreviewCoordinates(int previewX, int previewY, int previewWidth, int previewHeight) {
+    // If any edge of the preview image is outside of the bounds of the stored image, shift the preview image's
+    // coordinates to compensate for that
+    private Dimension adjustPreviewCoordinatesToFitImageBounds(int previewX, int previewY, int previewWidth,
+                                                               int previewHeight) {
         BufferedImage storedImage = mainFrame.getMainStoredImage();
         if (previewX < 0) {
             previewX = 0;
@@ -132,6 +139,8 @@ public class ImagePreviewPanel extends JPanel {
         return new Dimension(previewX, previewY);
     }
 
+    // If either dimension of the stored image is smaller than the dimensions of the preview image, shift the
+    // coordinates of where the stored image is drawn to the preview image so it is centered
     private BufferedImage adjustForUndersizedStoredImage(int previewX, int previewY) {
         BufferedImage storedImage = mainFrame.getMainStoredImage();
         int xToDraw = 0;
@@ -191,15 +200,11 @@ public class ImagePreviewPanel extends JPanel {
         return getPreferredSize();
     }
 
-    public BufferedImage getPreviewImage() {
-        return previewImage;
-    }
-
     public Timer getTimer() {
         return timer;
     }
 
-    public void setMouseOverImage(boolean isMouseOverImage) {
+    void setMouseOverImage(boolean isMouseOverImage) {
         this.isMouseOverImage = isMouseOverImage;
     }
 }

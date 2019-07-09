@@ -22,8 +22,8 @@ public class ImagePanel extends JPanel implements MouseInputListener {
     private ImageHandler imageHandler;
     private RectCursor rectCursor;
 //    private boolean shouldFollowCursor;
-//    private int mostRecentMouseX;
-//    private int mostRecentMouseY;
+    private int mostRecentMouseX;
+    private int mostRecentMouseY;
 
     public ImagePanel(MainFrame mainFrame) {
         setBackground(Color.DARK_GRAY);
@@ -280,13 +280,13 @@ public class ImagePanel extends JPanel implements MouseInputListener {
         this.rectCursor = rectCursor;
     }
 
-    //    public int getMostRecentMouseX() {
-//        return mostRecentMouseX;
-//    }
-//
-//    public int getMostRecentMouseY() {
-//        return mostRecentMouseY;
-//    }
+    public int getMostRecentMouseX() {
+        return mostRecentMouseX;
+    }
+
+    public int getMostRecentMouseY() {
+        return mostRecentMouseY;
+    }
 //
 //    public void setShouldFollowCursor(boolean shouldFollowCursor) {
 //        this.shouldFollowCursor = shouldFollowCursor;
@@ -326,14 +326,14 @@ public class ImagePanel extends JPanel implements MouseInputListener {
 
     @Override
     public void mouseEntered(MouseEvent e) {
-//        mostRecentMouseX = e.getX();
-//        mostRecentMouseY = e.getY();
-//        mainFrame.getImagePreviewPanel().setMouseOverImage(true);
+        mostRecentMouseX = e.getX();
+        mostRecentMouseY = e.getY();
+        mainFrame.getImagePreviewPanel().setMouseOverImage(true);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-//        mainFrame.getImagePreviewPanel().setMouseOverImage(false);
+        mainFrame.getImagePreviewPanel().setMouseOverImage(false);
     }
 
     @Override
