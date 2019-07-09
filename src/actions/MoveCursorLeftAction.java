@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 
 public class MoveCursorLeftAction extends MoveCursorAction {
 
-    public MoveCursorLeftAction(MainFrame mainFrame) {
+    MoveCursorLeftAction(MainFrame mainFrame) {
         super(mainFrame);
     }
 

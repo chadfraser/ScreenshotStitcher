@@ -10,7 +10,6 @@ import javax.swing.event.MouseInputListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.Serializable;
 
 public class ImagePanel extends JPanel implements MouseInputListener {
     private static final int WIDTH = 600;

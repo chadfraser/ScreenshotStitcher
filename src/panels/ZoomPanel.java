@@ -9,8 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class ZoomPanel extends JPanel implements ActionListener {
-    private static final long serialVersionUID = 1L;
-
     private static final int WIDTH = 250;
     private static final int HEIGHT = 450;
 

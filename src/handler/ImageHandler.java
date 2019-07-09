@@ -52,7 +52,7 @@ public class ImageHandler {
         updateImages(finalImage);
     }
 
-    // Draw the passed image parameter on the x and y coordinates
+    // Draw the passed image parameter on the rectCursor's x and y coordinates
     public void pasteToImage(BufferedImage pasteImage) {
         if (pasteImage.getWidth() > storedImage.getWidth() || pasteImage.getHeight() > storedImage.getHeight()) {
             increaseImageSize(pasteImage.getWidth(), pasteImage.getHeight());
@@ -70,6 +70,7 @@ public class ImageHandler {
         // TODO: Focus on cursor here
     }
 
+    // Remove the image data on the rectCursor's x and y coordinates (removing color and opacity)
     public void deleteFromImage() {
         int x = imagePanel.getRectCursor().getX();
         int y = imagePanel.getRectCursor().getY();
@@ -87,6 +88,8 @@ public class ImageHandler {
         // TODO: Focus on cursor here
     }
 
+    // Update the stored image to the previous image in the save state list
+    // Does nothing if there is no previous image
     public void undo() {
         BufferedImage newImage = saveStateList.getPreviousState();
         if (newImage != null) {
@@ -95,6 +98,8 @@ public class ImageHandler {
         // TODO: Adjust cursor on undo
     }
 
+    // Update the stored image to the next image in the save state list
+    // Does nothing if there is no next image
     public void redo() {
         BufferedImage newImage = saveStateList.getNextState();
         if (newImage != null) {

@@ -172,18 +172,6 @@ public class UndoButtonPanel extends JPanel implements ActionListener {
         radioPanel.add(previewRedoOption, c);
     }
 
-//    public void add(BufferedImage newImage) {
-//        while (undoIndex < undoQueue.size()) {
-//            undoQueue.remove(undoQueue.size() - 1);
-//        }
-//        undoQueue.add(newImage);
-//        undoIndex++;
-//        while (undoQueue.size() > MAX_QUEUE_SIZE) {
-//            undoQueue.remove(0);
-//            undoIndex--;
-//        }
-//    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == undoButton) {
@@ -193,11 +181,11 @@ public class UndoButtonPanel extends JPanel implements ActionListener {
         }
     }
 
-    public boolean getPreviewUndoOption() {
+    boolean getPreviewUndoOption() {
         return previewUndoOption.isSelected();
     }
 
-    public boolean getPreviewRedoOption() {
+    boolean getPreviewRedoOption() {
         return previewRedoOption.isSelected();
     }
 }

@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 
-public class MoveCursorAction extends AbstractAction {
+public abstract class MoveCursorAction extends AbstractAction {
     private MainFrame mainFrame;
 
     public MoveCursorAction(MainFrame mainFrame) {
@@ -20,7 +20,7 @@ public class MoveCursorAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
     }
 
-    public void moveCursor(String direction) {
+    void moveCursor(String direction) {
         ImagePanel imagePanel = mainFrame.getImagePanel();
         RectCursor cursor = imagePanel.getRectCursor();
         BufferedImage storedImage = imagePanel.getImageHandler().getStoredImage();
@@ -42,8 +42,8 @@ public class MoveCursorAction extends AbstractAction {
 
         // If the cursor would extend outside the right edge of the image (i.e., x + width > imageWidth), imageWidth
         // is set to x + width so its right edge is aligned with the cursor's right edge
-        imageWidth = Math.max(imageWidth, cursor.getX() + cursor.getWidth());
 
+        imageWidth = Math.max(imageWidth, cursor.getX() + cursor.getWidth());
         // y is treated analogously
         imageHeight = Math.max(imageHeight, Math.max(cursor.getY() + cursor.getHeight(), imageHeight - cursor.getY()));
 

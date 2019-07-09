@@ -15,7 +15,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-// TODO: Confirm upon open
 public class SavePanel extends JPanel implements ActionListener {
     private static final int WIDTH = 250;
     private static final int HEIGHT = 300;

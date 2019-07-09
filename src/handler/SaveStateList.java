@@ -11,21 +11,13 @@ public class SaveStateList extends ArrayList<BufferedImage> implements Serializa
     private transient List<BufferedImage> images;
     private int currentImageIndex;
 
-    public SaveStateList() {
+    SaveStateList() {
         images = new ArrayList<>();
         currentImageIndex = -1;
     }
 
-    public SaveStateList(List<BufferedImage> images) {
-        this.images = images;
-        currentImageIndex = -1;
-    }
-
-    public SaveStateList(List<BufferedImage> images, int currentImageIndex) {
-        this.images = images;
-        this.currentImageIndex = currentImageIndex;
-    }
-
+    // Write int fields as normal, and each image in the images list to a byte array output stream for serialization
+    // This prevents the loss or corruption of data from images getting written and read incompletely
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
         out.writeInt(images.size());
@@ -37,6 +29,8 @@ public class SaveStateList extends ArrayList<BufferedImage> implements Serializa
         }
     }
 
+    // Read int fields as normal, and fully read each image from the byte array input stream to deserialize
+    // This prevents the loss or corruption of data from images getting written and read incompletely
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         final int imageCount = in.readInt();
@@ -49,7 +43,10 @@ public class SaveStateList extends ArrayList<BufferedImage> implements Serializa
         }
     }
 
-    public BufferedImage getPreviousState() {
+    // Returns the BufferedImage in the images list one index behind the currentImageIndex, or null if no such image
+    // exists
+    // Also decrements currentImageIndex to represent that the returned image is the new 'current image"
+    BufferedImage getPreviousState() {
         if (currentImageIndex <= 0 || currentImageIndex >= images.size()) {
             return null;
         }
@@ -57,7 +54,11 @@ public class SaveStateList extends ArrayList<BufferedImage> implements Serializa
         return images.get(currentImageIndex);
     }
 
-    public BufferedImage getNextState() {
+
+    // Returns the BufferedImage in the images list one index ahead of the currentImageIndex, or null if no such image
+    // exists
+    // Also increments currentImageIndex to represent that the returned image is the new 'current image"
+    BufferedImage getNextState() {
         if (currentImageIndex < 0 || currentImageIndex >= images.size() - 1) {
             return null;
         }
@@ -65,6 +66,9 @@ public class SaveStateList extends ArrayList<BufferedImage> implements Serializa
         return images.get(currentImageIndex);
     }
 
+    // Returns the BufferedImage in the images list one index behind the currentImageIndex, or null if no such image
+    // exists
+    // Does not alter the currentImageIndex, as the returned image is *not* the new 'current image"
     public BufferedImage pollPreviousState() {
         if (currentImageIndex <= 0 || currentImageIndex >= images.size()) {
             return null;
@@ -72,6 +76,10 @@ public class SaveStateList extends ArrayList<BufferedImage> implements Serializa
         return images.get(currentImageIndex - 1);
     }
 
+
+    // Returns the BufferedImage in the images list one index ahead of the currentImageIndex, or null if no such image
+    // exists
+    // Does not alter the currentImageIndex, as the returned image is *not* the new 'current image"
     public BufferedImage pollNextState() {
         if (currentImageIndex < 0 || currentImageIndex >= images.size() - 1) {
             return null;

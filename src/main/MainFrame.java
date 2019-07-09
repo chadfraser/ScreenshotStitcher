@@ -1,5 +1,6 @@
 package main;
 
+import actions.ActionShortcutHandler;
 import panels.*;
 import zoom.ZoomValue;
 
@@ -44,6 +45,8 @@ public class MainFrame extends JFrame {
     private JPanel trimAndImagePreviewPanel;
     private JPanel dataAndImagePreviewPanel;
     private JTabbedPane optionTabbedPane;
+
+    private ActionShortcutHandler actionShortcutHandler;
 
     private MainFrame() {
         setTitle("NES Map Maker");
@@ -100,6 +103,10 @@ public class MainFrame extends JFrame {
         revalidate();
 
         imagePreviewPanel.getTimer().start();
+
+        actionShortcutHandler = new ActionShortcutHandler(this);
+        add(actionShortcutHandler);
+
         // TODO: Add component listener for window resize
         // TODO: Fix initialization of MapMakerImagePanel size
     }

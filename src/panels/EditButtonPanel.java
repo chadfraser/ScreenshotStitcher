@@ -19,8 +19,6 @@ import java.awt.image.RasterFormatException;
 import java.io.IOException;
 
 public class EditButtonPanel extends JPanel implements ActionListener {
-    private static final long serialVersionUID = 1L;
-
     private static final int WIDTH = 250;
     private static final int HEIGHT = 450;
 
@@ -37,11 +35,6 @@ public class EditButtonPanel extends JPanel implements ActionListener {
     private JButton deleteButton;
 
     private MainFrame mainFrame;
-    private MoveCursorAction moveCursor;
-    private MoveCursorUpAction moveCursorUp;
-    private MoveCursorDownAction moveCursorDown;
-    private MoveCursorLeftAction moveCursorLeft;
-    private MoveCursorRightAction moveCursorRight;
 
     public EditButtonPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -55,35 +48,9 @@ public class EditButtonPanel extends JPanel implements ActionListener {
         rightButtonPanel = new JPanel(new GridBagLayout());
         pasteDeleteButtonPanel = new JPanel(new GridBagLayout());
 
-        initializeCursorActions();
-        initializeActionMap();
         initializeButtons();
         initializePanels();
         initializeLayout();
-    }
-
-    private void initializeCursorActions() {
-        moveCursor = new MoveCursorAction(mainFrame);
-        moveCursorUp = new MoveCursorUpAction(mainFrame);
-        moveCursorDown = new MoveCursorDownAction(mainFrame);
-        moveCursorLeft = new MoveCursorLeftAction(mainFrame);
-        moveCursorRight = new MoveCursorRightAction(mainFrame);
-    }
-
-    // TODO: Consider moving to allow when EditButtonPanel is not visible
-    private void initializeActionMap() {
-        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_UP,
-                InputEvent.SHIFT_DOWN_MASK), "moveUp");
-        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN,
-                InputEvent.SHIFT_DOWN_MASK), "moveDown");
-        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT,
-                InputEvent.SHIFT_DOWN_MASK), "moveLeft");
-        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,
-                InputEvent.SHIFT_DOWN_MASK), "moveRight");
-        getActionMap().put("moveUp", moveCursorUp);
-        getActionMap().put("moveDown", moveCursorDown);
-        getActionMap().put("moveLeft", moveCursorLeft);
-        getActionMap().put("moveRight", moveCursorRight);
     }
 
     private void initializeButtons() {
@@ -327,6 +294,7 @@ public class EditButtonPanel extends JPanel implements ActionListener {
     }
 
     // TODO: Change this to use an enum?
+    // TODO: Reimplement
     private void handleMovement(ActionEvent e) {
         String direction = "";
         if (e.getSource() == upButton) {
@@ -338,7 +306,6 @@ public class EditButtonPanel extends JPanel implements ActionListener {
         } else if (e.getSource() == rightButton) {
             direction = "right";
         }
-        moveCursor.moveCursor(direction);
+//        moveCursor.moveCursor(direction);
     }
 }
-
