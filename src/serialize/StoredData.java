@@ -1,6 +1,7 @@
 package serialize;
 
 import main.MainFrame;
+import utils.RectCursor;
 import zoom.ZoomValue;
 
 import javax.imageio.ImageIO;
@@ -21,7 +22,8 @@ public class StoredData implements Serializable {
     private int cropWidth;
     private int cropHeight;
     private int offsets;
-    private List<BufferedImage> listOfChangedImages;
+    private RectCursor rectCursor;
+    private List<BufferedImage> listOfRecentImageChanges;
     // TODO: Implement data settings: save settings, shortcuts
     // TODO: Test serialization methods
 
@@ -32,9 +34,7 @@ public class StoredData implements Serializable {
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(fileName);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-
             objectOutputStream.writeObject(storedData);
-
             objectOutputStream.close();
             fileOutputStream.close();
         } catch (IOException e) {
@@ -63,11 +63,13 @@ public class StoredData implements Serializable {
         }
         zoomValue = mainFrame.getZoomValue();
         backgroundColor = mainFrame.getBackgroundColor();
-//        imageFile = mainFrame.get TODO: Include serialization of JTextArea strings
+        imageFile = mainFrame.getSavePanel().getImageFileNameText();
+        dataFile = mainFrame.getSavePanel().getDataFileNameText();
         cropX = mainFrame.getCropX();
         cropY = mainFrame.getCropY();
         cropWidth = mainFrame.getCropWidth();
         cropHeight = mainFrame.getCropHeight();
+        rectCursor = mainFrame.getImagePanel().getRectCursor();
         offsets = mainFrame.getOffsets();
     }
 
@@ -95,11 +97,14 @@ public class StoredData implements Serializable {
         BufferedImage tempImage = buildBufferedImage(storedImageByteArray, mainFrame);
         mainFrame.setZoomValue(zoomValue);
         mainFrame.setBackgroundColor(backgroundColor);
+        mainFrame.getSavePanel().setImageFileNameText(imageFile);
+        mainFrame.getSavePanel().setDataFileNameText(dataFile);
         mainFrame.setCropX(cropX);
         mainFrame.setCropY(cropY);
         mainFrame.setCropWidth(cropWidth);
         mainFrame.setCropHeight(cropHeight);
         mainFrame.setOffsets(offsets);
+        mainFrame.getImagePanel().setRectCursor(rectCursor);
         mainFrame.getImagePanel().getImageHandler().updateImages(tempImage);
     }
 

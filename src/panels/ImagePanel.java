@@ -79,6 +79,7 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
         displayedImage = buildNewImage(tempImage, mainFrame.getBackgroundColor(), rectCursor);
     }
 
+    // TODO: Reexamine
     private void updateScaledImage() {
         double[] scaledWidthAndHeightRatios = getScaledWidthAndHeightRatios();
         double scaledWidthRatio = scaledWidthAndHeightRatios[0];
@@ -130,24 +131,7 @@ public class ImagePanel extends JPanel implements MouseInputListener, Serializab
         return new double[] {scaledWidthRatio, scaledHeightRatio};
     }
 
-//    //
-//    public void increaseImageSize(int widthOfNewImage, int heightOfNewImage) {
-//        BufferedImage storedImage = imageHandler.getStoredImage();
-//        int updatedWidth = storedImage.getWidth();
-//        int updatedHeight = storedImage.getHeight();
-//
-//        updatedWidth = (updatedWidth >= widthOfNewImage) ? updatedWidth : widthOfNewImage;
-//        updatedHeight = (updatedHeight >= heightOfNewImage) ? updatedHeight : heightOfNewImage;
-//
-//        BufferedImage finalImage = new BufferedImage(updatedWidth, updatedHeight, BufferedImage.TYPE_INT_ARGB);
-//        Graphics2D g = finalImage.createGraphics();
-//        g.drawImage(storedImage, (updatedWidth - storedImage.getWidth()) / 2,
-//                (updatedHeight - storedImage.getHeight()) / 2,
-//                null);
-//        g.dispose();
-//        imageHandler.updateImages(finalImage);
-//    }
-
+    // TODO: Reexamine
     private void setScrollBarValue(JScrollBar scrollBar, int value) {
         int visibleAmount = scrollBar.getVisibleAmount();
         value = (value - visibleAmount / 2);

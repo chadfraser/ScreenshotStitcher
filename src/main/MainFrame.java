@@ -198,6 +198,10 @@ public class MainFrame extends JFrame implements Serializable {
         return imagePreviewPanel;
     }
 
+    public SavePanel getSavePanel() {
+        return savePanel;
+    }
+
     public int getCropX() {
         return cropX;
     }

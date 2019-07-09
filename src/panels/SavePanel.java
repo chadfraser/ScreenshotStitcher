@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+// TODO: Confirm upon open
 public class SavePanel extends JPanel implements ActionListener {
     private static final int WIDTH = 250;
     private static final int HEIGHT = 300;
@@ -223,7 +224,7 @@ public class SavePanel extends JPanel implements ActionListener {
         try {
             File outputFile = new File(fileName);
             if (!outputFile.exists() || confirmFileOverwrite(outputFile.getCanonicalPath()) == JOptionPane.OK_OPTION) {
-                StoredData.serializeData(mainFrame, fileName + ".ser");
+                StoredData.serializeData(mainFrame, fileName);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -326,6 +327,22 @@ public class SavePanel extends JPanel implements ActionListener {
         } else if (e.getSource() == openDataButton) {
             openData();
         }
+    }
+
+    public String getImageFileNameText() {
+        return imageFileNameField.getText();
+    }
+
+    public String getDataFileNameText() {
+        return dataFileNameField.getText();
+    }
+
+    public void setImageFileNameText(String text) {
+        imageFileNameField.setText(text);
+    }
+
+    public void setDataFileNameText(String text) {
+        dataFileNameField.setText(text);
     }
 }
 

@@ -280,4 +280,3 @@ public class DataPanel extends JPanel implements MouseListener, PropertyChangeLi
     @Override
     public void mouseExited(MouseEvent e) { }
 }
-

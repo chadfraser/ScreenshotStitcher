@@ -2,66 +2,20 @@ package handler;
 
 import panels.ImagePanel;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.nio.file.AccessDeniedException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ImageHandler {
-    private static final int RECENT_CHANGE_LIST_MAX_SIZE = 10;
     private ImagePanel imagePanel;
-
     private BufferedImage storedImage;
-    private int currentImageIndex;
-
-    private List<BufferedImage> listOfRecentImageChanges;
+    private SaveStateList saveStateList;
 
     public ImageHandler(ImagePanel imagePanel) {
         this.imagePanel = imagePanel;
-        this.currentImageIndex = 0;
 
-        listOfRecentImageChanges = new ArrayList<>() {
-//            @Override
-//            public boolean add(Object e) {
-//                if (this.size() >= RECENT_CHANGES_MAX_SIZE) {
-//                    this.remove(0);
-//                }
-//                return super.add(e);
-//            }
-//
-//            public boolean addAndAdjust(Object e, int currentImageIndex) {
-//                ArrayList<Object> newList = (ArrayList<Object>) this.subList(0, currentImageIndex + 1);
-//                this = newList;
-//                if (this.size() >= RECENT_CHANGES_MAX_SIZE) {
-//                    this.remove(0);
-//                }
-//                return super.add(e);
-//            }
-        };
+        saveStateList = new SaveStateList();
         storedImage = new BufferedImage(imagePanel.getWidth(), imagePanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        addToArrayList(storedImage);
-    }
-
-    private void addToArrayList(BufferedImage image) {
-        // First, delete all elements from the array list past the currentImageIndex
-        // This way, we prevent 'redos' that revert the state of the image
-        try {
-            listOfRecentImageChanges = listOfRecentImageChanges.subList(0, currentImageIndex);
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
-        }
-
-        // If the array list has more elements than MAX_SIZE, remove the first element from the array list to keep
-        // it under the size constraint
-        // This ensures that the past (n <= 10) 'undos' are always saved
-        if (listOfRecentImageChanges.size() >= RECENT_CHANGE_LIST_MAX_SIZE) {
-            listOfRecentImageChanges.remove(0);
-            currentImageIndex--;
-        }
-        listOfRecentImageChanges.add(image);
-        currentImageIndex++;
+        saveStateList.add(storedImage);
     }
 
     // Update the stored image, displayed image, and scaled displayed image
@@ -73,7 +27,7 @@ public class ImageHandler {
     // Update the images and also add the new stored image to the end of the undo stack
     public void updateAndStoreChangedImages(BufferedImage newStoredImage) {
         updateImages(newStoredImage);
-        addToArrayList(newStoredImage);
+        saveStateList.add(newStoredImage);
     }
 
     // Create a new stored image with a greater size than the current stored image, with the current stored image
@@ -97,9 +51,6 @@ public class ImageHandler {
 
     // Draw the passed image parameter on the x and y coordinates
     public void pasteToImage(BufferedImage pasteImage) {
-        int x = imagePanel.getRectCursor().getX();
-        int y = imagePanel.getRectCursor().getY();
-
         if (pasteImage.getWidth() > storedImage.getWidth() || pasteImage.getHeight() > storedImage.getHeight()) {
             increaseImageSize(pasteImage.getWidth(), pasteImage.getHeight());
         }
@@ -108,6 +59,8 @@ public class ImageHandler {
                 BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = newImage.createGraphics();
         g.drawImage(storedImage, 0, 0, null);
+        int x = imagePanel.getRectCursor().getX();
+        int y = imagePanel.getRectCursor().getY();
         g.drawImage(pasteImage, x, y, null);
         g.dispose();
         updateAndStoreChangedImages(newImage);
@@ -132,24 +85,19 @@ public class ImageHandler {
     }
 
     public void undo() {
-        if (currentImageIndex <= 0 || currentImageIndex > listOfRecentImageChanges.size() - 1) {
-            return;
+        System.out.println(">>>");
+        BufferedImage newImage = saveStateList.getPreviousState();
+        if (newImage != null) {
+            System.out.println("IMAGE");
+            updateImages(newImage);
         }
-        currentImageIndex--;
-        storedImage = getImageFromUndoQueue();
-        updateImages(getImageFromUndoQueue());
     }
 
     public void redo() {
-        if (currentImageIndex < 0 || currentImageIndex >= listOfRecentImageChanges.size() - 1) {
-            return;
+        BufferedImage newImage = saveStateList.getNextState();
+        if (newImage != null) {
+            updateImages(newImage);
         }
-        currentImageIndex++;
-        updateImages(getImageFromUndoQueue());
-    }
-
-    private BufferedImage getImageFromUndoQueue() {
-        return listOfRecentImageChanges.get(currentImageIndex);
     }
 
     public BufferedImage getStoredImage() {
