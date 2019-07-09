@@ -10,7 +10,6 @@ import javax.swing.*;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.List;
 
 public class StoredData implements Serializable {
     private byte[] storedImageByteArray;

@@ -19,12 +19,15 @@ public class ImageHandler {
     }
 
     // Update the stored image, displayed image, and scaled displayed image
+    // To be used with 'minor' technical changes that do not warrant an undo, such as moving the cursor's position
     public void updateImages(BufferedImage newStoredImage) {
         storedImage = newStoredImage;
         imagePanel.updateImages();
     }
 
     // Update the images and also add the new stored image to the end of the undo stack
+    // To be used with 'major' changes that do warrant an undo, such as adding or deleting a section of the stored
+    // image
     public void updateAndStoreChangedImages(BufferedImage newStoredImage) {
         updateImages(newStoredImage);
         saveStateList.add(newStoredImage);
@@ -97,6 +100,7 @@ public class ImageHandler {
         if (newImage != null) {
             updateImages(newImage);
         }
+        // TODO: Adjust cursor on redo
     }
 
     public BufferedImage getStoredImage() {

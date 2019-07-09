@@ -192,5 +192,13 @@ public class UndoButtonPanel extends JPanel implements ActionListener {
             mainFrame.getImagePanel().getImageHandler().redo();
         }
     }
+
+    public boolean getPreviewUndoOption() {
+        return previewUndoOption.isSelected();
+    }
+
+    public boolean getPreviewRedoOption() {
+        return previewRedoOption.isSelected();
+    }
 }
 

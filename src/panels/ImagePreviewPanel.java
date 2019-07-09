@@ -32,34 +32,49 @@ public class ImagePreviewPanel extends JPanel {
 
         ActionListener actionListener = e -> {
             BufferedImage newImage;
+            BufferedImage previewUndoRedoImage = getScaledPreviewUndoRedoImage();
             if (isMouseOverImage) {
                 newImage = createFocusedPreviewImage();
+            } else if (previewUndoRedoImage != null) {
+                newImage = previewUndoRedoImage;
             } else if (mainFrame.getZoomValue() == ZoomValue.FIT_TO_SCREEN) {
                 newImage = createBlankPreviewImage();
             } else {
-                newImage = createScaledPreviewImage();
+                newImage = createScaledPreviewImage(mainFrame.getMainStoredImage());
             }
             updatePreviewPanel(newImage);
         };
         timer = new Timer(50, actionListener);
     }
 
-    private BufferedImage createBlankPreviewImage() {
-        BufferedImage blankPreviewImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = blankPreviewImage.createGraphics();
-        g.setColor(mainFrame.getBackgroundColor());
-        g.fillRect(0, 0, getWidth(), getHeight());
-        g.dispose();
-        return blankPreviewImage;
+    private BufferedImage getScaledPreviewUndoRedoImage() {
+        if (!"UNDO".equals(mainFrame.getSelectedTabTitle())) {
+            return null;
+        }
+
+        BufferedImage previous = mainFrame.getImagePanel().getImageHandler().getSaveStateList().pollPreviousState();
+        if (mainFrame.getUndoButtonPanel().getPreviewUndoOption() && previous != null) {
+            return createScaledPreviewImage(previous);
+        }
+
+        BufferedImage next = mainFrame.getImagePanel().getImageHandler().getSaveStateList().pollNextState();
+        if (mainFrame.getUndoButtonPanel().getPreviewRedoOption() && next != null) {
+            return createScaledPreviewImage(next);
+        }
+        return null;
     }
 
-    private BufferedImage createScaledPreviewImage() {
-        BufferedImage storedImage = mainFrame.getMainStoredImage();
+    private BufferedImage createBlankPreviewImage() {
+        BufferedImage blankPreviewImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        return createScaledPreviewImage(blankPreviewImage);
+    }
+
+    private BufferedImage createScaledPreviewImage(BufferedImage imageToScale) {
         BufferedImage scaledPreviewImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = scaledPreviewImage.createGraphics();
         g.setColor(mainFrame.getBackgroundColor());
         g.fillRect(0, 0, getWidth(), getHeight());
-        g.drawImage(storedImage, 0, 0, scaledPreviewImage.getWidth(), scaledPreviewImage.getHeight(), null);
+        g.drawImage(imageToScale, 0, 0, scaledPreviewImage.getWidth(), scaledPreviewImage.getHeight(), null);
         g.dispose();
         return scaledPreviewImage;
     }
@@ -95,7 +110,7 @@ public class ImagePreviewPanel extends JPanel {
         return focusedPreviewImage;
     }
 
-    public void updatePreviewPanel(BufferedImage newPreviewImage) {
+    private void updatePreviewPanel(BufferedImage newPreviewImage) {
         previewImage = newPreviewImage;
         repaint();
     }

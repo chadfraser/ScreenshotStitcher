@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SaveStateList extends ArrayList<BufferedImage>  implements Serializable {
+public class SaveStateList extends ArrayList<BufferedImage> implements Serializable {
     private static final int MAX_CAPACITY = 10;
     private transient List<BufferedImage> images;
     private int currentImageIndex;
@@ -63,6 +63,20 @@ public class SaveStateList extends ArrayList<BufferedImage>  implements Serializ
         }
         currentImageIndex++;
         return images.get(currentImageIndex);
+    }
+
+    public BufferedImage pollPreviousState() {
+        if (currentImageIndex <= 0 || currentImageIndex >= images.size()) {
+            return null;
+        }
+        return images.get(currentImageIndex - 1);
+    }
+
+    public BufferedImage pollNextState() {
+        if (currentImageIndex < 0 || currentImageIndex >= images.size() - 1) {
+            return null;
+        }
+        return images.get(currentImageIndex + 1);
     }
 
     @Override
