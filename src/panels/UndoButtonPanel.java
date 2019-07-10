@@ -8,8 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class UndoButtonPanel extends JPanel implements ActionListener {
-//    private static final int WIDTH = 250;
-//    private static final int HEIGHT = 450;
+    private static final int WIDTH = 250;
+    private static final int HEIGHT = 300;
 
     private JPanel buttonPanel;
     private JPanel radioLabelPanel;
@@ -25,7 +25,6 @@ public class UndoButtonPanel extends JPanel implements ActionListener {
     private MainFrame mainFrame;
 
     public UndoButtonPanel(MainFrame mainFrame) {
-        setBackground(Color.GREEN);
         this.mainFrame = mainFrame;
 
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -41,7 +40,7 @@ public class UndoButtonPanel extends JPanel implements ActionListener {
         undoButton.addActionListener(this);
         redoButton.addActionListener(this);
 
-        previewOptionLabel = new JLabel("<html>Action to preview in the image preview panel:</html>");
+        previewOptionLabel = new JLabel("<html>Action to view in the image preview panel:</html>");
         previewUndoOption = new JRadioButton("Preview undo option");
         previewRedoOption = new JRadioButton("Preview redo option");
 
@@ -56,6 +55,9 @@ public class UndoButtonPanel extends JPanel implements ActionListener {
     }
 
     private void initializeLayout() {
+//        setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+//        add(buttonPanel);
+//        add(radioLabelPanel);
         setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
 
@@ -86,7 +88,7 @@ public class UndoButtonPanel extends JPanel implements ActionListener {
         c.gridy = 2;
         add(radioLabelPanel, c);
 
-        c.fill = GridBagConstraints.NONE;
+        c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = GridBagConstraints.NORTH;
         c.weightx = 0.5;
         c.weighty = 0.1;
@@ -128,13 +130,6 @@ public class UndoButtonPanel extends JPanel implements ActionListener {
         c.gridy = 0;
         buttonPanel.add(undoButton, c);
 
-//        c.weighty = 0.1;
-//        c.gridwidth = 1;
-//        c.gridheight = 1;
-//        c.gridx = 0;
-//        c.gridy = 1;
-//        buttonPanel.add(Box.createGlue(), c);
-
         c.weighty = 0.45;
         c.gridwidth = 1;
         c.gridheight = 1;
@@ -144,7 +139,7 @@ public class UndoButtonPanel extends JPanel implements ActionListener {
     }
 
     private void initializeRadioLabelPanel(GridBagConstraints c) {
-        c.insets = new Insets(0, 0, 5, 0);
+        c.insets = new Insets(10, 0, 0, 0);
 
         c.weightx = 0.5;
         c.weighty = 0.5;
