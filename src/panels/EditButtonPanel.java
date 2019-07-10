@@ -290,19 +290,16 @@ public class EditButtonPanel extends JPanel implements ActionListener {
         return null;
     }
 
-    // TODO: Change this to use an enum?
-    // TODO: Reimplement
     private void handleMovement(ActionEvent e) {
-        String direction = "";
+        ActionEvent actionEvent = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null);
         if (e.getSource() == upButton) {
-            direction = "up";
+            mainFrame.getActionHandler().getMoveCursorUp().actionPerformed(actionEvent);
         } else if (e.getSource() == downButton) {
-            direction = "down";
+            mainFrame.getActionHandler().getMoveCursorDown().actionPerformed(actionEvent);
         } else if (e.getSource() == leftButton) {
-            direction = "left";
+            mainFrame.getActionHandler().getMoveCursorLeft().actionPerformed(actionEvent);
         } else if (e.getSource() == rightButton) {
-            direction = "right";
+            mainFrame.getActionHandler().getMoveCursorRight().actionPerformed(actionEvent);
         }
-//        mainFrame.getImagePanel().getRectCursor().moveCursor(direction);
     }
 }

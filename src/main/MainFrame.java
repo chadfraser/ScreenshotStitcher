@@ -1,5 +1,6 @@
 package main;
 
+import actions.ActionHandler;
 import actions.ActionShortcutHandler;
 import panels.*;
 import zoom.ZoomValue;
@@ -46,6 +47,7 @@ public class MainFrame extends JFrame {
     private JPanel dataAndImagePreviewPanel;
     private JTabbedPane optionTabbedPane;
 
+    private ActionHandler actionHandler;
     private ActionShortcutHandler actionShortcutHandler;
 
     private MainFrame() {
@@ -104,6 +106,7 @@ public class MainFrame extends JFrame {
 
         imagePreviewPanel.getTimer().start();
 
+        actionHandler = new ActionHandler(this);
         actionShortcutHandler = new ActionShortcutHandler(this);
         add(actionShortcutHandler);
 
@@ -247,6 +250,10 @@ public class MainFrame extends JFrame {
 
     public JScrollPane getMapMakerImageScrollPane() {
         return mapMakerImageScrollPane;
+    }
+
+    public ActionHandler getActionHandler() {
+        return actionHandler;
     }
 
     public int getScrollPanelHeight() {

@@ -8,13 +8,6 @@ import java.awt.event.KeyEvent;
 
 public class ActionShortcutHandler extends JComponent {
     private MainFrame mainFrame;
-    private MoveCursorUpAction moveCursorUp;
-    private MoveCursorDownAction moveCursorDown;
-    private MoveCursorLeftAction moveCursorLeft;
-    private MoveCursorRightAction moveCursorRight;
-
-    private UndoAction undo;
-    private RedoAction redo;
 
     /*
     Save (image/data)
@@ -32,22 +25,7 @@ public class ActionShortcutHandler extends JComponent {
 
     public ActionShortcutHandler(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
-        initializeActions();
-
         initializeActionMap();
-    }
-
-    private void initializeActions() {
-        initializeCursorActions();
-        undo = new UndoAction(mainFrame);
-        redo = new RedoAction(mainFrame);
-    }
-
-    private void initializeCursorActions() {
-        moveCursorUp = new MoveCursorUpAction(mainFrame);
-        moveCursorDown = new MoveCursorDownAction(mainFrame);
-        moveCursorLeft = new MoveCursorLeftAction(mainFrame);
-        moveCursorRight = new MoveCursorRightAction(mainFrame);
     }
 
     private void initializeActionMap() {
@@ -67,12 +45,11 @@ public class ActionShortcutHandler extends JComponent {
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Z,
                 InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK), "redo");
 
-        getActionMap().put("moveUp", moveCursorUp);
-        getActionMap().put("moveDown", moveCursorDown);
-        getActionMap().put("moveLeft", moveCursorLeft);
-        getActionMap().put("moveRight", moveCursorRight);
-        getActionMap().put("undo", undo);
-        getActionMap().put("redo", redo);
+        getActionMap().put("moveUp", mainFrame.getActionHandler().getMoveCursorUp());
+        getActionMap().put("moveDown", mainFrame.getActionHandler().getMoveCursorDown());
+        getActionMap().put("moveLeft", mainFrame.getActionHandler().getMoveCursorLeft());
+        getActionMap().put("moveRight", mainFrame.getActionHandler().getMoveCursorRight());
+        getActionMap().put("undo", mainFrame.getActionHandler().getUndo());
+        getActionMap().put("redo", mainFrame.getActionHandler().getRedo());
     }
-
 }
