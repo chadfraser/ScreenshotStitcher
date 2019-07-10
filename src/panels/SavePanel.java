@@ -214,44 +214,6 @@ public class SavePanel extends JPanel implements ActionListener {
         autoSaveCheckBox.setEnabled(false);
     }
 
-    private void saveImage() {
-        String fileName = imageFileNameField.getText();
-        if (isInvalidFileName(".png", fileName)) {
-            return;
-        }
-        if (!fileName.endsWith(".png")) {
-            fileName = fileName + ".png";
-        }
-
-        try {
-            File outputFile = new File(fileName);
-            if (!outputFile.exists() || confirmFileOverwrite(outputFile.getCanonicalPath()) == JOptionPane.OK_OPTION) {
-                ImageIO.write(mainFrame.getMainStoredImage(), "png", outputFile);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void saveData() {
-        String fileName = dataFileNameField.getText();
-        if (isInvalidFileName(".ser", fileName)) {
-            return;
-        }
-        if (!fileName.endsWith(".ser")) {
-            fileName = fileName + ".ser";
-        }
-
-        try {
-            File outputFile = new File(fileName);
-            if (!outputFile.exists() || confirmFileOverwrite(outputFile.getCanonicalPath()) == JOptionPane.OK_OPTION) {
-                StoredData.serializeData(mainFrame, fileName);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private boolean isInvalidFileName(String extension, String fileName) {
         if (fileName == null || fileName.equals(extension)) {
             JOptionPane.showMessageDialog(mainFrame,
@@ -340,9 +302,9 @@ public class SavePanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == saveImageButton) {
-            saveImage();
+            mainFrame.getActionHandler().getSaveImageAction().actionPerformed(e);
         } else if (e.getSource() == saveDataButton) {
-            saveData();
+            mainFrame.getActionHandler().getSaveDataAction().actionPerformed(e);
         } else if (e.getSource() == openImageButton) {
             openImage();
         } else if (e.getSource() == openDataButton) {

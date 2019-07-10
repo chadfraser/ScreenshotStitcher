@@ -50,13 +50,20 @@ public class ActionShortcutHandler extends JComponent {
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Z,
                 InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK), "redo");
 
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+                InputEvent.CTRL_DOWN_MASK), "saveImage");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+                InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK), "saveData");
+
         getActionMap().put("moveUp", mainFrame.getActionHandler().getMoveCursorUp());
         getActionMap().put("moveDown", mainFrame.getActionHandler().getMoveCursorDown());
         getActionMap().put("moveLeft", mainFrame.getActionHandler().getMoveCursorLeft());
         getActionMap().put("moveRight", mainFrame.getActionHandler().getMoveCursorRight());
         getActionMap().put("paste", mainFrame.getActionHandler().getPasteAction());
         getActionMap().put("delete", mainFrame.getActionHandler().getDeleteAction());
-        getActionMap().put("undo", mainFrame.getActionHandler().getUndo());
-        getActionMap().put("redo", mainFrame.getActionHandler().getRedo());
+        getActionMap().put("undo", mainFrame.getActionHandler().getUndoAction());
+        getActionMap().put("redo", mainFrame.getActionHandler().getRedoAction());
+        getActionMap().put("saveImage", mainFrame.getActionHandler().getSaveImageAction());
+        getActionMap().put("saveData", mainFrame.getActionHandler().getSaveDataAction());
     }
 }

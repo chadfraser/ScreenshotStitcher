@@ -15,15 +15,15 @@ public class ActionHandler extends JComponent {
 
     private PasteAction pasteAction;
     private DeleteAction deleteAction;
-    private UndoAction undo;
-    private RedoAction redo;
+    private UndoAction undoAction;
+    private RedoAction redoAction;
+
+    private SaveImageAction saveImageAction;
+    private SaveDataAction saveDataAction;
 
     /*
-    Save (image/data)
     Open (image/data)
     Auto save
-    Paste
-    Delete
     Trim (hor/ver)
     Include offsets in trim
     Zoom
@@ -39,10 +39,12 @@ public class ActionHandler extends JComponent {
 
     private void initializeActions() {
         initializeCursorActions();
-        undo = new UndoAction(mainFrame);
-        redo = new RedoAction(mainFrame);
+        undoAction = new UndoAction(mainFrame);
+        redoAction = new RedoAction(mainFrame);
         pasteAction = new PasteAction(mainFrame);
         deleteAction = new DeleteAction(mainFrame);
+        saveImageAction = new SaveImageAction(mainFrame);
+        saveDataAction = new SaveDataAction(mainFrame);
     }
 
     private void initializeCursorActions() {
@@ -76,11 +78,19 @@ public class ActionHandler extends JComponent {
         return deleteAction;
     }
 
-    public UndoAction getUndo() {
-        return undo;
+    public UndoAction getUndoAction() {
+        return undoAction;
     }
 
-    public RedoAction getRedo() {
-        return redo;
+    public RedoAction getRedoAction() {
+        return redoAction;
+    }
+
+    public SaveImageAction getSaveImageAction() {
+        return saveImageAction;
+    }
+
+    public SaveDataAction getSaveDataAction() {
+        return saveDataAction;
     }
 }
