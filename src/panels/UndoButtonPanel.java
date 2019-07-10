@@ -8,8 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class UndoButtonPanel extends JPanel implements ActionListener {
-    private static final int WIDTH = 250;
-    private static final int HEIGHT = 450;
+//    private static final int WIDTH = 250;
+//    private static final int HEIGHT = 450;
 
     private JPanel buttonPanel;
     private JPanel radioLabelPanel;
@@ -25,6 +25,7 @@ public class UndoButtonPanel extends JPanel implements ActionListener {
     private MainFrame mainFrame;
 
     public UndoButtonPanel(MainFrame mainFrame) {
+        setBackground(Color.GREEN);
         this.mainFrame = mainFrame;
 
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -95,13 +96,13 @@ public class UndoButtonPanel extends JPanel implements ActionListener {
         c.gridy = 3;
         add(radioPanel, c);
 
-        c.weightx = 0.5;
-        c.weighty = 0.1;
-        c.gridwidth = 1;
-        c.gridheight = 1;
-        c.gridx = 0;
-        c.gridy = 4;
-        add(Box.createGlue(), c);
+//        c.weightx = 0.5;
+//        c.weighty = 0.1;
+//        c.gridwidth = 1;
+//        c.gridheight = 1;
+//        c.gridx = 0;
+//        c.gridy = 4;
+//        add(Box.createGlue(), c);
     }
 
     private void initializePanels() {

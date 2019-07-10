@@ -1,8 +1,6 @@
 package panels;
 
 // TODO: Make scrollpane follow cursor, adjust size responsiveness
-
-import actions.*;
 import handler.ImageHandler;
 import handler.ImageSaver;
 import main.MainFrame;
@@ -12,15 +10,13 @@ import java.awt.*;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.RasterFormatException;
 import java.io.IOException;
 
 public class EditButtonPanel extends JPanel implements ActionListener {
-    private static final int WIDTH = 250;
-    private static final int HEIGHT = 450;
+//    private static final int WIDTH = 250;
+//    private static final int HEIGHT = 450;
 
     private JPanel leftButtonPanel;
     private JPanel upDownButtonPanel;
@@ -42,6 +38,7 @@ public class EditButtonPanel extends JPanel implements ActionListener {
 //        setPreferredSize(new Dimension(WIDTH, HEIGHT));
 //        setMaximumSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
+
 
         leftButtonPanel = new JPanel(new GridBagLayout());
         upDownButtonPanel = new JPanel(new GridBagLayout());
@@ -306,6 +303,6 @@ public class EditButtonPanel extends JPanel implements ActionListener {
         } else if (e.getSource() == rightButton) {
             direction = "right";
         }
-//        moveCursor.moveCursor(direction);
+//        mainFrame.getImagePanel().getRectCursor().moveCursor(direction);
     }
 }
