@@ -18,7 +18,6 @@ public class UndoButtonPanel extends JPanel implements ActionListener {
     private JButton undoButton;
     private JButton redoButton;
     private JLabel previewOptionLabel;
-    private ButtonGroup previewOptionButtonGroup;
     private JRadioButton previewUndoOption;
     private JRadioButton previewRedoOption;
 
@@ -45,7 +44,7 @@ public class UndoButtonPanel extends JPanel implements ActionListener {
         previewRedoOption = new JRadioButton("Preview redo option");
 
         previewOptionLabel.setLabelFor(previewUndoOption);
-        previewOptionButtonGroup = new ButtonGroup();
+        ButtonGroup previewOptionButtonGroup = new ButtonGroup();
         previewOptionButtonGroup.add(previewUndoOption);
         previewOptionButtonGroup.add(previewRedoOption);
         previewUndoOption.setSelected(true);
