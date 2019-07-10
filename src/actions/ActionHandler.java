@@ -13,6 +13,8 @@ public class ActionHandler extends JComponent {
     private MoveCursorLeftAction moveCursorLeft;
     private MoveCursorRightAction moveCursorRight;
 
+    private PasteAction pasteAction;
+    private DeleteAction deleteAction;
     private UndoAction undo;
     private RedoAction redo;
 
@@ -39,6 +41,8 @@ public class ActionHandler extends JComponent {
         initializeCursorActions();
         undo = new UndoAction(mainFrame);
         redo = new RedoAction(mainFrame);
+        pasteAction = new PasteAction(mainFrame);
+        deleteAction = new DeleteAction(mainFrame);
     }
 
     private void initializeCursorActions() {
@@ -62,6 +66,14 @@ public class ActionHandler extends JComponent {
 
     public MoveCursorRightAction getMoveCursorRight() {
         return moveCursorRight;
+    }
+
+    public PasteAction getPasteAction() {
+        return pasteAction;
+    }
+
+    public DeleteAction getDeleteAction() {
+        return deleteAction;
     }
 
     public UndoAction getUndo() {

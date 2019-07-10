@@ -38,6 +38,11 @@ public class ActionShortcutHandler extends JComponent {
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,
                 InputEvent.SHIFT_DOWN_MASK), "moveRight");
 
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_V,
+                InputEvent.CTRL_DOWN_MASK), "paste");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_X,
+                InputEvent.CTRL_DOWN_MASK), "delete");
+
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Z,
                 InputEvent.CTRL_DOWN_MASK), "undo");
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Y,
@@ -49,6 +54,8 @@ public class ActionShortcutHandler extends JComponent {
         getActionMap().put("moveDown", mainFrame.getActionHandler().getMoveCursorDown());
         getActionMap().put("moveLeft", mainFrame.getActionHandler().getMoveCursorLeft());
         getActionMap().put("moveRight", mainFrame.getActionHandler().getMoveCursorRight());
+        getActionMap().put("paste", mainFrame.getActionHandler().getPasteAction());
+        getActionMap().put("delete", mainFrame.getActionHandler().getDeleteAction());
         getActionMap().put("undo", mainFrame.getActionHandler().getUndo());
         getActionMap().put("redo", mainFrame.getActionHandler().getRedo());
     }

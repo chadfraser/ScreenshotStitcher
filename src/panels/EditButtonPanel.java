@@ -251,55 +251,24 @@ public class EditButtonPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ImageHandler imageHandler = mainFrame.getImagePanel().getImageHandler();
-
         if (e.getSource() == pasteButton) {
-            BufferedImage croppedImage = cropImageToPaste();
-            if (croppedImage != null) {
-                imageHandler.pasteToImage(croppedImage);
-            }
+            mainFrame.getActionHandler().getPasteAction().actionPerformed(e);
         } else if (e.getSource() == deleteButton) {
-            imageHandler.deleteFromImage();
+            mainFrame.getActionHandler().getDeleteAction().actionPerformed(e);
         } else {
             handleMovement(e);
         }
     }
 
-    // TODO: Consider moving with crop values (mainframe?)
-    private BufferedImage cropImageToPaste() {
-        int cropX = mainFrame.getCropX();
-        int cropY = mainFrame.getCropY();
-        int cropWidth = mainFrame.getCropWidth();
-        int cropHeight = mainFrame.getCropHeight();
-
-        try {
-            return ImageSaver.cropClipboardImage(cropX, cropY, cropWidth, cropHeight);
-        } catch (RasterFormatException except) {
-            JOptionPane.showMessageDialog(mainFrame,
-                    "The current width or height values are too large to crop.",
-                    "Clipboard Image Error",
-                    JOptionPane.ERROR_MESSAGE);
-        } catch (UnsupportedFlavorException except) {
-            JOptionPane.showMessageDialog(mainFrame,
-                    "You do not currently have an image copied to the clipboard.",
-                    "Clipboard Image Error",
-                    JOptionPane.ERROR_MESSAGE);
-        } catch (IOException except) {
-            except.printStackTrace();
-        }
-        return null;
-    }
-
     private void handleMovement(ActionEvent e) {
-        ActionEvent actionEvent = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null);
         if (e.getSource() == upButton) {
-            mainFrame.getActionHandler().getMoveCursorUp().actionPerformed(actionEvent);
+            mainFrame.getActionHandler().getMoveCursorUp().actionPerformed(e);
         } else if (e.getSource() == downButton) {
-            mainFrame.getActionHandler().getMoveCursorDown().actionPerformed(actionEvent);
+            mainFrame.getActionHandler().getMoveCursorDown().actionPerformed(e);
         } else if (e.getSource() == leftButton) {
-            mainFrame.getActionHandler().getMoveCursorLeft().actionPerformed(actionEvent);
+            mainFrame.getActionHandler().getMoveCursorLeft().actionPerformed(e);
         } else if (e.getSource() == rightButton) {
-            mainFrame.getActionHandler().getMoveCursorRight().actionPerformed(actionEvent);
+            mainFrame.getActionHandler().getMoveCursorRight().actionPerformed(e);
         }
     }
 }

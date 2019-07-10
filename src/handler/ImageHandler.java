@@ -108,6 +108,8 @@ public class ImageHandler {
         // TODO: Adjust cursor on redo
     }
 
+
+
     public BufferedImage getStoredImage() {
         return storedImage;
     }
