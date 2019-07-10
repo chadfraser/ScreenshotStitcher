@@ -3,8 +3,6 @@ package actions;
 import main.MainFrame;
 
 import javax.swing.*;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 
 public class ActionHandler extends JComponent {
     private MainFrame mainFrame;
@@ -20,6 +18,8 @@ public class ActionHandler extends JComponent {
 
     private SaveImageAction saveImageAction;
     private SaveDataAction saveDataAction;
+    private OpenImageAction openImageAction;
+    private OpenDataAction openDataAction;
 
     /*
     Open (image/data)
@@ -45,6 +45,8 @@ public class ActionHandler extends JComponent {
         deleteAction = new DeleteAction(mainFrame);
         saveImageAction = new SaveImageAction(mainFrame);
         saveDataAction = new SaveDataAction(mainFrame);
+        openImageAction = new OpenImageAction(mainFrame);
+        openDataAction = new OpenDataAction(mainFrame);
     }
 
     private void initializeCursorActions() {
@@ -92,5 +94,13 @@ public class ActionHandler extends JComponent {
 
     public SaveDataAction getSaveDataAction() {
         return saveDataAction;
+    }
+
+    public OpenImageAction getOpenImageAction() {
+        return openImageAction;
+    }
+
+    public OpenDataAction getOpenDataAction() {
+        return openDataAction;
     }
 }

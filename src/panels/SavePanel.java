@@ -1,19 +1,13 @@
 package panels;
 
 import main.MainFrame;
-import serialize.StoredData;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 public class SavePanel extends JPanel implements ActionListener {
     private static final int WIDTH = 250;
@@ -59,12 +53,12 @@ public class SavePanel extends JPanel implements ActionListener {
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                System.out.println("AA");
-                if (isInvalidFileName(".ser", dataFileNameField.getText())) {
-                    autoSaveCheckBox.setEnabled(false);
-                } else {
-                    autoSaveCheckBox.setEnabled(true);
-                }
+//                System.out.println("AA");
+//                if (isInvalidFileName(".ser", dataFileNameField.getText())) {
+//                    autoSaveCheckBox.setEnabled(false);
+//                } else {
+//                    autoSaveCheckBox.setEnabled(true);
+//                }
             }
         });
     }
@@ -214,91 +208,6 @@ public class SavePanel extends JPanel implements ActionListener {
         autoSaveCheckBox.setEnabled(false);
     }
 
-    private boolean isInvalidFileName(String extension, String fileName) {
-        if (fileName == null || fileName.equals(extension)) {
-            JOptionPane.showMessageDialog(mainFrame,
-                    "No filename is selected to save to.",
-                    "Filename Missing Warning",
-                    JOptionPane.WARNING_MESSAGE);
-            return true;
-        } else if (fileName.contains(".") && !fileName.endsWith(extension)) {
-            JOptionPane.showMessageDialog(mainFrame,
-                    "It looks like you are trying to save to a file extension other than " + extension + "\n" +
-                            "This program does not support any other file extensions.",
-                    "Filename Extension Warning",
-                    JOptionPane.WARNING_MESSAGE);
-            return true;
-        }
-        return false;
-    }
-
-    private void openImage() {
-        String fileName = imageFileNameField.getText();
-        File imageFile = new File(fileName);
-
-        if (!imageFile.exists()) {
-            JFileChooser fileChooser = new JFileChooser(new File("."));
-            fileChooser.setDialogTitle("Open Image File");
-            FileNameExtensionFilter filter = new FileNameExtensionFilter("PNG images", "png");
-            fileChooser.setFileFilter(filter);
-
-            int status = fileChooser.showOpenDialog(this);
-            if (status == JFileChooser.APPROVE_OPTION) {
-                imageFile = fileChooser.getSelectedFile();
-                imageFileNameField.setText(imageFile.getName());
-            } else {
-                return;
-            }
-        }
-
-        try {
-            BufferedImage openedImage = ImageIO.read(imageFile);
-            mainFrame.getImagePanel().getImageHandler().updateAndStoreChangedImages(openedImage);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void openData() {
-        String fileName = dataFileNameField.getText();
-        File dataFile = new File(fileName);
-
-        if (!dataFile.exists()) {
-            JFileChooser fileChooser = new JFileChooser(new File("."));
-            fileChooser.setDialogTitle("Open MapMaker File");
-            FileNameExtensionFilter filter = new FileNameExtensionFilter("SER images", "ser");
-            fileChooser.setFileFilter(filter);
-
-            int status = fileChooser.showOpenDialog(this);
-            if (status == JFileChooser.APPROVE_OPTION) {
-                dataFile = fileChooser.getSelectedFile();
-                dataFileNameField.setText(dataFile.getName());
-            } else {
-                return;
-            }
-        }
-
-        if (confirmDataOverwrite() == JOptionPane.OK_OPTION) {
-            StoredData.deserializeData(mainFrame, dataFile);
-        }
-    }
-
-    private int confirmFileOverwrite(String outputFilePath) {
-        return JOptionPane.showConfirmDialog(mainFrame,
-                "The file " + outputFilePath + " already exists. Overwrite this file?",
-                "File Overwrite Confirmation",
-                JOptionPane.OK_CANCEL_OPTION);
-    }
-
-    private int confirmDataOverwrite() {
-        return JOptionPane.showConfirmDialog(mainFrame,
-                "You are trying to open up stored data. This will permanently delete any unsaved progress in the " +
-                        "current session! Are you sure you wish to do this?\n" +
-                        "You may wish to cancel this and save your current image first, so you can reopen it later.",
-                "Data Overwrite Confirmation",
-                JOptionPane.OK_CANCEL_OPTION);
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == saveImageButton) {
@@ -306,9 +215,9 @@ public class SavePanel extends JPanel implements ActionListener {
         } else if (e.getSource() == saveDataButton) {
             mainFrame.getActionHandler().getSaveDataAction().actionPerformed(e);
         } else if (e.getSource() == openImageButton) {
-            openImage();
+            mainFrame.getActionHandler().getOpenImageAction().actionPerformed(e);
         } else if (e.getSource() == openDataButton) {
-            openData();
+            mainFrame.getActionHandler().getOpenDataAction().actionPerformed(e);
         }
     }
 

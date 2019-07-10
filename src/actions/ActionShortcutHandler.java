@@ -54,6 +54,10 @@ public class ActionShortcutHandler extends JComponent {
                 InputEvent.CTRL_DOWN_MASK), "saveImage");
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_S,
                 InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK), "saveData");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_O,
+                InputEvent.CTRL_DOWN_MASK), "loadImage");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_O,
+                InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK), "loadData");
 
         getActionMap().put("moveUp", mainFrame.getActionHandler().getMoveCursorUp());
         getActionMap().put("moveDown", mainFrame.getActionHandler().getMoveCursorDown());
@@ -65,5 +69,7 @@ public class ActionShortcutHandler extends JComponent {
         getActionMap().put("redo", mainFrame.getActionHandler().getRedoAction());
         getActionMap().put("saveImage", mainFrame.getActionHandler().getSaveImageAction());
         getActionMap().put("saveData", mainFrame.getActionHandler().getSaveDataAction());
+//        getActionMap().put("openImage", mainFrame.getActionHandler().getOpenImageAction());
+//        getActionMap().put("openData", mainFrame.getActionHandler().getOpenDataAction());
     }
 }
