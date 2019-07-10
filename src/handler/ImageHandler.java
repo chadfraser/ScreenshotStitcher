@@ -1,6 +1,7 @@
 package handler;
 
 import panels.ImagePanel;
+import utils.RectCursor;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -72,17 +73,15 @@ public class ImageHandler {
 
     // Remove the image data on the rectCursor's x and y coordinates (removing color and opacity)
     public void deleteFromImage() {
-        int x = imagePanel.getRectCursor().getX();
-        int y = imagePanel.getRectCursor().getY();
-        int cropWidth = imagePanel.getMainFrame().getCropWidth();
-        int cropHeight = imagePanel.getMainFrame().getCropHeight();
+        RectCursor cursor = imagePanel.getRectCursor();
 
         BufferedImage newImage = new BufferedImage(storedImage.getWidth(), storedImage.getHeight(),
                 BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = newImage.createGraphics();
+        g.drawImage(storedImage, 0, 0, null);
         g.setComposite(AlphaComposite.Src);
         g.setColor(new Color(0, 0, 0, 0));
-        g.fillRect(x, y, cropWidth, cropHeight);
+        g.fillRect(cursor.getX(), cursor.getY(), cursor.getWidth(), cursor.getHeight());
         g.dispose();
         updateAndStoreChangedImages(newImage);
         // TODO: Focus on cursor here
@@ -107,8 +106,6 @@ public class ImageHandler {
         }
         // TODO: Adjust cursor on redo
     }
-
-
 
     public BufferedImage getStoredImage() {
         return storedImage;
