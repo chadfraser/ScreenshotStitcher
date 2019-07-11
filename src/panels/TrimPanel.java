@@ -112,20 +112,18 @@ public class TrimPanel extends JPanel implements ActionListener {
         add(checkBoxPanel, c);
     }
 
-    private int getOffsetAdjustment() {
-        if (trimOffsetsCheckBox.isSelected()) {
-            return mainFrame.getOffsets();
-        }
-        return 0;
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == trimHorizontalButton) {
-            mainFrame.getImagePanel().trimImageHorizontally(getOffsetAdjustment());
+//            mainFrame.getImagePanel().trimImageHorizontally(getOffsetAdjustment());
+            mainFrame.getActionHandler().getTrimHorizontallyAction().actionPerformed(e);
         } else if (e.getSource() == trimVerticalButton) {
-            mainFrame.getImagePanel().trimImageVertically(getOffsetAdjustment());
+            mainFrame.getActionHandler().getTrimVerticallyAction().actionPerformed(e);
         }
+    }
+
+    public JCheckBox getTrimOffsetsCheckBox() {
+        return trimOffsetsCheckBox;
     }
 }
 

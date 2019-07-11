@@ -215,6 +215,10 @@ public class MainFrame extends JFrame {
         return undoButtonPanel;
     }
 
+    public TrimPanel getTrimPanel() {
+        return trimPanel;
+    }
+
     public String getSelectedTabTitle() {
         int selectedIndex = optionTabbedPane.getSelectedIndex();
         return optionTabbedPane.getTitleAt(selectedIndex);

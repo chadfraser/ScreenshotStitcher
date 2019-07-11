@@ -55,9 +55,14 @@ public class ActionShortcutHandler extends JComponent {
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_S,
                 InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK), "saveData");
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_O,
-                InputEvent.CTRL_DOWN_MASK), "loadImage");
+                InputEvent.CTRL_DOWN_MASK), "openImage");
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_O,
-                InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK), "loadData");
+                InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK), "openData");
+
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET,
+                InputEvent.CTRL_DOWN_MASK), "trimHorizontally");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET,
+                InputEvent.CTRL_DOWN_MASK), "trimVertically");
 
         getActionMap().put("moveUp", mainFrame.getActionHandler().getMoveCursorUp());
         getActionMap().put("moveDown", mainFrame.getActionHandler().getMoveCursorDown());
@@ -69,7 +74,9 @@ public class ActionShortcutHandler extends JComponent {
         getActionMap().put("redo", mainFrame.getActionHandler().getRedoAction());
         getActionMap().put("saveImage", mainFrame.getActionHandler().getSaveImageAction());
         getActionMap().put("saveData", mainFrame.getActionHandler().getSaveDataAction());
-//        getActionMap().put("openImage", mainFrame.getActionHandler().getOpenImageAction());
-//        getActionMap().put("openData", mainFrame.getActionHandler().getOpenDataAction());
+        getActionMap().put("openImage", mainFrame.getActionHandler().getOpenImageAction());
+        getActionMap().put("openData", mainFrame.getActionHandler().getOpenDataAction());
+        getActionMap().put("trimHorizontally", mainFrame.getActionHandler().getTrimHorizontallyAction());
+        getActionMap().put("trimVertically", mainFrame.getActionHandler().getTrimVerticallyAction());
     }
 }

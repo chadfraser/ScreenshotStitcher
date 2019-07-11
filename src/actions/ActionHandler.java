@@ -21,10 +21,11 @@ public class ActionHandler extends JComponent {
     private OpenImageAction openImageAction;
     private OpenDataAction openDataAction;
 
+    private TrimHorizontallyAction trimHorizontallyAction;
+    private TrimVerticallyAction trimVerticallyAction;
+
     /*
-    Open (image/data)
     Auto save
-    Trim (hor/ver)
     Include offsets in trim
     Zoom
     Focus (origin/cursor)
@@ -47,6 +48,8 @@ public class ActionHandler extends JComponent {
         saveDataAction = new SaveDataAction(mainFrame);
         openImageAction = new OpenImageAction(mainFrame);
         openDataAction = new OpenDataAction(mainFrame);
+        trimHorizontallyAction = new TrimHorizontallyAction(mainFrame);
+        trimVerticallyAction = new TrimVerticallyAction(mainFrame);
     }
 
     private void initializeCursorActions() {
@@ -102,5 +105,13 @@ public class ActionHandler extends JComponent {
 
     public OpenDataAction getOpenDataAction() {
         return openDataAction;
+    }
+
+    public TrimHorizontallyAction getTrimHorizontallyAction() {
+        return trimHorizontallyAction;
+    }
+
+    public TrimVerticallyAction getTrimVerticallyAction() {
+        return trimVerticallyAction;
     }
 }
