@@ -20,9 +20,11 @@ public class ActionHandler extends JComponent {
     private SaveDataAction saveDataAction;
     private OpenImageAction openImageAction;
     private OpenDataAction openDataAction;
+    private CheckboxAction autoSaveCheckboxAction;
 
     private TrimHorizontallyAction trimHorizontallyAction;
     private TrimVerticallyAction trimVerticallyAction;
+    private CheckboxAction trimCheckboxAction;
 
     /*
     Auto save
@@ -48,8 +50,10 @@ public class ActionHandler extends JComponent {
         saveDataAction = new SaveDataAction(mainFrame);
         openImageAction = new OpenImageAction(mainFrame);
         openDataAction = new OpenDataAction(mainFrame);
+        autoSaveCheckboxAction = new CheckboxAction(mainFrame, mainFrame.getSavePanel().getAutoSaveCheckBox());
         trimHorizontallyAction = new TrimHorizontallyAction(mainFrame);
         trimVerticallyAction = new TrimVerticallyAction(mainFrame);
+        trimCheckboxAction = new CheckboxAction(mainFrame, mainFrame.getTrimPanel().getTrimOffsetsCheckBox());
     }
 
     private void initializeCursorActions() {
@@ -107,11 +111,19 @@ public class ActionHandler extends JComponent {
         return openDataAction;
     }
 
+    public CheckboxAction getAutoSaveCheckboxAction() {
+        return autoSaveCheckboxAction;
+    }
+
     public TrimHorizontallyAction getTrimHorizontallyAction() {
         return trimHorizontallyAction;
     }
 
     public TrimVerticallyAction getTrimVerticallyAction() {
         return trimVerticallyAction;
+    }
+
+    public CheckboxAction getTrimCheckboxAction() {
+        return trimCheckboxAction;
     }
 }

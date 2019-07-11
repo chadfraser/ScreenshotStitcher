@@ -58,11 +58,15 @@ public class ActionShortcutHandler extends JComponent {
                 InputEvent.CTRL_DOWN_MASK), "openImage");
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_O,
                 InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK), "openData");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SLASH,
+                InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK), "autoSaveCheckbox");
 
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET,
                 InputEvent.CTRL_DOWN_MASK), "trimHorizontally");
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET,
                 InputEvent.CTRL_DOWN_MASK), "trimVertically");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SLASH,
+                InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK), "trimCheckbox");
 
         getActionMap().put("moveUp", mainFrame.getActionHandler().getMoveCursorUp());
         getActionMap().put("moveDown", mainFrame.getActionHandler().getMoveCursorDown());
@@ -76,7 +80,9 @@ public class ActionShortcutHandler extends JComponent {
         getActionMap().put("saveData", mainFrame.getActionHandler().getSaveDataAction());
         getActionMap().put("openImage", mainFrame.getActionHandler().getOpenImageAction());
         getActionMap().put("openData", mainFrame.getActionHandler().getOpenDataAction());
+        getActionMap().put("autoSaveCheckbox", mainFrame.getActionHandler().getAutoSaveCheckboxAction());
         getActionMap().put("trimHorizontally", mainFrame.getActionHandler().getTrimHorizontallyAction());
         getActionMap().put("trimVertically", mainFrame.getActionHandler().getTrimVerticallyAction());
+        getActionMap().put("trimCheckbox", mainFrame.getActionHandler().getTrimCheckboxAction());
     }
 }

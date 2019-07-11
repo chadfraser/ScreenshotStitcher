@@ -115,7 +115,6 @@ public class TrimPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == trimHorizontalButton) {
-//            mainFrame.getImagePanel().trimImageHorizontally(getOffsetAdjustment());
             mainFrame.getActionHandler().getTrimHorizontallyAction().actionPerformed(e);
         } else if (e.getSource() == trimVerticalButton) {
             mainFrame.getActionHandler().getTrimVerticallyAction().actionPerformed(e);

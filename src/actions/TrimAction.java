@@ -4,7 +4,6 @@ import main.MainFrame;
 import utils.RectCursor;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 
@@ -20,10 +19,7 @@ public abstract class TrimAction extends AbstractAction {
     }
 
     int getOffsetAdjustment() {
-        if (mainFrame.getTrimPanel().getTrimOffsetsCheckBox().isSelected()) {
-            return mainFrame.getOffsets();
-        }
-        return 0;
+        return mainFrame.getTrimPanel().getTrimOffsetsCheckBox().isSelected() ? mainFrame.getOffsets() : 0;
     }
 
     void adjustCursorAfterTrimming() {

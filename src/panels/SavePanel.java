@@ -236,5 +236,9 @@ public class SavePanel extends JPanel implements ActionListener {
     public void setDataFileNameText(String text) {
         dataFileNameField.setText(text);
     }
+
+    public JCheckBox getAutoSaveCheckBox() {
+        return autoSaveCheckBox;
+    }
 }
 
