@@ -151,4 +151,3 @@ public class ZoomPanel extends JPanel implements ActionListener {
         }
     }
 }
-

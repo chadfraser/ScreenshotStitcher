@@ -19,7 +19,7 @@ public class OpenDataAction extends OpenAction {
     }
 
     private void openData() {
-        String fileName = mainFrame.getSavePanel().getImageFileNameText();
+        String fileName = mainFrame.getSavePanel().getDataFileNameText();
         File dataFile = new File(fileName);
 
         if (!dataFile.exists()) {

@@ -24,7 +24,6 @@ public class StoredData implements Serializable {
     private int offsets;
     private RectCursor rectCursor;
     private SaveStateList saveStateList;
-    // TODO: Implement shortcuts
 
     public static void serializeData(MainFrame mainFrame, String fileName) {
         StoredData storedData = new StoredData();
