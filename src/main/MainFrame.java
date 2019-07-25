@@ -15,6 +15,7 @@ public class MainFrame extends JFrame {
 
     private int cropX = 8;
     private int cropY = 67;
+    // TODO: Decouple cropWidth/Height from MainFrame to RectCursor
     private int cropWidth = 512;
     private int cropHeight = 384;
     private int offsets = 6;
@@ -181,10 +182,12 @@ public class MainFrame extends JFrame {
 
     public void setCropWidth(int cropWidth) {
         this.cropWidth = cropWidth;
+        imagePanel.getRectCursor().setWidth(cropWidth);
     }
 
     public void setCropHeight(int cropHeight) {
         this.cropHeight = cropHeight;
+        imagePanel.getRectCursor().setWidth(cropHeight);
     }
 
     public void setOffsets(int offsets) {

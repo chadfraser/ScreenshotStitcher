@@ -25,10 +25,32 @@ public class RectCursor implements Serializable {
     }
 
     public void drawCursorOnImage(BufferedImage image) {
+//        Graphics2D g = image.createGraphics();
+//        g.setColor(color);
+//        g.drawRect(x, y, width, height);
+//        g.dispose();
+        drawContrastingCursorOnImage(image);
+    }
+
+    // TODO: Fix the error with values being mis-rounded depending on the zoom value of the window
+    private void drawContrastingCursorOnImage(BufferedImage image) {
+        System.out.println(x + " " + y + " " + width + " " + height);
         Graphics2D g = image.createGraphics();
-        g.setColor(color);
-        g.drawRect(x, y, width, height);
+        for (int currentX = x; currentX <= x + width; currentX++) {
+            drawContrastingPixelsAtPosition(image, g, currentX, y);
+            drawContrastingPixelsAtPosition(image, g, currentX, y + height);
+        }
+        for (int currentY = y + 1; currentY <= y + height - 1; currentY++) {
+            drawContrastingPixelsAtPosition(image, g, x, currentY);
+            drawContrastingPixelsAtPosition(image, g, x + width, currentY);
+        }
         g.dispose();
+    }
+
+    private void drawContrastingPixelsAtPosition(BufferedImage image, Graphics2D g, int currentX, int currentY) {
+        Color backgroundPixelColor = new Color(image.getRGB(currentX, currentY));
+        g.setColor(getContrastingColor(backgroundPixelColor));
+        g.drawLine(currentX, currentY, currentX, currentY);
     }
 
     // Returns black if the main color is light, or white if the main color is dark

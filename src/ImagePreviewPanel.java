@@ -94,7 +94,7 @@ public class ImagePreviewPanel extends JPanel {
         return focusedPreviewImage;
     }
 
-    public void updatePreviewPanel(BufferedImage newPreviewImage) {
+    private void updatePreviewPanel(BufferedImage newPreviewImage) {
         previewImage = newPreviewImage;
         repaint();
     }
