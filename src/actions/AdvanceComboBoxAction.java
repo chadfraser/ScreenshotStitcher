@@ -10,19 +10,20 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RasterFormatException;
 import java.io.IOException;
 
-public class PasteAction extends AbstractAction {
+public class AdvanceComboBoxAction extends AbstractAction {
     private MainFrame mainFrame;
+    private JComboBox comboBox;
 
-    PasteAction(MainFrame mainFrame) {
+    AdvanceComboBoxAction(MainFrame mainFrame, JComboBox comboBox) {
         this.mainFrame = mainFrame;
+        this.comboBox = comboBox;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        BufferedImage croppedImage = cropImage();
-        if (croppedImage != null) {
-            mainFrame.getImagePanel().getImageHandler().pasteToImage(croppedImage);
-        }
+//        if (comboBox.getItemCount() == )
+//        BufferedImage croppedImage = cropImage();
+//        mainFrame.getImagePanel().getImageHandler().pasteToImage(croppedImage);
     }
 
     private BufferedImage cropImage() {
