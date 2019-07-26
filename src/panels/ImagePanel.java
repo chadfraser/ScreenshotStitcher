@@ -149,6 +149,7 @@ public class ImagePanel extends JPanel implements MouseInputListener {
         final int verticalValue;
         double[] scaledWidthAndHeight = getScaledWidthAndHeightRatios();
 
+        // TODO: Replace cropWidth/Height with cursor width/height
         horizontalScrollBar = mainFrame.getMapMakerImageScrollPane().getHorizontalScrollBar();
         horizontalValue = findCenterOfScaledCursor(rectCursor.getX(), scaledWidthAndHeight[0], mainFrame.getCropWidth());
         SwingUtilities.invokeLater(() -> setScrollBarValue(horizontalScrollBar, horizontalValue));
@@ -173,87 +174,87 @@ public class ImagePanel extends JPanel implements MouseInputListener {
         SwingUtilities.invokeLater(() -> setScrollBarValue(verticalScrollBar, verticalValue));
     }
 
-    public void trimImageHorizontally(int offsetAdjustment) {
-        BufferedImage storedImage = imageHandler.getStoredImage();
-        int cropHeight = mainFrame.getCropHeight();
-        BufferedImage upperSubImage;
-        BufferedImage lowerSubImage;
-        BufferedImage newImage;
-
-        if (storedImage.getHeight() - (cropHeight + 2 * offsetAdjustment) <= 0) {
-            return;
-        }
-
-        newImage = new BufferedImage(storedImage.getWidth(), storedImage.getHeight() - (cropHeight + offsetAdjustment),
-                BufferedImage.TYPE_INT_ARGB);
-
-        Graphics2D g = newImage.createGraphics();
-        if (rectCursor.getY() - offsetAdjustment > 0) {
-            upperSubImage = storedImage.getSubimage(0, 0, storedImage.getWidth(), rectCursor.getY() - offsetAdjustment);
-            g.drawImage(upperSubImage, 0, 0, null);
-        }
-        if (rectCursor.getY() + cropHeight + offsetAdjustment < storedImage.getHeight()) {
-            lowerSubImage = storedImage.getSubimage(0, rectCursor.getY() + cropHeight + offsetAdjustment, storedImage.getWidth(),
-                    storedImage.getHeight() - (rectCursor.getY() + cropHeight + offsetAdjustment));
-            g.drawImage(lowerSubImage, 0, rectCursor.getY(), null);
-        }
-        g.dispose();
-
-        imageHandler.updateAndStoreChangedImages(newImage);
-        adjustCursorAfterTrimming();
-    }
-
-    public void trimImageVertically(int offsetAdjustment) {
-        BufferedImage storedImage = imageHandler.getStoredImage();
-        int cropWidth = mainFrame.getCropWidth();
-        BufferedImage leftSubImage;
-        BufferedImage rightSubImage;
-        BufferedImage newImage;
-
-        if (storedImage.getWidth() - (cropWidth + 2 * offsetAdjustment) <= 0) {
-            return;
-        }
-
-        // subtract offsetAdjustment once from the width of storedImage. If offsetAdjustment = 0, this has no effect
-        // otherwise,
-        newImage = new BufferedImage(storedImage.getWidth() - (cropWidth - offsetAdjustment), storedImage.getHeight(),
-                BufferedImage.TYPE_INT_ARGB);  // TODO: Look into how this works
-        Graphics2D g = newImage.createGraphics();
-        if (rectCursor.getX() - offsetAdjustment > 0) {
-            leftSubImage = storedImage.getSubimage(0, 0, rectCursor.getX() - offsetAdjustment, storedImage.getHeight());
-            g.drawImage(leftSubImage, 0, 0, null);
-        }
-        if (rectCursor.getX() + cropWidth + offsetAdjustment <= storedImage.getWidth()) {
-            rightSubImage = storedImage.getSubimage(rectCursor.getX() + cropWidth + offsetAdjustment, 0,
-                    storedImage.getWidth() - (rectCursor.getX() + cropWidth + offsetAdjustment), storedImage.getHeight());
-            g.drawImage(rightSubImage, rectCursor.getX(), 0, null);
-        }
-        g.dispose();
-
-        imageHandler.updateAndStoreChangedImages(newImage);
-        adjustCursorAfterTrimming();
-    }
-
-    private void adjustCursorAfterTrimming() {
-        BufferedImage storedImage = imageHandler.getStoredImage();
-        int cropWidth = mainFrame.getCropWidth();
-        int cropHeight = mainFrame.getCropHeight();
-
-        if (cropWidth > storedImage.getWidth()) {
-            mainFrame.setCropWidth(storedImage.getWidth());
-            cropWidth = storedImage.getWidth();
-        }
-        if (cropHeight > storedImage.getHeight()) {
-            mainFrame.setCropHeight(storedImage.getHeight());
-            cropHeight = storedImage.getHeight();
-        }
-        if (rectCursor.getX() + cropWidth > storedImage.getWidth()) {
-            rectCursor.setX(storedImage.getWidth() - cropWidth);
-        }
-        if (rectCursor.getY() + cropHeight > storedImage.getHeight()) {
-            rectCursor.setY(storedImage.getHeight() - cropHeight);
-        }
-    }
+//    public void trimImageHorizontally(int offsetAdjustment) {
+//        BufferedImage storedImage = imageHandler.getStoredImage();
+//        int cropHeight = mainFrame.getCropHeight();
+//        BufferedImage upperSubImage;
+//        BufferedImage lowerSubImage;
+//        BufferedImage newImage;
+//
+//        if (storedImage.getHeight() - (cropHeight + 2 * offsetAdjustment) <= 0) {
+//            return;
+//        }
+//
+//        newImage = new BufferedImage(storedImage.getWidth(), storedImage.getHeight() - (cropHeight + offsetAdjustment),
+//                BufferedImage.TYPE_INT_ARGB);
+//
+//        Graphics2D g = newImage.createGraphics();
+//        if (rectCursor.getY() - offsetAdjustment > 0) {
+//            upperSubImage = storedImage.getSubimage(0, 0, storedImage.getWidth(), rectCursor.getY() - offsetAdjustment);
+//            g.drawImage(upperSubImage, 0, 0, null);
+//        }
+//        if (rectCursor.getY() + cropHeight + offsetAdjustment < storedImage.getHeight()) {
+//            lowerSubImage = storedImage.getSubimage(0, rectCursor.getY() + cropHeight + offsetAdjustment, storedImage.getWidth(),
+//                    storedImage.getHeight() - (rectCursor.getY() + cropHeight + offsetAdjustment));
+//            g.drawImage(lowerSubImage, 0, rectCursor.getY(), null);
+//        }
+//        g.dispose();
+//
+//        imageHandler.updateAndStoreChangedImages(newImage);
+//        adjustCursorAfterTrimming();
+//    }
+//
+//    public void trimImageVertically(int offsetAdjustment) {
+//        BufferedImage storedImage = imageHandler.getStoredImage();
+//        int cropWidth = mainFrame.getCropWidth();
+//        BufferedImage leftSubImage;
+//        BufferedImage rightSubImage;
+//        BufferedImage newImage;
+//
+//        if (storedImage.getWidth() - (cropWidth + 2 * offsetAdjustment) <= 0) {
+//            return;
+//        }
+//
+//        // subtract offsetAdjustment once from the width of storedImage. If offsetAdjustment = 0, this has no effect
+//        // otherwise,
+//        newImage = new BufferedImage(storedImage.getWidth() - (cropWidth - offsetAdjustment), storedImage.getHeight(),
+//                BufferedImage.TYPE_INT_ARGB);  // TODO: Look into how this works
+//        Graphics2D g = newImage.createGraphics();
+//        if (rectCursor.getX() - offsetAdjustment > 0) {
+//            leftSubImage = storedImage.getSubimage(0, 0, rectCursor.getX() - offsetAdjustment, storedImage.getHeight());
+//            g.drawImage(leftSubImage, 0, 0, null);
+//        }
+//        if (rectCursor.getX() + cropWidth + offsetAdjustment <= storedImage.getWidth()) {
+//            rightSubImage = storedImage.getSubimage(rectCursor.getX() + cropWidth + offsetAdjustment, 0,
+//                    storedImage.getWidth() - (rectCursor.getX() + cropWidth + offsetAdjustment), storedImage.getHeight());
+//            g.drawImage(rightSubImage, rectCursor.getX(), 0, null);
+//        }
+//        g.dispose();
+//
+//        imageHandler.updateAndStoreChangedImages(newImage);
+//        adjustCursorAfterTrimming();
+//    }
+//
+//    private void adjustCursorAfterTrimming() {
+//        BufferedImage storedImage = imageHandler.getStoredImage();
+//        int cropWidth = mainFrame.getCropWidth();
+//        int cropHeight = mainFrame.getCropHeight();
+//
+//        if (cropWidth > storedImage.getWidth()) {
+//            mainFrame.setCropWidth(storedImage.getWidth());
+//            cropWidth = storedImage.getWidth();
+//        }
+//        if (cropHeight > storedImage.getHeight()) {
+//            mainFrame.setCropHeight(storedImage.getHeight());
+//            cropHeight = storedImage.getHeight();
+//        }
+//        if (rectCursor.getX() + cropWidth > storedImage.getWidth()) {
+//            rectCursor.setX(storedImage.getWidth() - cropWidth);
+//        }
+//        if (rectCursor.getY() + cropHeight > storedImage.getHeight()) {
+//            rectCursor.setY(storedImage.getHeight() - cropHeight);
+//        }
+//    }
 
     public MainFrame getMainFrame() {
         return mainFrame;

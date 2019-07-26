@@ -2,6 +2,7 @@ package actions;
 
 import handler.ImageSaver;
 import main.MainFrame;
+import utils.RectCursor;
 
 import javax.swing.*;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -26,10 +27,11 @@ public class PasteAction extends AbstractAction {
     }
 
     private BufferedImage cropImage() {
-        int cropX = mainFrame.getCropX();
-        int cropY = mainFrame.getCropY();
-        int cropWidth = mainFrame.getCropWidth();
-        int cropHeight = mainFrame.getCropHeight();
+        RectCursor cursor = mainFrame.getImagePanel().getRectCursor();
+        int cropX = cursor.getX();
+        int cropY = cursor.getY();
+        int cropWidth = cursor.getWidth();
+        int cropHeight = cursor.getHeight();
 
         try {
             return ImageSaver.cropClipboardImage(cropX, cropY, cropWidth, cropHeight);
