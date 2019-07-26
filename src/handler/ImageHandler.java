@@ -66,7 +66,6 @@ public class ImageHandler {
         int x = imagePanel.getRectCursor().getX();
         int y = imagePanel.getRectCursor().getY();
         g.drawImage(pasteImage, x, y, null);
-        System.out.println(">>" + pasteImage.getWidth() + " " + pasteImage.getHeight());
         g.dispose();
         updateAndStoreChangedImages(newImage);
         // TODO: Focus on cursor here

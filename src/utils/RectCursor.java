@@ -32,9 +32,10 @@ public class RectCursor implements Serializable {
         drawContrastingCursorOnImage(image);
     }
 
+    // TODO: Fix out of bounds error when extending screen down or right
     // TODO: Fix the error with values being mis-rounded depending on the zoom value of the window
+    // TODO: Fix the cursor becoming misaligned when scrolling upwards
     private void drawContrastingCursorOnImage(BufferedImage image) {
-        System.out.println(x + " " + y + " " + width + " " + height);
         Graphics2D g = image.createGraphics();
         for (int currentX = x; currentX <= x + width; currentX++) {
             drawContrastingPixelsAtPosition(image, g, currentX, y);
@@ -44,13 +45,15 @@ public class RectCursor implements Serializable {
             drawContrastingPixelsAtPosition(image, g, x, currentY);
             drawContrastingPixelsAtPosition(image, g, x + width, currentY);
         }
-        g.dispose();
     }
 
     private void drawContrastingPixelsAtPosition(BufferedImage image, Graphics2D g, int currentX, int currentY) {
-        Color backgroundPixelColor = new Color(image.getRGB(currentX, currentY));
-        g.setColor(getContrastingColor(backgroundPixelColor));
-        g.drawLine(currentX, currentY, currentX, currentY);
+        try {
+            Color backgroundPixelColor = new Color(image.getRGB(currentX, currentY));
+            g.setColor(getContrastingColor(backgroundPixelColor));
+            g.drawLine(currentX, currentY, currentX, currentY);
+        }
+        catch (IndexOutOfBoundsException ignore) { }
     }
 
     // Returns black if the main color is light, or white if the main color is dark

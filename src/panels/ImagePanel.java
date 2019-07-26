@@ -100,7 +100,7 @@ public class ImagePanel extends JPanel implements MouseInputListener {
         BufferedImage storedImage = imageHandler.getStoredImage();
         g.drawImage(storedImage, 0, 0, tempImage.getWidth(), tempImage.getHeight(), null);
         g.dispose();
-        cursor.setColor(rectCursor.getContrastingColor(backgroundColor));
+//        cursor.setColor(rectCursor.getContrastingColor(backgroundColor));
         cursor.drawCursorOnImage(tempImage);
         return tempImage;
     }
