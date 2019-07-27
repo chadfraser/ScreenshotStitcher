@@ -28,8 +28,8 @@ public class PasteAction extends AbstractAction {
 
     private BufferedImage cropImage() {
         RectCursor cursor = mainFrame.getImagePanel().getRectCursor();
-        int cropX = cursor.getX();
-        int cropY = cursor.getY();
+        int cropX = mainFrame.getCropX();
+        int cropY = mainFrame.getCropY();
         int cropWidth = cursor.getWidth();
         int cropHeight = cursor.getHeight();
 
