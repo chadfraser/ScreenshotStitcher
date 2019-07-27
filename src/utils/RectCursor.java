@@ -11,17 +11,24 @@ public class RectCursor implements Serializable {
     private int y;
     private int width;
     private int height;
-    private Color color;
     private transient ImagePanel imagePanel;
 
     public RectCursor(ImagePanel imagePanel, int x, int y, int width, int height) {
+        this.imagePanel = imagePanel;
+
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        this.color = Color.BLACK;
+    }
 
+    public RectCursor(ImagePanel imagePanel) {
         this.imagePanel = imagePanel;
+
+        this.width = 400;
+        this.height = 400;
+        this.x = (imagePanel.getWidth() - width) / 2;
+        this.y = (imagePanel.getHeight() - height) / 2;
     }
 
     public void drawCursorOnImage(BufferedImage image) {
@@ -123,14 +130,6 @@ public class RectCursor implements Serializable {
 
     public void setHeight(int height) {
         this.height = height;
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
     }
 
     public ImagePanel getImagePanel() {

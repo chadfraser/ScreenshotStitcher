@@ -19,8 +19,6 @@ public class StoredData implements Serializable {
     private String dataFile;
     private int cropX;
     private int cropY;
-//    private int cropWidth;
-//    private int cropHeight;
     private int offsets;
     private RectCursor rectCursor;
     private SaveStateList saveStateList;
@@ -65,8 +63,6 @@ public class StoredData implements Serializable {
         dataFile = mainFrame.getSavePanel().getDataFileNameText();
         cropX = mainFrame.getCropX();
         cropY = mainFrame.getCropY();
-//        cropWidth = mainFrame.getCropWidth();
-//        cropHeight = mainFrame.getCropHeight();
         rectCursor = mainFrame.getImagePanel().getRectCursor();
         offsets = mainFrame.getOffsets();
         saveStateList = mainFrame.getImagePanel().getImageHandler().getSaveStateList();
@@ -100,8 +96,6 @@ public class StoredData implements Serializable {
         mainFrame.getSavePanel().setDataFileNameText(dataFile);
         mainFrame.setCropX(cropX);
         mainFrame.setCropY(cropY);
-        mainFrame.setCropWidth(rectCursor.getWidth());
-        mainFrame.setCropHeight(rectCursor.getHeight());
         mainFrame.setOffsets(offsets);
         mainFrame.getImagePanel().setRectCursor(rectCursor);
         rectCursor.setImagePanel(mainFrame.getImagePanel());

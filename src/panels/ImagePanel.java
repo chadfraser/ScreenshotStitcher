@@ -46,12 +46,13 @@ public class ImagePanel extends JPanel implements MouseInputListener {
     }
 
     private void initializeCursor() {
-        int cursorWidth = mainFrame.getCropWidth();
-        int cursorHeight = mainFrame.getCropHeight();
-        int cursorX = (WIDTH - cursorWidth) / 2;
-        int cursorY = (HEIGHT - cursorHeight) / 2;
-        this.rectCursor = new RectCursor(this, cursorX, cursorY, cursorWidth, cursorHeight);
+//        int cursorWidth = mainFrame.getCropWidth();
+//        int cursorHeight = mainFrame.getCropHeight();
+//        int cursorX = (WIDTH - cursorWidth) / 2;
+//        int cursorY = (HEIGHT - cursorHeight) / 2;
+//        this.rectCursor = new RectCursor(this, cursorX, cursorY, cursorWidth, cursorHeight);
 //        shouldFollowCursor = false;
+        this.rectCursor = new RectCursor(this);
     }
 
     private void initializeImages() {
@@ -150,13 +151,13 @@ public class ImagePanel extends JPanel implements MouseInputListener {
         double[] scaledWidthAndHeight = getScaledWidthAndHeightRatios();
 
         // TODO: Replace cropWidth/Height with cursor width/height
-        horizontalScrollBar = mainFrame.getMapMakerImageScrollPane().getHorizontalScrollBar();
-        horizontalValue = findCenterOfScaledCursor(rectCursor.getX(), scaledWidthAndHeight[0], mainFrame.getCropWidth());
-        SwingUtilities.invokeLater(() -> setScrollBarValue(horizontalScrollBar, horizontalValue));
-
-        verticalScrollBar = mainFrame.getMapMakerImageScrollPane().getVerticalScrollBar();
-        verticalValue = findCenterOfScaledCursor(rectCursor.getY(), scaledWidthAndHeight[1], mainFrame.getCropHeight());
-        SwingUtilities.invokeLater(() -> setScrollBarValue(verticalScrollBar, verticalValue));
+//        horizontalScrollBar = mainFrame.getMapMakerImageScrollPane().getHorizontalScrollBar();
+//        horizontalValue = findCenterOfScaledCursor(rectCursor.getX(), scaledWidthAndHeight[0], mainFrame.getCropWidth());
+//        SwingUtilities.invokeLater(() -> setScrollBarValue(horizontalScrollBar, horizontalValue));
+//
+//        verticalScrollBar = mainFrame.getMapMakerImageScrollPane().getVerticalScrollBar();
+//        verticalValue = findCenterOfScaledCursor(rectCursor.getY(), scaledWidthAndHeight[1], mainFrame.getCropHeight());
+//        SwingUtilities.invokeLater(() -> setScrollBarValue(verticalScrollBar, verticalValue));
     }
 
     public void focusOnOrigin() {

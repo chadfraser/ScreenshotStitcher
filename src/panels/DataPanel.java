@@ -244,9 +244,9 @@ public class DataPanel extends JPanel implements MouseListener, PropertyChangeLi
     public void propertyChange(PropertyChangeEvent evt) {
         Object source = evt.getSource();
         if (source == cropWidthField) {
-            mainFrame.setCropWidth((int) (long) cropWidthField.getValue());
+            mainFrame.getImagePanel().getRectCursor().setWidth((int) (long) cropWidthField.getValue());
         } else if (source == cropHeightField) {
-            mainFrame.setCropHeight((int) (long) cropHeightField.getValue());
+            mainFrame.getImagePanel().getRectCursor().setHeight((int) (long) cropHeightField.getValue());
         } else if (source == cropXField) {
             mainFrame.setCropX((int) (long) cropXField.getValue());
         } else if (source == cropYField) {
