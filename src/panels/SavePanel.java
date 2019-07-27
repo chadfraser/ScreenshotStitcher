@@ -53,7 +53,6 @@ public class SavePanel extends JPanel implements ActionListener {
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-//                System.out.println("AA");
 //                if (isInvalidFileName(".ser", dataFileNameField.getText())) {
 //                    autoSaveCheckBox.setEnabled(false);
 //                } else {

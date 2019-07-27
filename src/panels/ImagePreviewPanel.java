@@ -1,5 +1,6 @@
 package panels;
 
+import handler.ImageState;
 import main.MainFrame;
 import zoom.ZoomValue;
 
@@ -56,14 +57,14 @@ public class ImagePreviewPanel extends JPanel {
             return null;
         }
 
-        BufferedImage previous = mainFrame.getImagePanel().getImageHandler().getSaveStateList().pollPreviousState();
+        ImageState previous = mainFrame.getImagePanel().getImageHandler().getSaveStateList().pollPreviousState();
         if (mainFrame.getUndoButtonPanel().getPreviewUndoOption() && previous != null) {
-            return createScaledPreviewImage(previous);
+            return createScaledPreviewImage(previous.getImage());
         }
 
-        BufferedImage next = mainFrame.getImagePanel().getImageHandler().getSaveStateList().pollNextState();
+        ImageState next = mainFrame.getImagePanel().getImageHandler().getSaveStateList().pollNextState();
         if (mainFrame.getUndoButtonPanel().getPreviewRedoOption() && next != null) {
-            return createScaledPreviewImage(next);
+            return createScaledPreviewImage(next.getImage());
         }
         return null;
     }

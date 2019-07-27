@@ -100,6 +100,10 @@ public class RectCursor implements Serializable {
         y = Math.max(0, y);
     }
 
+    public RectCursor getClone() {
+        return new RectCursor(imagePanel, x, y, width, height);
+    }
+
     public int getX() {
         return x;
     }

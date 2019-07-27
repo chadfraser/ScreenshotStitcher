@@ -37,9 +37,10 @@ public class ImagePanel extends JPanel implements MouseInputListener {
         setFocusable(true);
 
         this.mainFrame = mainFrame;
-        this.imageHandler = new ImageHandler(this);
         initializeCursor();
         initializeImages();
+
+        this.imageHandler = new ImageHandler(this);
 
         addMouseListener(this);
         addMouseMotionListener(this);

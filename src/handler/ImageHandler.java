@@ -16,7 +16,7 @@ public class ImageHandler {
 
         saveStateList = new SaveStateList();
         storedImage = new BufferedImage(imagePanel.getWidth(), imagePanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        saveStateList.add(storedImage);
+        saveStateList.add(new ImageState(storedImage, imagePanel.getRectCursor()));
     }
 
     // Update the stored image, displayed image, and scaled displayed image
@@ -31,7 +31,7 @@ public class ImageHandler {
     // image
     public void updateAndStoreChangedImages(BufferedImage newStoredImage) {
         updateImages(newStoredImage);
-        saveStateList.add(newStoredImage);
+        saveStateList.add(new ImageState(newStoredImage, imagePanel.getRectCursor()));
     }
 
     // Create a new stored image with a greater size than the current stored image, with the current stored image
@@ -90,21 +90,21 @@ public class ImageHandler {
     // Update the stored image to the previous image in the save state list
     // Does nothing if there is no previous image
     public void undo() {
-        BufferedImage newImage = saveStateList.getPreviousState();
-        if (newImage != null) {
-            updateImages(newImage);
+        ImageState newImageState = saveStateList.getPreviousState();
+        if (newImageState != null) {
+            imagePanel.setRectCursor(newImageState.getRectCursor());
+            updateImages(newImageState.getImage());
         }
-        // TODO: Adjust cursor on undo
     }
 
     // Update the stored image to the next image in the save state list
     // Does nothing if there is no next image
     public void redo() {
-        BufferedImage newImage = saveStateList.getNextState();
-        if (newImage != null) {
-            updateImages(newImage);
+        ImageState newImageState = saveStateList.getNextState();
+        if (newImageState != null) {
+            imagePanel.setRectCursor(newImageState.getRectCursor());
+            updateImages(newImageState.getImage());
         }
-        // TODO: Adjust cursor on redo
     }
 
     public BufferedImage getStoredImage() {
