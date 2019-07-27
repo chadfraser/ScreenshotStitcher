@@ -10,11 +10,7 @@ public class ActionShortcutHandler extends JComponent {
     private MainFrame mainFrame;
 
     /*
-    Save (image/data)
-    Open (image/data)
     Auto save
-    Paste
-    Delete
     Trim (hor/ver)
     Include offsets in trim
     Zoom
@@ -37,6 +33,8 @@ public class ActionShortcutHandler extends JComponent {
                 InputEvent.SHIFT_DOWN_MASK), "moveLeft");
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,
                 InputEvent.SHIFT_DOWN_MASK), "moveRight");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F,
+                InputEvent.CTRL_DOWN_MASK), "toggleCursor");
 
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_V,
                 InputEvent.CTRL_DOWN_MASK), "paste");
@@ -72,6 +70,7 @@ public class ActionShortcutHandler extends JComponent {
         getActionMap().put("moveDown", mainFrame.getActionHandler().getMoveCursorDown());
         getActionMap().put("moveLeft", mainFrame.getActionHandler().getMoveCursorLeft());
         getActionMap().put("moveRight", mainFrame.getActionHandler().getMoveCursorRight());
+        getActionMap().put("toggleCursor", mainFrame.getActionHandler().getToggleCursorAction());
         getActionMap().put("paste", mainFrame.getActionHandler().getPasteAction());
         getActionMap().put("delete", mainFrame.getActionHandler().getDeleteAction());
         getActionMap().put("undo", mainFrame.getActionHandler().getUndoAction());

@@ -10,6 +10,7 @@ public class ActionHandler extends JComponent {
     private MoveCursorDownAction moveCursorDown;
     private MoveCursorLeftAction moveCursorLeft;
     private MoveCursorRightAction moveCursorRight;
+    private ToggleCursorAction toggleCursorAction;
 
     private PasteAction pasteAction;
     private DeleteAction deleteAction;
@@ -61,6 +62,7 @@ public class ActionHandler extends JComponent {
         moveCursorDown = new MoveCursorDownAction(mainFrame);
         moveCursorLeft = new MoveCursorLeftAction(mainFrame);
         moveCursorRight = new MoveCursorRightAction(mainFrame);
+        toggleCursorAction = new ToggleCursorAction(mainFrame);
     }
 
     public MoveCursorUpAction getMoveCursorUp() {
@@ -78,6 +80,8 @@ public class ActionHandler extends JComponent {
     public MoveCursorRightAction getMoveCursorRight() {
         return moveCursorRight;
     }
+
+    public ToggleCursorAction getToggleCursorAction() { return toggleCursorAction; }
 
     public PasteAction getPasteAction() {
         return pasteAction;

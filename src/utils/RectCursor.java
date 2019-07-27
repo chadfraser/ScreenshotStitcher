@@ -1,5 +1,6 @@
 package utils;
 
+import org.w3c.dom.css.Rect;
 import panels.ImagePanel;
 
 import java.awt.*;
@@ -11,9 +12,11 @@ public class RectCursor implements Serializable {
     private int y;
     private int width;
     private int height;
+    private boolean displayCursor = true;
     private transient ImagePanel imagePanel;
 
     public RectCursor(ImagePanel imagePanel, int x, int y, int width, int height) {
+        displayCursor = true;
         this.imagePanel = imagePanel;
 
         this.x = x;
@@ -36,6 +39,9 @@ public class RectCursor implements Serializable {
 //        g.setColor(color);
 //        g.drawRect(x, y, width, height);
 //        g.dispose();
+        if (!displayCursor) {
+            return;
+        }
         drawContrastingCursorOnImage(image);
     }
 
@@ -64,7 +70,7 @@ public class RectCursor implements Serializable {
     }
 
     // Returns black if the main color is light, or white if the main color is dark
-    public Color getContrastingColor(Color mainColor) {
+    private Color getContrastingColor(Color mainColor) {
         double luma = 0.299 * mainColor.getRed() + 0.587 * mainColor.getGreen() + 0.114 * mainColor.getBlue();
         return (luma >= 128) ? Color.BLACK : Color.WHITE;
     }
@@ -74,10 +80,13 @@ public class RectCursor implements Serializable {
         int scaledY = (int) (y * scaledHeightFactor);
         int scaledWidth = (int) (width * scaledWidthFactor);
         int scaledHeight = (int) (height * scaledHeightFactor);
-        return new RectCursor(imagePanel, scaledX, scaledY, scaledWidth, scaledHeight);
+        RectCursor scaledCursor = new RectCursor(imagePanel, scaledX, scaledY, scaledWidth, scaledHeight);
+        scaledCursor.displayCursor = displayCursor;
+        return scaledCursor;
     }
 
     public void shiftCursor(String direction, int offsets) {
+        displayCursor = true;
         switch (direction) {
             case "up":
                 y -= (height + offsets);
@@ -98,6 +107,11 @@ public class RectCursor implements Serializable {
     public void makeXAndYNonNegative() {
         x = Math.max(0, x);
         y = Math.max(0, y);
+    }
+
+    public void toggleDisplayCursor() {
+        displayCursor = !displayCursor;
+        imagePanel.updateImages();
     }
 
     public RectCursor getClone() {
