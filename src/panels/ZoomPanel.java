@@ -47,7 +47,7 @@ public class ZoomPanel extends JPanel implements ActionListener {
 
         zoomComboBox = new JComboBox<>();
         zoomComboBox.setModel(new DefaultComboBoxModel<>(ZoomValue.values()));
-        zoomComboBox.setSelectedIndex(0);
+        zoomComboBox.setSelectedIndex(5);
         zoomComboBox.addActionListener(this);
     }
 
