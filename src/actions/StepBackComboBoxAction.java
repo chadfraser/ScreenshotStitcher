@@ -5,11 +5,11 @@ import main.MainFrame;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-public class AdvanceComboBoxAction extends AbstractAction {
+public class StepBackComboBoxAction extends AbstractAction {
     private MainFrame mainFrame;
     private JComboBox comboBox;
 
-    AdvanceComboBoxAction(MainFrame mainFrame, JComboBox comboBox) {
+    StepBackComboBoxAction(MainFrame mainFrame, JComboBox comboBox) {
         this.mainFrame = mainFrame;
         this.comboBox = comboBox;
     }
@@ -17,9 +17,9 @@ public class AdvanceComboBoxAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         int indexOfSelectedObject = comboBox.getSelectedIndex();
-        if (0 <= indexOfSelectedObject && indexOfSelectedObject < comboBox.getItemCount() - 1)
+        if (0 < indexOfSelectedObject && indexOfSelectedObject < comboBox.getItemCount())
         {
-            comboBox.setSelectedIndex(indexOfSelectedObject + 1);
+            comboBox.setSelectedIndex(indexOfSelectedObject - 1);
         }
     }
 }

@@ -150,4 +150,8 @@ public class ZoomPanel extends JPanel implements ActionListener {
             mainFrame.getImagePanel().focusOnCursor();
         }
     }
+
+    public JComboBox<ZoomValue> getZoomComboBox() {
+        return zoomComboBox;
+    }
 }

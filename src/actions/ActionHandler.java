@@ -27,10 +27,12 @@ public class ActionHandler extends JComponent {
     private TrimVerticallyAction trimVerticallyAction;
     private CheckboxAction trimCheckboxAction;
 
+    private AdvanceComboBoxAction advanceComboBoxAction;
+    private StepBackComboBoxAction stepBackComboBoxAction;
+
     /*
     Auto save
     Include offsets in trim
-    Zoom
     Focus (origin/cursor)
     Manually place cursor
     Manually set crop
@@ -55,6 +57,8 @@ public class ActionHandler extends JComponent {
         trimHorizontallyAction = new TrimHorizontallyAction(mainFrame);
         trimVerticallyAction = new TrimVerticallyAction(mainFrame);
         trimCheckboxAction = new CheckboxAction(mainFrame, mainFrame.getTrimPanel().getTrimOffsetsCheckBox());
+        advanceComboBoxAction = new AdvanceComboBoxAction(mainFrame, mainFrame.getZoomPanel().getZoomComboBox());
+        stepBackComboBoxAction = new StepBackComboBoxAction(mainFrame, mainFrame.getZoomPanel().getZoomComboBox());
     }
 
     private void initializeCursorActions() {
@@ -129,5 +133,13 @@ public class ActionHandler extends JComponent {
 
     public CheckboxAction getTrimCheckboxAction() {
         return trimCheckboxAction;
+    }
+
+    public AdvanceComboBoxAction getAdvanceComboBoxAction() {
+        return advanceComboBoxAction;
+    }
+
+    public StepBackComboBoxAction getStepBackComboBoxAction() {
+        return stepBackComboBoxAction;
     }
 }

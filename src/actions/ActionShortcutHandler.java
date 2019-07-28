@@ -66,6 +66,17 @@ public class ActionShortcutHandler extends JComponent {
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SLASH,
                 InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK), "trimCheckbox");
 
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ADD,
+                InputEvent.CTRL_DOWN_MASK), "advanceZoomComboBox");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS,
+                InputEvent.CTRL_DOWN_MASK), "advanceZoomComboBox");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS,
+                InputEvent.CTRL_DOWN_MASK), "advanceZoomComboBox");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT,
+                InputEvent.CTRL_DOWN_MASK), "stepBackZoomComboBox");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS,
+                InputEvent.CTRL_DOWN_MASK), "stepBackZoomComboBox");
+
         getActionMap().put("moveUp", mainFrame.getActionHandler().getMoveCursorUp());
         getActionMap().put("moveDown", mainFrame.getActionHandler().getMoveCursorDown());
         getActionMap().put("moveLeft", mainFrame.getActionHandler().getMoveCursorLeft());
@@ -83,5 +94,7 @@ public class ActionShortcutHandler extends JComponent {
         getActionMap().put("trimHorizontally", mainFrame.getActionHandler().getTrimHorizontallyAction());
         getActionMap().put("trimVertically", mainFrame.getActionHandler().getTrimVerticallyAction());
         getActionMap().put("trimCheckbox", mainFrame.getActionHandler().getTrimCheckboxAction());
+        getActionMap().put("advanceZoomComboBox", mainFrame.getActionHandler().getAdvanceComboBoxAction());
+        getActionMap().put("stepBackZoomComboBox", mainFrame.getActionHandler().getStepBackComboBoxAction());
     }
 }

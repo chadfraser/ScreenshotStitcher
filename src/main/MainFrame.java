@@ -220,6 +220,10 @@ public class MainFrame extends JFrame {
         return trimPanel;
     }
 
+    public ZoomPanel getZoomPanel() {
+        return zoomPanel;
+    }
+
     public String getSelectedTabTitle() {
         int selectedIndex = optionTabbedPane.getSelectedIndex();
         return optionTabbedPane.getTitleAt(selectedIndex);
