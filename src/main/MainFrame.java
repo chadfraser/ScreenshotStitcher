@@ -7,11 +7,16 @@ import zoom.ZoomValue;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class MainFrame extends JFrame {
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 650;
+    public static final Lock LOCK = new ReentrantLock();
 
     private int cropX = 8;
     private int cropY = 67;
@@ -51,7 +56,7 @@ public class MainFrame extends JFrame {
 
     private MainFrame() {
         setTitle("NES Map Maker");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setResizable(true);
         setFocusable(true);
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -108,6 +113,11 @@ public class MainFrame extends JFrame {
         actionHandler = new ActionHandler(this);
         actionShortcutHandler = new ActionShortcutHandler(this);
         add(actionShortcutHandler);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                handleClose();
+            }
+        });
 
         // TODO: Add component listener for window resize
         // TODO: Fix initialization of MapMakerImagePanel size
@@ -168,6 +178,39 @@ public class MainFrame extends JFrame {
     private void moveImagePreviewPanelToActivePanel(JPanel activePanel) {
         activePanel.add(imagePreviewSubPanel);
         activePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    }
+
+    private void handleClose() {
+//        if (hasUnsavedData())
+        if (true) {
+            int answer = showSavedDataWarningMessage();
+
+            switch (answer) {
+                case JOptionPane.YES_OPTION:
+                    dispose();
+                    break;
+                case JOptionPane.NO_OPTION:
+                    dispose();
+                    break;
+                case JOptionPane.CANCEL_OPTION:
+                    break;
+            }
+        }
+    }
+
+    private int showSavedDataWarningMessage() {
+        String[] buttonLabels = new String[] {"Yes", "No", "Cancel"};
+        String defaultOption = buttonLabels[0];
+
+        return JOptionPane.showOptionDialog(this,
+                "You have unsaved data in your mapmaker program.\n" +
+                        "Do you want to save before exiting?",
+                "Unsaved Data Warning",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.WARNING_MESSAGE,
+                null,
+                buttonLabels,
+                defaultOption);
     }
 
     public void setCropX(int cropX) {
