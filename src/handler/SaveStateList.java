@@ -1,7 +1,5 @@
 package handler;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,33 +13,6 @@ public class SaveStateList extends ArrayList<ImageState> implements Serializable
         imageStates = new ArrayList<>();
         currentStateIndex = -1;
     }
-
-//    // Write int fields as normal, and each image in the images list to a byte array output stream for serialization
-//    // This prevents the loss or corruption of data from images getting written and read incompletely
-//    private void writeObject(ObjectOutputStream out) throws IOException {
-//        out.defaultWriteObject();
-//        out.writeInt(images.size());
-//        for (BufferedImage eachImage : images) {
-//            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//            ImageIO.write(eachImage, "png", byteArrayOutputStream);
-//            out.writeInt(byteArrayOutputStream.size());
-//            byteArrayOutputStream.writeTo(out);
-//        }
-//    }
-//
-//    // Read int fields as normal, and fully read each image from the byte array input stream to deserialize
-//    // This prevents the loss or corruption of data from images getting written and read incompletely
-//    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-//        in.defaultReadObject();
-//        final int imageCount = in.readInt();
-//        images = new ArrayList<>(imageCount);
-//        for (int i = 0; i < imageCount; i++) {
-//            int size = in.readInt();
-//            byte[] buffer = new byte[size];
-//            in.readFully(buffer);
-//            images.add(ImageIO.read(new ByteArrayInputStream(buffer)));
-//        }
-//    }
 
     // Returns the ImageState in the image state list one index behind the currentStateIndex, or null if no such state
     // exists
