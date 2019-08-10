@@ -27,6 +27,8 @@ public class SavePanel extends JPanel implements ActionListener {
     private JPanel saveDataPanel;
     private JPanel checkBoxPanel;
 
+    private String autoSaveFileName;
+
     private MainFrame mainFrame;
 
     public SavePanel(MainFrame mainFrame) {

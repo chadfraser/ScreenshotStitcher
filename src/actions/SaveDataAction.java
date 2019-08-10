@@ -15,10 +15,10 @@ public class SaveDataAction extends SaveAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        saveData();
+        new Thread(saveDataTask);
     }
 
-    private void saveData() {
+    private final Runnable saveDataTask = () -> {
         String fileName = mainFrame.getSavePanel().getDataFileNameText();
         if (isInvalidFileName(".ser", fileName)) {
             return;
@@ -27,6 +27,7 @@ public class SaveDataAction extends SaveAction {
             fileName = fileName + ".ser";
         }
 
+        MainFrame.LOCK.lock();
         try {
             File outputFile = new File(fileName);
             if (!outputFile.exists() || confirmFileOverwrite(outputFile.getCanonicalPath()) == JOptionPane.OK_OPTION) {
@@ -34,6 +35,8 @@ public class SaveDataAction extends SaveAction {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            MainFrame.LOCK.unlock();
         }
-    }
+    };
 }

@@ -3,6 +3,7 @@ package main;
 import actions.ActionHandler;
 import actions.ActionShortcutHandler;
 import panels.*;
+import serialize.LastSavedDataTracker;
 import zoom.ZoomValue;
 
 import javax.swing.*;
@@ -53,6 +54,7 @@ public class MainFrame extends JFrame {
 
     private ActionHandler actionHandler;
     private ActionShortcutHandler actionShortcutHandler;
+    private LastSavedDataTracker lastSavedDataTracker;
 
     private MainFrame() {
         setTitle("NES Map Maker");
@@ -113,6 +115,8 @@ public class MainFrame extends JFrame {
         actionHandler = new ActionHandler(this);
         actionShortcutHandler = new ActionShortcutHandler(this);
         add(actionShortcutHandler);
+        lastSavedDataTracker = new LastSavedDataTracker(this);
+
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 handleClose();
@@ -181,30 +185,34 @@ public class MainFrame extends JFrame {
     }
 
     private void handleClose() {
-//        if (hasUnsavedData())
-        if (true) {
+        // TODO: Save data on close, only prompt when unsaved data exists
+        if (lastSavedDataTracker.areUnsavedChanges()) {
             int answer = showSavedDataWarningMessage();
 
             switch (answer) {
                 case JOptionPane.YES_OPTION:
-                    dispose();
+                    // TODO: Confirm save before closing
+                    actionHandler.getSaveImageAction().actionPerformed(null);
                     break;
                 case JOptionPane.NO_OPTION:
-                    dispose();
                     break;
                 case JOptionPane.CANCEL_OPTION:
-                    break;
+                default:
+                    return;
             }
         }
+        LOCK.lock();
+        System.exit(0);
     }
 
+    // TODO: Break into save data for image or for serialized data
     private int showSavedDataWarningMessage() {
         String[] buttonLabels = new String[] {"Yes", "No", "Cancel"};
         String defaultOption = buttonLabels[0];
 
         return JOptionPane.showOptionDialog(this,
-                "You have unsaved data in your mapmaker program.\n" +
-                        "Do you want to save before exiting?",
+                "You have unsaved data in the screenshot editing program.\n" +
+                        "Do you want to save the image before exiting?",
                 "Unsaved Data Warning",
                 JOptionPane.YES_NO_CANCEL_OPTION,
                 JOptionPane.WARNING_MESSAGE,
