@@ -1,6 +1,7 @@
 package serialize;
 
 import main.MainFrame;
+import utils.ImageComparer;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -28,25 +29,7 @@ public class LastSavedImageDataTracker {
             return true;
         }
 
-        return !areImagesEqual(currentStoredImage, lastSavedStoredImage);
-    }
-
-    private boolean areImagesEqual(BufferedImage imageA, BufferedImage imageB) {
-        if (imageA.getWidth() != imageB.getWidth() || imageA.getHeight() != imageB.getHeight()) {
-            return false;
-        }
-
-        int width  = imageA.getWidth();
-        int height = imageA.getHeight();
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                if (imageA.getRGB(x, y) != imageB.getRGB(x, y)) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return !ImageComparer.areImagesEqual(currentStoredImage, lastSavedStoredImage);
     }
 
     public BufferedImage getLastSavedStoredImage() {
