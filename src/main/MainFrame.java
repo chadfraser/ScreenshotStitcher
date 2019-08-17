@@ -3,7 +3,7 @@ package main;
 import actions.ActionHandler;
 import actions.ActionShortcutHandler;
 import panels.*;
-import serialize.LastSavedDataTracker;
+import serialize.LastSavedImageDataTracker;
 import zoom.ZoomValue;
 
 import javax.swing.*;
@@ -54,7 +54,7 @@ public class MainFrame extends JFrame {
 
     private ActionHandler actionHandler;
     private ActionShortcutHandler actionShortcutHandler;
-    private LastSavedDataTracker lastSavedDataTracker;
+    private LastSavedImageDataTracker lastSavedImageDataTracker;
 
     private MainFrame() {
         setTitle("NES Map Maker");
@@ -115,7 +115,7 @@ public class MainFrame extends JFrame {
         actionHandler = new ActionHandler(this);
         actionShortcutHandler = new ActionShortcutHandler(this);
         add(actionShortcutHandler);
-        lastSavedDataTracker = new LastSavedDataTracker(this);
+        lastSavedImageDataTracker = new LastSavedImageDataTracker(this);
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -186,7 +186,7 @@ public class MainFrame extends JFrame {
 
     private void handleClose() {
         // TODO: Save data on close, only prompt when unsaved data exists
-        if (lastSavedDataTracker.areUnsavedChanges()) {
+        if (lastSavedImageDataTracker.areUnsavedChanges()) {
             int answer = showSavedDataWarningMessage();
 
             switch (answer) {

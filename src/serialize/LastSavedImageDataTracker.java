@@ -5,13 +5,13 @@ import main.MainFrame;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class LastSavedDataTracker {
+public class LastSavedImageDataTracker {
     private MainFrame mainFrame;
     private BufferedImage lastSavedStoredImage;
     private Color lastSavedBackgroundColor;
     private String lastSavedImageFileName;
 
-    public LastSavedDataTracker(MainFrame mainFrame) {
+    public LastSavedImageDataTracker(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
         lastSavedStoredImage = mainFrame.getMainStoredImage();
         lastSavedBackgroundColor = mainFrame.getBackgroundColor();
