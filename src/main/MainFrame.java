@@ -341,6 +341,10 @@ public class MainFrame extends JFrame {
         return actionHandler;
     }
 
+    public String getSavedFileName() {
+        return savedFileName;
+    }
+
     public int getScrollPanelHeight() {
         return mapMakerImageScrollPane.getViewport().getHeight();
     }
