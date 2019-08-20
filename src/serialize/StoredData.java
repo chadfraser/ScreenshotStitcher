@@ -46,6 +46,7 @@ public class StoredData implements Serializable {
             in.close();
             fileIn.close();
             storedData.applyData(mainFrame);
+            mainFrame.setSavedFileName(file.getName().substring(0, file.getName().length() - 4));
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }

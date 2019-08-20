@@ -26,6 +26,7 @@ public class MainFrame extends JFrame {
     private Color backgroundColor = Color.WHITE;
     private ZoomValue zoomValue = ZoomValue.FIT_TO_SCREEN;
     private JScrollPane mapMakerImageScrollPane;
+    private String savedFileName;
 
     private ImagePanel imagePanel;
     private ImagePreviewPanel imagePreviewPanel;
@@ -57,7 +58,7 @@ public class MainFrame extends JFrame {
     private LastSavedImageDataTracker lastSavedImageDataTracker;
 
     private MainFrame() {
-        setTitle("NES Map Maker");
+        setTitle("Screenshot Stitcher");
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setResizable(true);
         setFocusable(true);
@@ -187,33 +188,60 @@ public class MainFrame extends JFrame {
     private void handleClose() {
         // TODO: Save data on close, only prompt when unsaved data exists
         if (lastSavedImageDataTracker.areUnsavedChanges()) {
-            int answer = showSavedDataWarningMessage();
+            int answer = showSavedDataWarningMessage("Your image has been changed since you've last saved it.\n" +
+                            "Do you want to save the image before exiting?", "Unsaved Image Warning");
 
-            switch (answer) {
-                case JOptionPane.YES_OPTION:
-                    // TODO: Confirm save before closing
-                    actionHandler.getSaveImageAction().actionPerformed(null);
-                    break;
-                case JOptionPane.NO_OPTION:
-                    break;
-                case JOptionPane.CANCEL_OPTION:
-                default:
-                    return;
+            if (!confirmCloseAction(answer, actionHandler.getSaveImageAction())) {
+                return;
             }
+        }
+
+        // TODO: Update
+        if (lastSavedImageDataTracker.areUnsavedChanges()) {
+            int answer = showSavedDataWarningMessage("You have unsaved data in the screenshot editing program.\n" +
+                    "Do you want to save the status of your program before exiting?", "Unsaved Data Warning");
+
+            if (answer == JOptionPane.YES_OPTION) {
+                actionHandler.getSaveDataAction().actionPerformed(null);
+            } else if (answer == JOptionPane.CANCEL_OPTION) {
+                return;
+            }
+//            switch (answer) {
+//                case JOptionPane.YES_OPTION:
+//                    // TODO: Confirm save before closing
+//                    actionHandler.getSaveImageAction().actionPerformed(null);
+//                    break;
+//                case JOptionPane.NO_OPTION:
+//                    break;
+//                case JOptionPane.CANCEL_OPTION:
+//                default:
+//                    return;
+//            }
         }
         LOCK.lock();
         System.exit(0);
     }
 
+    private boolean confirmCloseAction(int answer, Action action) {
+        switch (answer) {
+            case JOptionPane.YES_OPTION:
+                // TODO: Confirm save before closing
+                action.actionPerformed(null);
+                return true;
+            case JOptionPane.NO_OPTION:
+                return true;
+            case JOptionPane.CANCEL_OPTION:
+            default:
+                return false;
+        }
+    }
+
     // TODO: Break into save data for image or for serialized data
-    private int showSavedDataWarningMessage() {
+    private int showSavedDataWarningMessage(String message, String title) {
         String[] buttonLabels = new String[] {"Yes", "No", "Cancel"};
         String defaultOption = buttonLabels[0];
 
-        return JOptionPane.showOptionDialog(this,
-                "You have unsaved data in the screenshot editing program.\n" +
-                        "Do you want to save the image before exiting?",
-                "Unsaved Data Warning",
+        return JOptionPane.showOptionDialog(this, message, title,
                 JOptionPane.YES_NO_CANCEL_OPTION,
                 JOptionPane.WARNING_MESSAGE,
                 null,
@@ -249,6 +277,11 @@ public class MainFrame extends JFrame {
 
     public void setBackgroundColor(Color backgroundColor) {
         this.backgroundColor = backgroundColor;
+    }
+
+    public void setSavedFileName(String savedFileName) {
+        this.savedFileName = savedFileName;
+        this.setTitle(savedFileName + " - Screenshot Stitcher");
     }
 
     public ImagePanel getImagePanel() {
