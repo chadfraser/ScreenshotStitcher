@@ -3,7 +3,6 @@ package actions;
 import main.MainFrame;
 import serialize.StoredData;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -31,14 +30,22 @@ public class SaveDataAction extends SaveAction {
             fileName = fileName + ".ser";
         }
 
+        File outputFile = new File(fileName);
         try {
-            File outputFile = new File(fileName);
-            if (!outputFile.exists() || confirmFileOverwrite(outputFile.getCanonicalPath()) == JOptionPane.OK_OPTION) {
+            if (canSaveFileWithoutConfirmation(outputFile)) {
                 StoredData.serializeData(mainFrame, fileName);
+                // TODO: Replace with apache commons baseName
                 mainFrame.setSavedFileName(fileName.substring(0, fileName.length() - 4));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean canSaveFileWithoutConfirmation(File outputFile) throws IOException {
+        // TODO: Replace with apache commons baseName
+        String outputFileName = outputFile.getName().substring(0, outputFile.getName().length() - 4);
+        return !outputFile.exists() || outputFileName.equals(mainFrame.getSavedFileName()) ||
+                confirmFileOverwrite(outputFile.getCanonicalPath()) == JOptionPane.OK_OPTION;
     }
 }
