@@ -13,6 +13,10 @@ import java.io.IOException;
 public class OpenImageAction extends OpenAction {
     OpenImageAction(MainFrame mainFrame) {
         super(mainFrame);
+        fileChooser = new JFileChooser(new File("."));
+        fileChooser.setDialogTitle("Open Image File");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("PNG images", "png");
+        fileChooser.setFileFilter(filter);
     }
 
     @Override
@@ -25,11 +29,6 @@ public class OpenImageAction extends OpenAction {
         File imageFile = new File(fileName);
 
         if (!imageFile.exists()) {
-            JFileChooser fileChooser = new JFileChooser(new File("."));
-            fileChooser.setDialogTitle("Open Image File");
-            FileNameExtensionFilter filter = new FileNameExtensionFilter("PNG images", "png");
-            fileChooser.setFileFilter(filter);
-
             int status = fileChooser.showOpenDialog(mainFrame);
             if (status == JFileChooser.APPROVE_OPTION) {
                 imageFile = fileChooser.getSelectedFile();

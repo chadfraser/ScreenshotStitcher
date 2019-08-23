@@ -11,6 +11,10 @@ import java.io.File;
 public class OpenDataAction extends OpenAction {
     OpenDataAction(MainFrame mainFrame) {
         super(mainFrame);
+        fileChooser = new JFileChooser(new File("."));
+        fileChooser.setDialogTitle("Open Screenshot Stitcher Data File");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("SER data files", "ser");
+        fileChooser.setFileFilter(filter);
     }
 
     @Override
@@ -23,10 +27,6 @@ public class OpenDataAction extends OpenAction {
         File dataFile = new File(fileName);
 
         if (!dataFile.exists()) {
-            JFileChooser fileChooser = new JFileChooser(new File("."));
-            fileChooser.setDialogTitle("Open Screenshot Stitcher File");
-            FileNameExtensionFilter filter = new FileNameExtensionFilter("SER images", "ser");
-            fileChooser.setFileFilter(filter);
 
             int status = fileChooser.showOpenDialog(mainFrame);
             if (status == JFileChooser.APPROVE_OPTION) {

@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 
 public abstract class OpenAction extends AbstractAction {
     MainFrame mainFrame;
+    JFileChooser fileChooser;
 
     OpenAction(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
