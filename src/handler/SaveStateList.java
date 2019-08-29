@@ -1,5 +1,8 @@
 package handler;
 
+import utils.ImageComparer;
+import utils.RectCursor;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +28,6 @@ public class SaveStateList extends ArrayList<ImageState> implements Serializable
         return imageStates.get(currentStateIndex);
     }
 
-
     // Returns the ImageState in the image state list one index ahead of the currentStateIndex, or null if no such
     // state exists
     // Also increments currentStateIndex to represent that the returned state is the new 'current state
@@ -46,7 +48,6 @@ public class SaveStateList extends ArrayList<ImageState> implements Serializable
         }
         return imageStates.get(currentStateIndex - 1);
     }
-
 
     // Returns the ImageState in the image state list one index ahead of the currentStateIndex, or null if no such
     // state exists
@@ -75,5 +76,20 @@ public class SaveStateList extends ArrayList<ImageState> implements Serializable
         boolean result = imageStates.add(imageState);
         currentStateIndex = imageStates.size() - 1;
         return result;
+    }
+
+    public static boolean containSameImageStates(SaveStateList listA, SaveStateList listB) {
+        if (listA.size() != listB.size()) {
+            return false;
+        }
+        for (int i = 0; i < listA.size(); i++) {
+            ImageState imageStateA = listA.get(i);
+            ImageState imageStateB = listB.get(i);
+            if (!ImageComparer.areImagesEqual(imageStateA.getImage(), imageStateB.getImage()) ||
+                    !RectCursor.haveEqualMeasurements(imageStateA.getRectCursor(), imageStateB.getRectCursor())) {
+                return false;
+            }
+        }
+        return true;
     }
 }

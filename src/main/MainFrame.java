@@ -3,6 +3,7 @@ package main;
 import actions.ActionHandler;
 import actions.ActionShortcutHandler;
 import panels.*;
+import serialize.LastSavedFileDataTracker;
 import serialize.LastSavedImageDataTracker;
 import zoom.ZoomValue;
 
@@ -56,6 +57,7 @@ public class MainFrame extends JFrame {
     private ActionHandler actionHandler;
     private ActionShortcutHandler actionShortcutHandler;
     private LastSavedImageDataTracker lastSavedImageDataTracker;
+    private LastSavedFileDataTracker lastSavedFileDataTracker;
 
     private MainFrame() {
         setTitle("Screenshot Stitcher");
@@ -117,6 +119,7 @@ public class MainFrame extends JFrame {
         actionShortcutHandler = new ActionShortcutHandler(this);
         add(actionShortcutHandler);
         lastSavedImageDataTracker = new LastSavedImageDataTracker(this);
+        lastSavedFileDataTracker = new LastSavedFileDataTracker(this);
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -196,8 +199,7 @@ public class MainFrame extends JFrame {
             }
         }
 
-        // TODO: Update
-        if (lastSavedImageDataTracker.areUnsavedChanges()) {
+        if (lastSavedFileDataTracker.areUnsavedChanges()) {
             int answer = showSavedDataWarningMessage("You have unsaved data in the screenshot editing program.\n" +
                     "Do you want to save the status of your program before exiting?", "Unsaved Data Warning");
 
@@ -343,6 +345,14 @@ public class MainFrame extends JFrame {
 
     public String getSavedFileName() {
         return savedFileName;
+    }
+
+    public LastSavedImageDataTracker getLastSavedImageDataTracker() {
+        return lastSavedImageDataTracker;
+    }
+
+    public LastSavedFileDataTracker getLastSavedFileDataTracker() {
+        return lastSavedFileDataTracker;
     }
 
     public int getScrollPanelHeight() {

@@ -118,6 +118,13 @@ public class RectCursor implements Serializable {
         return new RectCursor(imagePanel, x, y, width, height);
     }
 
+    public static boolean haveEqualMeasurements(RectCursor cursorA, RectCursor cursorB) {
+        return cursorA.getX() == cursorB.getX() &&
+                cursorA.getY() == cursorB.getY() &&
+                cursorA.getWidth() == cursorB.getWidth() &&
+                cursorA.getHeight() == cursorB.getHeight();
+    }
+
     public int getX() {
         return x;
     }
