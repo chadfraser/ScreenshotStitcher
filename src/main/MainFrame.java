@@ -1,35 +1,37 @@
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.EventListener;
+package main;
 
-public class MapMakerWindow extends JFrame implements Serializable {
+import actions.ActionHandler;
+import actions.ActionShortcutHandler;
+import panels.*;
+import serialize.LastSavedFileDataTracker;
+import serialize.LastSavedImageDataTracker;
+import zoom.ZoomValue;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class MainFrame extends JFrame {
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 650;
+    public static final Lock LOCK = new ReentrantLock();
 
     private int cropX = 8;
     private int cropY = 67;
-    private int cropWidth = 512;
-    private int cropHeight = 384;
-//    private int cropX;
-//    private int cropY;
-//    private int cropWidth;
-//    private int cropHeight;
+    // TODO: Decouple cropWidth/Height from MainFrame to RectCursor
     private int offsets = 6;
     private Color backgroundColor = Color.WHITE;
-//    private ZoomValue zoomValue = ZoomValue.FIT_TO_SCREEN;
-    private ZoomValue zoomValue = ZoomValue.ONE_HUNDRED_PERCENT;
+    private ZoomValue zoomValue = ZoomValue.FIT_TO_SCREEN;
     private JScrollPane mapMakerImageScrollPane;
+    private String savedFileName;
 
-    private MapMakerImagePanel mapMakerImagePanel;
+    private ImagePanel imagePanel;
     private ImagePreviewPanel imagePreviewPanel;
-    private DirectionalButtonPanel directionalButtonPanel;
+    private EditButtonPanel editButtonPanel;
     private ZoomPanel zoomPanel;
     private SavePanel savePanel;
     private UndoButtonPanel undoButtonPanel;
@@ -52,10 +54,14 @@ public class MapMakerWindow extends JFrame implements Serializable {
     private JPanel dataAndImagePreviewPanel;
     private JTabbedPane optionTabbedPane;
 
-    private MapMakerWindow() {
-        setTitle("NES Map Maker");
+    private ActionHandler actionHandler;
+    private ActionShortcutHandler actionShortcutHandler;
+    private LastSavedImageDataTracker lastSavedImageDataTracker;
+    private LastSavedFileDataTracker lastSavedFileDataTracker;
+
+    private MainFrame() {
         setTitle("Screenshot Stitcher");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setResizable(true);
         setFocusable(true);
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -63,10 +69,10 @@ public class MapMakerWindow extends JFrame implements Serializable {
         setMaximumSize(new Dimension(WIDTH, HEIGHT));
 //        setMinimumSize(new Dimension(700, 600));
 
-        mapMakerImagePanel = new MapMakerImagePanel(this);
-        mapMakerImageScrollPane = new JScrollPane(mapMakerImagePanel);
+        imagePanel = new ImagePanel(this);
+        mapMakerImageScrollPane = new JScrollPane(imagePanel);
         imagePreviewPanel = new ImagePreviewPanel(this);
-        directionalButtonPanel = new DirectionalButtonPanel(this);
+        editButtonPanel = new EditButtonPanel(this);
         zoomPanel = new ZoomPanel(this);
         savePanel = new SavePanel(this);
         undoButtonPanel = new UndoButtonPanel(this);
@@ -103,17 +109,30 @@ public class MapMakerWindow extends JFrame implements Serializable {
         initializeLayout();
         pack();
         setLocationRelativeTo(null);
-        mapMakerImagePanel.updateImages();
+        imagePanel.updateImages();
         setVisible(true);
         revalidate();
 
         imagePreviewPanel.getTimer().start();
+
+        actionHandler = new ActionHandler(this);
+        actionShortcutHandler = new ActionShortcutHandler(this);
+        add(actionShortcutHandler);
+        lastSavedImageDataTracker = new LastSavedImageDataTracker(this);
+        lastSavedFileDataTracker = new LastSavedFileDataTracker(this);
+
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                handleClose();
+            }
+        });
+
         // TODO: Add component listener for window resize
         // TODO: Fix initialization of MapMakerImagePanel size
     }
 
     public static void main(String[] args) {
-        new MapMakerWindow();
+        new MainFrame();
     }
 
     private void initializeLayout() {
@@ -126,9 +145,9 @@ public class MapMakerWindow extends JFrame implements Serializable {
     private void initializePanels() {
         initializeSubPanel(imagePreviewSubPanel, imagePreviewPanel);
 
-//        imagePreviewSubPanel.setBackground(Color.YELLOW);  // TODO: Remove after testing size of panel is done
+        imagePreviewSubPanel.setBackground(Color.YELLOW);  // TODO: Remove after testing size of panel is done
 //        initializeDirectionalButtonSubPanel();  // TODO: Figure out how to prevent this panel resizing immediately
-        initializeSubPanel(directionalButtonSubPanel, directionalButtonPanel);
+        initializeSubPanel(directionalButtonSubPanel, editButtonPanel);
         initializeSubPanel(zoomSubPanel, zoomPanel);
         initializeSubPanel(saveSubPanel, savePanel);
         initializeSubPanel(undoSubPanel, undoButtonPanel);
@@ -169,6 +188,69 @@ public class MapMakerWindow extends JFrame implements Serializable {
         activePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     }
 
+    private void handleClose() {
+        // TODO: Save data on close, only prompt when unsaved data exists
+        if (lastSavedImageDataTracker.areUnsavedChanges()) {
+            int answer = showSavedDataWarningMessage("Your image has been changed since you've last saved it.\n" +
+                            "Do you want to save the image before exiting?", "Unsaved Image Warning");
+
+            if (!confirmCloseAction(answer, actionHandler.getSaveImageAction())) {
+                return;
+            }
+        }
+
+        if (lastSavedFileDataTracker.areUnsavedChanges()) {
+            int answer = showSavedDataWarningMessage("You have unsaved data in the screenshot editing program.\n" +
+                    "Do you want to save the status of your program before exiting?", "Unsaved Data Warning");
+
+            if (answer == JOptionPane.YES_OPTION) {
+                actionHandler.getSaveDataAction().actionPerformed(null);
+            } else if (answer == JOptionPane.CANCEL_OPTION) {
+                return;
+            }
+//            switch (answer) {
+//                case JOptionPane.YES_OPTION:
+//                    // TODO: Confirm save before closing
+//                    actionHandler.getSaveImageAction().actionPerformed(null);
+//                    break;
+//                case JOptionPane.NO_OPTION:
+//                    break;
+//                case JOptionPane.CANCEL_OPTION:
+//                default:
+//                    return;
+//            }
+        }
+        LOCK.lock();
+        System.exit(0);
+    }
+
+    private boolean confirmCloseAction(int answer, Action action) {
+        switch (answer) {
+            case JOptionPane.YES_OPTION:
+                // TODO: Confirm save before closing
+                action.actionPerformed(null);
+                return true;
+            case JOptionPane.NO_OPTION:
+                return true;
+            case JOptionPane.CANCEL_OPTION:
+            default:
+                return false;
+        }
+    }
+
+    // TODO: Break into save data for image or for serialized data
+    private int showSavedDataWarningMessage(String message, String title) {
+        String[] buttonLabels = new String[] {"Yes", "No", "Cancel"};
+        String defaultOption = buttonLabels[0];
+
+        return JOptionPane.showOptionDialog(this, message, title,
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.WARNING_MESSAGE,
+                null,
+                buttonLabels,
+                defaultOption);
+    }
+
     public void setCropX(int cropX) {
         this.cropX = cropX;
     }
@@ -177,13 +259,15 @@ public class MapMakerWindow extends JFrame implements Serializable {
         this.cropY = cropY;
     }
 
-    public void setCropWidth(int cropWidth) {
-        this.cropWidth = cropWidth;
-    }
-
-    public void setCropHeight(int cropHeight) {
-        this.cropHeight = cropHeight;
-    }
+//    public void setCropWidth(int cropWidth) {
+//        this.cropWidth = cropWidth;
+//        imagePanel.getRectCursor().setWidth(cropWidth);
+//    }
+//
+//    public void setCropHeight(int cropHeight) {
+//        this.cropHeight = cropHeight;
+//        imagePanel.getRectCursor().setWidth(cropHeight);
+//    }
 
     public void setOffsets(int offsets) {
         this.offsets = offsets;
@@ -197,12 +281,38 @@ public class MapMakerWindow extends JFrame implements Serializable {
         this.backgroundColor = backgroundColor;
     }
 
-    public MapMakerImagePanel getMapMakerImagePanel() {
-        return mapMakerImagePanel;
+    public void setSavedFileName(String savedFileName) {
+        this.savedFileName = savedFileName;
+        this.setTitle(savedFileName + " - Screenshot Stitcher");
+    }
+
+    public ImagePanel getImagePanel() {
+        return imagePanel;
     }
 
     public ImagePreviewPanel getImagePreviewPanel() {
         return imagePreviewPanel;
+    }
+
+    public SavePanel getSavePanel() {
+        return savePanel;
+    }
+
+    public UndoButtonPanel getUndoButtonPanel() {
+        return undoButtonPanel;
+    }
+
+    public TrimPanel getTrimPanel() {
+        return trimPanel;
+    }
+
+    public ZoomPanel getZoomPanel() {
+        return zoomPanel;
+    }
+
+    public String getSelectedTabTitle() {
+        int selectedIndex = optionTabbedPane.getSelectedIndex();
+        return optionTabbedPane.getTitleAt(selectedIndex);
     }
 
     public int getCropX() {
@@ -211,14 +321,6 @@ public class MapMakerWindow extends JFrame implements Serializable {
 
     public int getCropY() {
         return cropY;
-    }
-
-    public int getCropWidth() {
-        return cropWidth;
-    }
-
-    public int getCropHeight() {
-        return cropHeight;
     }
 
     public int getOffsets() {
@@ -237,11 +339,31 @@ public class MapMakerWindow extends JFrame implements Serializable {
         return mapMakerImageScrollPane;
     }
 
+    public ActionHandler getActionHandler() {
+        return actionHandler;
+    }
+
+    public String getSavedFileName() {
+        return savedFileName;
+    }
+
+    public LastSavedImageDataTracker getLastSavedImageDataTracker() {
+        return lastSavedImageDataTracker;
+    }
+
+    public LastSavedFileDataTracker getLastSavedFileDataTracker() {
+        return lastSavedFileDataTracker;
+    }
+
     public int getScrollPanelHeight() {
         return mapMakerImageScrollPane.getViewport().getHeight();
     }
 
     public int getScrollPanelWidth() {
         return mapMakerImageScrollPane.getViewport().getWidth();
+    }
+
+    public BufferedImage getMainStoredImage() {
+        return imagePanel.getImageHandler().getStoredImage();
     }
 }

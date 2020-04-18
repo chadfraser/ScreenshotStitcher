@@ -1,9 +1,15 @@
+package serialize;
+
+import handler.SaveStateList;
+import main.MainFrame;
+import utils.RectCursor;
+import zoom.ZoomValue;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.List;
 
 public class StoredData implements Serializable {
     private byte[] storedImageByteArray;
@@ -13,23 +19,18 @@ public class StoredData implements Serializable {
     private String dataFile;
     private int cropX;
     private int cropY;
-    private int cropWidth;
-    private int cropHeight;
     private int offsets;
-    private List<BufferedImage> undoListImages;
-    // TODO: Implement data settings: save settings, shortcuts
-    // TODO: Test serialization methods
+    private RectCursor rectCursor;
+    private SaveStateList saveStateList;
 
-    public static void serializeData(MapMakerWindow mapMakerWindow, String fileName) {
+    public static void serializeData(MainFrame mainFrame, String fileName) {
         StoredData storedData = new StoredData();
-        storedData.setData(mapMakerWindow);
+        storedData.setData(mainFrame);
 
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(fileName);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-
             objectOutputStream.writeObject(storedData);
-
             objectOutputStream.close();
             fileOutputStream.close();
         } catch (IOException e) {
@@ -37,38 +38,39 @@ public class StoredData implements Serializable {
         }
     }
 
-    public static void deserializeData(MapMakerWindow mapMakerWindow, File file) {
-        StoredData storedData;
+    public static void deserializeData(MainFrame mainFrame, File file) {
         try {
             FileInputStream fileIn = new FileInputStream(file);
             ObjectInputStream in = new ObjectInputStream(fileIn);
-            storedData = (StoredData) in.readObject();
+            StoredData storedData = (StoredData) in.readObject();
             in.close();
             fileIn.close();
-            storedData.applyData(mapMakerWindow);
+            storedData.applyData(mainFrame);
+            mainFrame.setSavedFileName(file.getName().substring(0, file.getName().length() - 4));
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
 
     // TODO: Find better name for this method
-    private void setData(MapMakerWindow mapMakerWindow) {
-        storedImageByteArray = buildByteArray(mapMakerWindow);
+    private void setData(MainFrame mainFrame) {
+        storedImageByteArray = buildByteArray(mainFrame);
         if (storedImageByteArray == null) {
             return;
         }
-        zoomValue = mapMakerWindow.getZoomValue();
-        backgroundColor = mapMakerWindow.getBackgroundColor();
-//        imageFile = mapMakerWindow.get TODO: Include serialization of JTextArea strings
-        cropX = mapMakerWindow.getCropX();
-        cropY = mapMakerWindow.getCropY();
-        cropWidth = mapMakerWindow.getCropWidth();
-        cropHeight = mapMakerWindow.getCropHeight();
-        offsets = mapMakerWindow.getOffsets();
+        zoomValue = mainFrame.getZoomValue();
+        backgroundColor = mainFrame.getBackgroundColor();
+        imageFile = mainFrame.getSavePanel().getImageFileNameText();
+        dataFile = mainFrame.getSavePanel().getDataFileNameText();
+        cropX = mainFrame.getCropX();
+        cropY = mainFrame.getCropY();
+        rectCursor = mainFrame.getImagePanel().getRectCursor();
+        offsets = mainFrame.getOffsets();
+        saveStateList = mainFrame.getImagePanel().getImageHandler().getSaveStateList();
     }
 
-    private byte[] buildByteArray(MapMakerWindow mapMakerWindow) {
-        BufferedImage tempImage = mapMakerWindow.getMapMakerImagePanel().getStoredImage();
+    private byte[] buildByteArray(MainFrame mainFrame) {
+        BufferedImage tempImage = mainFrame.getMainStoredImage();
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(tempImage, "png", byteArrayOutputStream);
@@ -78,7 +80,7 @@ public class StoredData implements Serializable {
             return tempByteArray;
         } catch (IOException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(mapMakerWindow,
+            JOptionPane.showMessageDialog(mainFrame,
                     "An error occurred while trying to serialize the currently-stored image.",
                     "Data Serialization Error",
                     JOptionPane.ERROR_MESSAGE);
@@ -87,27 +89,28 @@ public class StoredData implements Serializable {
     }
 
     // TODO: Find better name for this method
-    private void applyData(MapMakerWindow mapMakerWindow) {
-        BufferedImage tempImage = buildBufferedImage(storedImageByteArray, mapMakerWindow);
-        mapMakerWindow.getMapMakerImagePanel().setStoredImage(tempImage);
-        mapMakerWindow.setZoomValue(zoomValue);
-        mapMakerWindow.setBackgroundColor(backgroundColor);
-        mapMakerWindow.setCropX(cropX);
-        mapMakerWindow.setCropY(cropY);
-        mapMakerWindow.setCropWidth(cropWidth);
-        mapMakerWindow.setCropHeight(cropHeight);
-        mapMakerWindow.setOffsets(offsets);
-
-        mapMakerWindow.getMapMakerImagePanel().updateImages();
+    private void applyData(MainFrame mainFrame) {
+        BufferedImage tempImage = buildBufferedImage(storedImageByteArray, mainFrame);
+        mainFrame.setZoomValue(zoomValue);
+        mainFrame.setBackgroundColor(backgroundColor);
+        mainFrame.getSavePanel().setImageFileNameText(imageFile);
+        mainFrame.getSavePanel().setDataFileNameText(dataFile);
+        mainFrame.setCropX(cropX);
+        mainFrame.setCropY(cropY);
+        mainFrame.setOffsets(offsets);
+        mainFrame.getImagePanel().setRectCursor(rectCursor);
+        rectCursor.setImagePanel(mainFrame.getImagePanel());
+        mainFrame.getImagePanel().getImageHandler().updateImages(tempImage);
+        mainFrame.getImagePanel().getImageHandler().setSaveStateList(saveStateList);
     }
 
-    private BufferedImage buildBufferedImage(byte[] bytes, MapMakerWindow mapMakerWindow) {
+    private BufferedImage buildBufferedImage(byte[] bytes, MainFrame mainFrame) {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
         try {
             return ImageIO.read(byteArrayInputStream);
         } catch (IOException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(mapMakerWindow,
+            JOptionPane.showMessageDialog(mainFrame,
                     "An error occurred while trying to deserialize the saved stored image.",
                     "Data Deserialization Error",
                     JOptionPane.ERROR_MESSAGE);

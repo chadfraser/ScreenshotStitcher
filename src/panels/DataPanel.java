@@ -1,3 +1,7 @@
+package panels;
+
+import main.MainFrame;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
@@ -12,21 +16,9 @@ import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 
 public class DataPanel extends JPanel implements MouseListener, PropertyChangeListener {
-    private static final long serialVersionUID = 1L;
-
-    private static final int PANEL_WIDTH = 250;
-    private static final int PANEL_HEIGHT = 200;
-
     private int baseWidth = 512;
     private int baseHeight = 384;
     private int baseOffset = 4;
-
-    private Border cropWidthTitleBorder;
-    private Border cropHeightTitleBorder;
-    private Border cropXTitleBorder;
-    private Border cropYTitleBorder;
-    private Border offsetTitleBorder;
-    private Border backgroundColorTitleBorder;
 
     private JLabel cropWidthLabel;
     private JLabel cropHeightLabel;
@@ -52,10 +44,10 @@ public class DataPanel extends JPanel implements MouseListener, PropertyChangeLi
     private JPanel leftOptionsPanel;
     private JPanel rightOptionsPanel;
     private JPanel backgroundColorChooserPanel;
-    private MapMakerWindow mapMakerWindow;
+    private MainFrame mainFrame;
 
-    DataPanel(MapMakerWindow mapMakerWindow) {
-        this.mapMakerWindow = mapMakerWindow;
+    public DataPanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
 
 //        setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
 //        setMinimumSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
@@ -68,7 +60,7 @@ public class DataPanel extends JPanel implements MouseListener, PropertyChangeLi
                 return new Dimension(20, 20);
             }
         };
-        backgroundColorChooserPanel.setBackground(mapMakerWindow.getBackgroundColor());
+        backgroundColorChooserPanel.setBackground(mainFrame.getBackgroundColor());
 
         initializeFormats();
         initializeLabels();
@@ -76,7 +68,7 @@ public class DataPanel extends JPanel implements MouseListener, PropertyChangeLi
         initializePanels();
         initializeLayout();
 
-//        setBackground(Color.ORANGE);
+        setBackground(Color.ORANGE);
     }
 
     private void initializeLayout() {
@@ -252,27 +244,27 @@ public class DataPanel extends JPanel implements MouseListener, PropertyChangeLi
     public void propertyChange(PropertyChangeEvent evt) {
         Object source = evt.getSource();
         if (source == cropWidthField) {
-            mapMakerWindow.setCropWidth((int) (long) cropWidthField.getValue());
+            mainFrame.getImagePanel().getRectCursor().setWidth((int) (long) cropWidthField.getValue());
         } else if (source == cropHeightField) {
-            mapMakerWindow.setCropHeight((int) (long) cropHeightField.getValue());
+            mainFrame.getImagePanel().getRectCursor().setHeight((int) (long) cropHeightField.getValue());
         } else if (source == cropXField) {
-            mapMakerWindow.setCropX((int) (long) cropXField.getValue());
+            mainFrame.setCropX((int) (long) cropXField.getValue());
         } else if (source == cropYField) {
-            mapMakerWindow.setCropY((int) (long) cropYField.getValue());
+            mainFrame.setCropY((int) (long) cropYField.getValue());
         } else if (source == offsetField) {
-            mapMakerWindow.setOffsets((int) (long) offsetField.getValue());
+            mainFrame.setOffsets((int) (long) offsetField.getValue());
         }
-        mapMakerWindow.getMapMakerImagePanel().updateImages();
+        mainFrame.getImagePanel().updateImages();
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getSource() == backgroundColorChooserPanel) {
             Color newBackgroundColor = JColorChooser.showDialog(null, "Choose a new background color",
-                    mapMakerWindow.getBackgroundColor());
-            mapMakerWindow.setBackgroundColor(newBackgroundColor);
-            backgroundColorChooserPanel.setBackground(mapMakerWindow.getBackgroundColor());
-            mapMakerWindow.getMapMakerImagePanel().updateImages();
+                    mainFrame.getBackgroundColor());
+            mainFrame.setBackgroundColor(newBackgroundColor);
+            backgroundColorChooserPanel.setBackground(mainFrame.getBackgroundColor());
+            mainFrame.getImagePanel().updateImages();
         }
     }
 
